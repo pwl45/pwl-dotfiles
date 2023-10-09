@@ -1,0 +1,261 @@
+#!/bin/sh
+
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+alias epsxe="ePSXe"
+alias stata="echo 'exit, clear' | stata-se"
+alias please="sudo"
+alias vim="nvim"
+alias ll='ls -alF'
+alias la='exa -al --color=always --group-directories-first'
+alias cb='xclip -selection c'
+alias cbo='xclip -selection c -out'
+# alias l='ls -CF'
+# alias debugoff="find -name settings.py -exec sed -i 's/DEBUG\s*=\s*True/DEBUG=False/g' {} \+"
+# alias debugon="find -name settings.py -exec sed -i 's/DEBUG\s*=\s*False/DEBUG=True/g' {} \+"
+alias wttr="curl wttr.in"
+alias stw='st -e zstart "curl wttr.in"'
+alias gits="git status"
+alias gac="git add -u && git commit -m"
+alias gau="git add -u"
+gacap(){
+    git add -u
+    git commit -m $1
+    git push
+}
+alias so="source $HOME/.zshrc"
+alias sa="source $HOME/.config/aliasrc"
+alias va="vim $HOME/.config/aliasrc"
+alias ev="vim $MYVIMRC"
+alias std="st -d . >/dev/null 2>/dev/null &"
+alias duh="du -h"
+alias duskstat='duskc run_command setstatus'
+# alias duskmenu='dmenu_run -fn monospace:size=10 -nb #180A13 -nf #BE89AE -sb #440000 -sf #FFF7D4'
+# alias duskmenu_run='dmenu -fn monospace:size=10 -nb #180A13 -nf #BE89AE -sb #440000 -sf #FFF7D4'
+
+alias glap="git log --patch -1"
+alias glp="git log --patch"
+alias gcm="git commit -m"
+alias gp="git push"
+alias gd="git diff"
+alias ggm='git status -uno'
+alias chx="echo 'chimken' && chmod 755"
+alias fzf='fzf --reverse --prompt=">> "'
+alias q='qutebrowser'
+alias z='zathura'
+alias gr='grep -r'
+alias texskel="cp ${HOME}/closet/tex.tex"
+gcb(){
+    cmd="git clone $( xclip -selection c -out )"
+    echo "$cmd"
+    eval $cmd && echo "$cmd" >> .zhistory
+}
+alias G='gcb'
+alias pyi='python3 -i'
+alias py3='python3'
+
+# nice things for movement
+alias emom="cd $HOME/qmk_firmware/keyboards/momoka_ergo/keymaps/momoka_ergo_beta && $EDITOR keymap.c"
+alias ered="cd $HOME/qmk_firmware/keyboards/redox/keymaps/redox_pwl45/ && $EDITOR keymap.c"
+alias eava="cd $HOME/qmk_firmware/keyboards/avalanche/v4/keymaps/avalanch_pwl45/ && $EDITOR keymap.c"
+alias ths="cd $HOME/thesis/git/thesis-document"
+alias tho="cd $HOME/thesis/git/otree"
+alias thl="cd $HOME/thesis/git/luka"
+alias thc="cd $HOME/thesis/git/cat"
+alias ekm="eava"
+alias qc="qmk compile"
+alias qf="qmk flash && xset r rate 300 50"
+alias fm="qmk flash && echo '\n----------DONE----------\n' && qmk flash && xset r rate 300 50"
+alias cdd='cd $HOME && cd'
+alias fzk="ps aux | fzf | awk '{print \$2}' | xargs -r kill"
+alias dkill="ps aux | dmenu -l 20 | awk '{print \$2}' | xargs -r kill"
+alias cal3="cal -3"
+alias calf="cal -A 3"
+alias calb="cal -B 3"
+alias mkc='mkdir-cd'
+lsd(){
+ ls -d $@ */
+}
+# alias lsd='ls -d -- */'
+
+mkdir-cd(){
+    mkdir $1 && cd $1
+}
+# alias fixaudio="pactl set-card-profile 0 output:analog-stereo && pactl set-card-profile 0 input:analog-stereo"
+
+zf() { fd -H ".*.pdf" | fzf  | xargs -d '\n' -r zathura }
+vf() { fd -H | fzf  | xargs -r $EDITOR }
+gf() { 
+    file=$( fd -H | fzf ) 
+    # read program
+    read -sk char
+    echo $char
+    case $char in
+	v)
+	    program="neovim"
+	    ;;
+	z)
+	    program="zathura"
+	    ;;
+	m)
+	    program="mpv"
+	    ;;
+	e)
+	    program="emacs"
+	    ;;
+	c)
+	    cd "$file"
+	    return 0
+	    ;;
+	*)
+	    echo "Usage: $0 {start|stop|restart|status}"
+	    return 1
+	    ;;
+    esac
+    echo $program $file
+
+    $program $file
+}
+
+ef() { fd -H | fzf  | xargs -r emacs }
+vff() { fd -H . $HOME | fzf  | xargs -r $EDITOR }
+# ccv() { tmp=$(fd -H -t d . $HOME | fzf) && cd $tmp }
+vfc() { tmp=$( fzf ) && cd $( dirname "$tmp" ) && basename $tmp | xargs -r $EDITOR }
+# TODO: Refactor these 
+vffc() { tmpcmd=$FZF_DEFAULT_COMMAND; FZF_DEFAULT_COMMAND='fd -H . $HOME'; vfc ; FZF_DEFAULT_COMMAND=$tmpcmd }
+cv() { tmp=$(fd -H -t d | fzf) && cd $tmp }
+ccv() { tmp=$(fd -H -t d . $HOME | fzf) && cd $tmp }
+
+cdl() {
+    \cd $1 && echo $PWD >> $HOME/.shell-dir
+    echo "cd $1" >> $HISTFILE
+}
+alias cd='cdl'
+
+cdg(){
+    tmp=$( tail -n 10000 $HOME/.shell-dir | awk '!seen[$0]++' | tac | fzf )
+    if [ ! -z $tmp ]; then
+	cdl $tmp
+    fi
+}
+
+cdlr(){
+    tmp=$( fd -H -t d | fzf )
+    if [ ! -z $tmp ]; then
+	cdl $tmp
+    fi
+}
+
+
+l() {
+    if [ -z $1 ]; then
+	ls
+    else
+	ls *.$1
+    fi
+}
+
+getmr() {
+    digit_re='^[0-9]+$'
+    if [ -z $2 ]; then
+	if [ -z $1 ]; then # zero 
+	    # zero arguments
+	    ls --sort=time | head -n 1
+	else
+	    # one argument
+	    if [[ $1 =~ $digit_re ]] ; then
+		# argument is a number: list that many of everything
+		ls --sort=time | head -n $1
+	    else 
+		# argument is not a number
+		ls *.$1 --sort=time | head -n 1
+	    fi
+	fi
+    else
+	# two arguments
+	if [[ $1 =~ $digit_re ]] ; then
+	    # first is a number: list that many of *.$2
+	    ls *.$2 --sort=time | head -n $1
+	else
+	    if [[ $2 =~ $digit_re ]] ; then
+		# argument is a number: list that many
+		ls *.$1 --sort=time | head -n $2
+	    else 
+		# neither is a number: warn
+		echo "invalid format"
+		return 1
+	    fi
+	fi
+	# ls *.$1 --sort=time | head -n 1
+    fi
+}
+alias grab=getmr
+
+rerun() {
+    killall $1 && $1
+}
+
+dwmdo(){
+    echo $1 > /tmp/dwm.fifo
+}
+
+lview(){
+    pdflatex $1 && zathura $( basename $1 ).pdf
+}
+
+ccc(){
+    file=$1
+    if [[ $file = *.c ]]; then
+	# remove smallest suffix matching .c from filename
+	# (there can only be one suffix matching .c)
+	cmd="gcc ${file} -o ${file%.c}"
+	echo $cmd
+	eval $cmd
+    else
+	cmd="gcc ${file}.c -o ${file}"
+	echo $cmd
+	eval $cmd
+    fi
+}
+
+# ZLE Bindings are annoying
+function vf-z() { vf ; zle reset-prompt; zle redisplay; zle-keymap-select}
+zle -N vf-z
+bindkey '^f' vf-z
+
+function zf-z() { zf ; zle reset-prompt; zle redisplay; zle-keymap-select}
+zle -N zf-z
+bindkey '^g' zf-z
+
+
+function cdg-z() { cdg ; zle reset-prompt; zle redisplay; zle-keymap-select}
+zle -N cdg-z
+bindkey '^p' cdg-z
+
+function cdlr-z() { cdlr ; zle reset-prompt; zle redisplay; zle-keymap-select}
+zle -N cdlr-z
+bindkey '\eg' cdlr-z
+# bindkey '\ej' cdlr-z
+
+function gcb-z(){zle reset-prompt; gcb ; zle reset-prompt; zle redisplay; zle-keymap-select}
+zle -N gcb-z
+# bindkey '\eg' gcb-z
+
+# remap control enter to do autosuggest
+bindkey '[13;5u' autosuggest-execute
+
+function bk-z() { cd .. ; zle reset-prompt; zle redisplay; zle-keymap-select}
+zle -N bk-z
+bindkey '^h' bk-z
+
+bindkey '^k' up-line-or-search
+bindkey '^j' down-line-or-search
+
