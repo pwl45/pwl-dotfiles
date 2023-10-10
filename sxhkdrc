@@ -7,31 +7,31 @@ super + ctrl + b
 super + shift + b
 	/home/paul/dynamic-bookmarks/bookmarks.sh  -n
 # super + q
-# 	/home/paul/scripts/qrclip.sh
+# 	/home/paul/pwl-dotfiles/scripts/qrclip.sh
 super + shift + d
 	/home/paul/dynamic-bookmarks/bookclip.sh
 super + shift + s
-	/home/paul/scripts/scrot-cb.sh
+	/home/paul/pwl-dotfiles/scripts/scrot-cb.sh
 super + s; s
 	scrot "$HOME/Pictures/$(date +"%F-%T")_scrot.png"
 super + s; u
 	scrot -u "$HOME/Pictures/$(date +"%F-%T")_scrot.png"
 super + slash
-	/home/paul/scripts/search.sh
+	/home/paul/pwl-dotfiles/scripts/search.sh
 # super + z
 # 	zathura $( xclip -selection c -out )
 super + x
-	/home/paul/scripts/switchex.sh
+	/home/paul/pwl-dotfiles/scripts/switchex.sh
 super + n; c
-	/home/paul/scripts/network/wifi-connect.sh connect
+	/home/paul/pwl-dotfiles/scripts/network/wifi-connect.sh connect
 super + n; C
-	/home/paul/scripts/network/device-connect.sh connect
+	/home/paul/pwl-dotfiles/scripts/network/device-connect.sh connect
 super + n; d
-	/home/paul/scripts/network/device-connect.sh disconnect
+	/home/paul/pwl-dotfiles/scripts/network/device-connect.sh disconnect
 super + shift + k;
-	/home/paul/scripts/dkill.sh
+	/home/paul/pwl-dotfiles/scripts/dkill.sh
 super + shift + x;
-    /home/paul/scripts/xrandr-do.sh
+    /home/paul/pwl-dotfiles/scripts/xrandr-do.sh
 super + shift + t;
     /home/paul/thesis/git/thesis-document/start.sh
 super + ctrl + h;
