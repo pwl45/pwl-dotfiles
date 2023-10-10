@@ -12,7 +12,7 @@ autoload -U colors && colors
 # startp=$( echo -n "\x11" )
 # endp=$( echo -n "\x14" )
 # PS1="${startp}%F{160%}%~%{$reset_color%}:%b ${endp}"
-PS1="%F{160%}%~%{$reset_color%}:%b "
+PS1="%F{160%}%~%{$reset_color%}: "
 # History in cache directory:
 HISTSIZE=1000000
 SAVEHIST=1000000
@@ -104,6 +104,8 @@ export FZF_COMPLETION_TRIGGER=''
 xset r rate 300 50
 setxkbmap -option ctrl:nocaps
 
+[ -e "$HOME/.zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh" ] || 
+    ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/kutsan/zsh-system-clipboard $HOME/.zsh/plugins/zsh-system-clipboard )
 source "$HOME/.zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh"
 # Load zsh-syntax-highlighting; should be last.
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null

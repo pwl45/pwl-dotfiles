@@ -1,6 +1,5 @@
 " let fortune = system('/home/paul/scripts/line-fortunes.sh')
 let mapleader =" "
-let g:python3_host_prog = 'python3.9' 
 let g:EasyMotion_do_mapping = 0
 let g:polyglot_disabled = ['autoindent', 'sensible']
 " TODO:
