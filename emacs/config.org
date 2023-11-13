@@ -627,3 +627,27 @@ insert mode keychords for creating blocks. <s followed by TAB creates a source c
         which-key-separator " → " ))
 #+end_src
 * Language Integration LSP, Treesitter 
+#+begin_src emacs-lisp
+(use-package rust-mode)
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  :hook ((python-mode . lsp-deferred)  ;; LSP start automatically for Python
+         (rust-mode . lsp-deferred)    ;; And for Rust
+         (cc-mode . lsp-deferred)    ;; And for C/C++
+         (js-mode . lsp-deferred)        ;; And for JavaScript
+         ;; Add other major modes that you want LSP to support
+         )
+  :config
+  (setq lsp-enable-symbol-highlighting t)
+  (setq lsp-signature-auto-activate nil)
+  (setq lsp-auto-guess-root t))
+ ;; You can adjust LSP settings here
+
+(use-package tree-sitter
+  :ensure t
+  :config
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+#+end_src
