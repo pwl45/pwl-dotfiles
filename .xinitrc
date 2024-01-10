@@ -9,6 +9,7 @@ sxhkd &  # hotkeys
 unclutter &
 ./.screenlayout/3monitor-layout.sh # set up monitor layout
 mkfifo /tmp/dwm.fifo
+xinput disable "ELAN Touchscreen"
 # xterm
 # cinnamon
 # cinnammon-session

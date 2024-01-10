@@ -11,7 +11,7 @@ echo -n "connecting to $netname..." > $HOME/.status-msg # updating status
 # annoying: nmcli doesn't set $? to 1 on failed connection
 # so we have to grep for 'success' to determine if connection was successful
 # if it fails, dmenu for password connecct using that password
-nmcli dev wifi connect "$netname" | grep -qi "secrets.*required" &&
+nmcli dev wifi connect "$netname" 2>&1 | grep -qi "secrets.*required" &&
     dmenu -p "password for $netname?" | xargs nmcli dev wifi connect "$netname" password 
 
 rm $HOME/.status-msg

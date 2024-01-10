@@ -9,6 +9,9 @@ declare -a monitor_order=(
 "DP-1"
 "DP-2"
 "DP-3"
+"DP1-1"
+"DP1-2"
+"DP1-3"
 "DP2-1"
 "DP2-2"
 "DP2-3"
@@ -39,7 +42,8 @@ for out in "${outputs[@]}"; do
 done
 
 # Print the sorted array
-echo "${sorted[@]}"
+echo "sorted: ${sorted[@]}"
+# exit 0
 
 xrargs=""
 xcoord="0"

@@ -15,7 +15,7 @@ alias stata="echo 'exit, clear' | stata-se"
 alias please="sudo"
 alias vim="nvim"
 alias ll='ls -alF'
-alias la='exa -al --color=always --group-directories-first'
+alias la='eza -al --color=always --group-directories-first'
 alias cb='xclip -selection c'
 alias cbo='xclip -selection c -out'
 # alias l='ls -CF'
@@ -61,6 +61,7 @@ gcb(){
 alias G='gcb'
 alias pyi='python3 -i'
 alias py3='python3'
+alias ec='devour emacsclient -c'
 
 # nice things for movement
 alias emom="cd $HOME/qmk_firmware/keyboards/momoka_ergo/keymaps/momoka_ergo_beta && $EDITOR keymap.c"
