@@ -9,18 +9,7 @@
   - [[#sourcing-the-scripts][Sourcing the scripts]]
   - [[#load-evil-mode][Load Evil Mode]]
   - [[#evil-packages][Evil Packages]]
-  - [[#general-keybindings][General Keybindings]]
-- [[#misc][MISC]]
-  - [[#backup][BACKUP]]
-  - [[#shells-and-terminals][SHELLS AND TERMINALS]]
-  - [[#eshell][Eshell]]
-  - [[#vterm][Vterm]]
-  - [[#vterm-toggle][Vterm Toggle]]
-  - [[#sudo-edit][SUDO EDIT]]
-  - [[#minibuffer-escape][MINIBUFFER ESCAPE]]
-  - [[#dired][DIRED]]
-- [[#company][COMPANY]]
-- [[#flycheck][FLYCHECK]]
+  - [[#keybindings][Keybindings]]
 - [[#gui][GUI]]
   - [[#disable-menubar-toolbars-and-scrollbars][Disable Menubar, Toolbars, and Scrollbars]]
   - [[#display-line-numbers-and-truncated-lines][Display Line Numbers and Truncated Lines]]
@@ -33,6 +22,19 @@
   - [[#diminish][DIMINISH]]
   - [[#rainbow-delimiters][RAINBOW Delimiters]]
   - [[#dashboard][DASHBOARD]]
+- [[#misc][MISC]]
+  - [[#misc-variables][Misc. Variables]]
+  - [[#backup][BACKUP]]
+  - [[#shells-and-terminals][SHELLS AND TERMINALS]]
+  - [[#eshell][Eshell]]
+  - [[#vterm][Vterm]]
+  - [[#sudo-edit][SUDO EDIT]]
+  - [[#minibuffer-escape][MINIBUFFER ESCAPE]]
+  - [[#dired][DIRED]]
+- [[#company][COMPANY]]
+- [[#helm][HELM]]
+- [[#fzf][FZF]]
+- [[#flycheck][FLYCHECK]]
 - [[#ivy-counsel][IVY (COUNSEL)]]
 - [[#org-mode][ORG MODE]]
   - [[#nice-keybindings][Nice Keybindings]]
@@ -58,26 +60,30 @@
 #+end_src
 ** Load Evil Mode
 #+begin_src emacs-lisp
-;; Expands to: (elpaca evil (use-package evil :demand t))
+(use-package undo-tree
+  :init
+  (global-undo-tree-mode)
+  )
 (use-package evil
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
   (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below t)
-  (evil-mode))
+  (setq evil-undo-system 'undo-tree)
+
+  (evil-mode)
+  )
 (use-package evil-collection
   :after evil
   :config
   (setq evil-collection-mode-list '(dashhboard dired ibuffer))
-  (setq evil-undo-system 'undo-redo)
   (evil-collection-init))
 (use-package evil-tutor)
 ;;(with-eval-after-load 'evil-maps
-  ;;(define-key evil-motion-state-map (kbd "SPC") nil)
-  ;;(define-key evil-motion-state-map (kbd "RET") nil)
-  ;;(define-key evil-motion-state-map (kbd "TAB") nil)
-  ;;)
+;;(define-key evil-motion-state-map (kbd "SPC") nil)
+;;(define-key evil-motion-state-map (kbd "RET") nil)
+;;(define-key evil-motion-state-map (kbd "TAB") nil)
+;;)
 
 
 ;;Turns off elpaca-use-package-mode current declaration
@@ -96,7 +102,9 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
   (setq evil-commentary-mode t)
   )
 #+end_src
-** General Keybindings
+** Keybindings 
+*** Basic Keybindings 
+*** Keybindings with General
 #+begin_src emacs-lisp
 (use-package general
   :config
@@ -119,6 +127,9 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
     "." '(find-file :wk "Find file")
     "fc" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
     "fr" '(counsel-recentf :wk "Find recent files")
+    "ff" '(helm-multi-files :wk "Fuzzy find files in helm")
+    "fg" '(helm-rg :wk "rip grep for files with helm")
+    "rg" '(helm-rg :wk "rip grep for files with helm")
     "TAB TAB" '(comment-line :wk "Comment lines")
     )
 
@@ -199,144 +210,84 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
     "d j" '(dired-jump :wk "Dired jump to current")
     "d p" '(peep-dired :wk "Peep-dired"))
 
+  (defun save-and-escape ()
+    "Save the buffer and escape from the current mode."
+    (interactive)
+    (save-buffer)
+    (evil-normal-state))
+
+  (general-define-key
+   :states '(normal insert visual)
+   "C-SPC" 'save-and-escape)
+
+  ;; Simple remaps for normal mode
+  (general-define-key
+   :states 'normal
+   "Q" 'evil-lookup
+   "J" 'evil-forward-paragraph
+   "K" 'evil-backward-paragraph
+   "H" 'evil-first-non-blank
+   "L" 'evil-end-of-line
+   "j" 'evil-next-visual-line
+   "k" 'evil-previous-visual-line
+
+)
+
+  ;; Simple remaps for visual mode
+  (general-define-key
+   :states 'visual
+   "H" 'evil-first-non-blank
+   "L" 'evil-end-of-line)
+
+  ;; S - substitute command skeleton and move the cursor between the two slashes
+  ;; this is annoyingly difficult, have to do minibuffer-with-setup-hook
+  (general-define-key
+   :states 'normal
+   :keymaps 'override
+   "S" (lambda ()
+         (interactive)
+         (minibuffer-with-setup-hook
+             (lambda () (backward-char 2))
+           (evil-ex "%s//g"))
+         )
+   )
+
+  (general-define-key
+   :states 'visual
+   :keymaps 'override
+   "S" (lambda ()
+         (interactive)
+         (minibuffer-with-setup-hook
+             (lambda () (backward-char 2))
+           (evil-ex "'<,'>s//g")
+           )
+         )
+   )
+
+  ;; nnoremap c "_c
+  (defvar my/original-evil-change-command (lookup-key evil-normal-state-map "c"))
+  (defun my/evil-change-to-blackhole ()
+    (interactive)
+    (let ((evil-this-register ?_))
+      (call-interactively my/original-evil-change-command)))
+  (general-define-key
+   :states '(normal visual)
+   "c" 'my/evil-change-to-blackhole)
+
+  ;; nnoremap C "_C
+  (defvar my/original-evil-change-to-end-of-line-command (lookup-key evil-normal-state-map "C"))
+  (defun my/evil-change-to-end-of-line-to-blackhole ()
+    (interactive)
+    (let ((evil-this-register ?_))
+      (call-interactively my/original-evil-change-to-end-of-line-command)))
+  (general-define-key
+   :states '(normal visual)
+   "C" 'my/evil-change-to-end-of-line-to-blackhole)
 
 
   )
-#+end_src
+   #+end_src
 
-* MISC
-Unimportant things that are helpful, improve quality of life, etc.
-** BACKUP
-    Make emacs store its clutter-y backup files in the trash
-    #+begin_src emacs-lisp
-    (setq backup-directory-alist '((".*" . "~/.Trash")))
-    #+end_src
-** SHELLS AND TERMINALS
-** Eshell
-#+begin_src emacs-lisp
-(use-package eshell-syntax-highlighting
-  :after esh-mode
-  :config
-  (eshell-syntax-highlighting-global-mode +1))
-
-;; eshell-syntax-highlighting -- adds fish/zsh-like syntax highlighting.
-;; eshell-rc-script -- your profile for eshell; like a bashrc for eshell.
-;; eshell-aliases-file -- sets an aliases file for the eshell.
-
-(setq eshell-rc-script (concat user-emacs-directory "eshell/profile")
-      eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
-      eshell-history-size 5000
-      eshell-buffer-maximum-lines 5000
-      eshell-hist-ignoredups t
-      eshell-scroll-to-bottom-on-input t
-      eshell-destroy-buffer-when-process-dies t
-      eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
-#+end_src
-
-** Vterm
-#+begin_src emacs-lisp
-(use-package vterm
-  :config (setq shell-file-name "/bin/bash"))
-#+end_src
-
-** Vterm Toggle
-[[https://github.com/jixiuf/vterm-toggle][vterm-toggle]] toggles between the vterm buffer and whatever buffer you are editing.
-
-#+begin_src emacs-lisp
-(use-package vterm-toggle
-  :after vterm
-  :config
-  (setq vterm-toggle-fullscreen-p nil)
-  (setq vterm-toggle-scope 'project)
-  (add-to-list 'display-buffer-alist
-               '((lambda (buffer-or-name _)
-                   (let ((buffer (get-buffer buffer-or-name)))
-                     (with-current-buffer buffer
-                       (or (equal major-mode 'vterm-mode)
-                           (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
-                 (display-buffer-reuse-window display-buffer-at-bottom)
-                 ;;(display-buffer-reuse-window display-buffer-in-direction)
-                 ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-                 ;;(direction . bottom)
-                 ;;(dedicated . t) ;dedicated is supported in emacs27
-                 (reusable-frames . visible)
-                 (window-height . 0.3))))
-#+end_src
-
-** SUDO EDIT
-#+begin_src emacs-lisp
-(use-package sudo-edit)
-#+end_src
-** MINIBUFFER ESCAPE
-By default, Emacs requires you to hit ESC thre times to quite the minibuffer. Change this to only once.
-#+begin_src emacs-lisp
-(global-set-key [escape] 'keyboard-escape-quit)
-#+end_src
-** DIRED
-#+begin_src emacs-lisp
-(use-package dired-open
-  :config
-  (setq dired-open-extensions '(("gif" . "sxiv")
-                                ("jpg" . "sxiv")
-                                ("png" . "sxiv")
-                                ("mkv" . "mpv")
-                                ("mp4" . "mpv"))))
-
-(use-package peep-dired
-  :after dired
-  :hook (evil-normalize-keymaps . peep-dired-hook)
-  :config
-  (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
-  (evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file) ; use dired-find-file instead if not using dired-open package
-  (evil-define-key 'normal peep-dired-mode-map (kbd "j") 'peep-dired-next-file)
-  (evil-define-key 'normal peep-dired-mode-map (kbd "k") 'peep-dired-prev-file)
-  )
-
-;;(add-hook 'peep-dired-hook 'evil-normalize-keymaps)
-
-#+end_src
-
-* COMPANY 
-#+begin_src emacs-lisp
-(use-package company
-  :defer 2
-  :diminish
-  :custom
-  (company-begin-commands '(self-insert-command))
-  (company-idle-delay .05)
-  (company-minimum-prefix-length 1)
-  (company-show-numbers t)
-  (company-tooltip-align-annotations 't)
-  (global-company-mode t)
-  (company-tng-mode t)
-  :config
-  (define-key company-active-map (kbd "RET") #'company-complete-selection)
-  (add-to-list 'company-backends 'company-dabbrev-code)
-  (setq company-dabbrev-code-ignore-case t)
-  (setq company-dabbrev-downcase nil)
-  (setq company-dabbrev-code-everywhere t)
-  (setq company-dabbrev-code-modes t)
-  (setq company-dabbrev-code-other-buffers 'all)
-
-  ;; (setq company-dabbrev-code-everywhere t)
-  ;; (setq company-backends '((company-dabbrev-code company-keywords company-files)
-  ;;                          company-dabbrev))
-  )
-
-
-(use-package company-box
-  :after company
-  :diminish
-  :hook (company-mode . company-box-mode))
-#+end_src
-* FLYCHECK
-#+begin_src emacs-lisp
-(use-package flycheck
-  :ensure t
-  :defer t
-  :diminish
-  :init (global-flycheck-mode))
-#+end_src
 * GUI
 Making GNU Emacs look a little better.
 ** Disable Menubar, Toolbars, and Scrollbars
@@ -505,6 +456,187 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
 (setq inhibit-startup-screen t)
 #+end_src
 
+* MISC
+Unimportant things that are helpful, improve quality of life, etc.
+** Misc. Variables
+#+begin_src emacs-lisp
+;; Scroll one line at a time
+(setq scroll-step 1)
+(setq scroll-conservatively 10000)
+
+;; make word mappings go past underscore
+;; ciw diw cw dw, etc.
+(modify-syntax-entry ?_ "w")
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (modify-syntax-entry ?_ "w")))
+
+;; fill in closing things
+(electric-pair-mode)
+
+#+end_src
+** BACKUP
+    Make emacs store its clutter-y backup files in the trash
+    #+begin_src emacs-lisp
+    (setq backup-directory-alist '((".*" . "~/.Trash")))
+    #+end_src
+** SHELLS AND TERMINALS
+** Eshell
+#+begin_src emacs-lisp
+(use-package eshell-syntax-highlighting
+  :after esh-mode
+  :config
+  (eshell-syntax-highlighting-global-mode +1))
+
+;; eshell-syntax-highlighting -- adds fish/zsh-like syntax highlighting.
+;; eshell-rc-script -- your profile for eshell; like a bashrc for eshell.
+;; eshell-aliases-file -- sets an aliases file for the eshell.
+
+(setq eshell-rc-script (concat user-emacs-directory "eshell/profile")
+      eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
+      eshell-history-size 5000
+      eshell-buffer-maximum-lines 5000
+      eshell-hist-ignoredups t
+      eshell-scroll-to-bottom-on-input t
+      eshell-destroy-buffer-when-process-dies t
+      eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
+#+end_src
+
+** Vterm
+#+begin_src emacs-lisp
+(use-package vterm
+  :config (setq shell-file-name "/bin/bash"))
+#+end_src
+
+** SUDO EDIT
+#+begin_src emacs-lisp
+(use-package sudo-edit)
+#+end_src
+** MINIBUFFER ESCAPE
+By default, Emacs requires you to hit ESC thre times to quite the minibuffer. Change this to only once.
+#+begin_src emacs-lisp
+(global-set-key [escape] 'keyboard-escape-quit)
+#+end_src
+** DIRED
+#+begin_src emacs-lisp
+(use-package dired-open
+  :config
+  (setq dired-open-extensions '(("gif" . "sxiv")
+                                ("jpg" . "sxiv")
+                                ("png" . "sxiv")
+                                ("mkv" . "mpv")
+                                ("mp4" . "mpv"))))
+
+;; (use-package peep-dired
+;;   :after dired
+;;   :hook (evil-normalize-keymaps . peep-dired-hook)
+;;   :config
+;;   (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
+;;   (evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file) ; use dired-find-file instead if not using dired-open package
+;;   (evil-define-key 'normal peep-dired-mode-map (kbd "j") 'peep-dired-next-file)
+;;   (evil-define-key 'normal peep-dired-mode-map (kbd "k") 'peep-dired-prev-file)
+;;   )
+
+;;(add-hook 'peep-dired-hook 'evil-normalize-keymaps)
+
+#+end_src
+
+* COMPANY 
+#+begin_src emacs-lisp
+(defun my/company-complete-or-newline ()
+  "Complete the selection if a company suggestion is highlighted, otherwise insert a newline."
+  (interactive)
+  (if (and (company-manual-begin) company-selection-changed)
+      (company-complete-selection)
+    (newline)))
+
+(use-package company
+  :defer 2
+  :diminish
+  :custom
+  (company-begin-commands '(self-insert-command))
+  (company-idle-delay .05)
+  (company-minimum-prefix-length 1)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations 't)
+  (global-company-mode t)
+  (company-tng-mode t)
+  :config
+  (define-key company-active-map (kbd "RET") #'my/company-complete-or-newline)
+  (define-key company-active-map [return] #'my/company-complete-or-newline)
+  (add-to-list 'company-backends 'company-dabbrev-code)
+  (setq company-dabbrev-code-ignore-case t)
+  (setq company-dabbrev-downcase nil)
+  (setq company-dabbrev-code-everywhere t)
+  (setq company-dabbrev-code-modes t)
+  (setq company-dabbrev-code-other-buffers 'all)
+
+  )
+
+
+;; (with-eval-after-load 'company
+
+
+(use-package company-box
+  :after company
+  :diminish
+  :hook (company-mode . company-box-mode))
+#+end_src
+* HELM
+#+begin_src emacs-lisp
+(use-package helm
+  :ensure t  ; Make sure the package is installed automatically
+  :init
+  ;; You can set Helm-specific initialization settings here
+  :config
+  ;; (require 'helm-config)  ; Load Helm configuration
+
+  ;; Set Helm as the default completion mechanism
+  (helm-mode 1)
+  (setq helm-mode-fuzzy-match t)
+  (setq helm-completion-in-region-fuzzy-match t)
+
+  ;; Bind the Helm command to a key combination, e.g., "C-x C-f" for `helm-find-files`
+  ;; (global-set-key (kbd "C-x C-f") #'helm-find-files)
+  ;; (global-set-key (kbd "M-x") #'helm-M-x)
+  ;; (global-set-key (kbd "C-x b") #'helm-buffers-list)
+  ;; ... and other key bindings as needed
+
+  ;; You can customize Helm further using `setq` and other configuration commands
+  )
+(use-package helm-rg
+  :ensure t  ; Automatically install the package if not already installed
+  :config
+  ;; Optional: put any configuration you want to execute after helm-rg is loaded
+)
+
+
+#+end_src
+* FZF
+#+begin_src emacs-lisp
+(use-package fzf
+  :bind
+    ;; Don't forget to set keybinds!
+  :config
+  (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
+        fzf/executable "fzf"
+        fzf/git-grep-args "-i --line-number %s"
+        ;; command used for `fzf-grep-*` functions
+        ;; example usage for ripgrep:
+        ;; fzf/grep-command "rg --no-heading -nH"
+        fzf/grep-command "grep -nrH"
+        ;; If nil, the fzf buffer will appear at the top of the window
+        fzf/position-bottom t
+        fzf/window-height 15))
+#+end_src
+* FLYCHECK
+#+begin_src emacs-lisp
+(use-package flycheck
+  :ensure t
+  :defer t
+  :diminish
+  :init (global-flycheck-mode))
+#+end_src
 * IVY (COUNSEL)
 + Ivy, a generic completion mechanism for Emacs.
 + Counsel, a collection of Ivy-enhanced versions of common Emacs commands
@@ -629,6 +761,12 @@ insert mode keychords for creating blocks. <s followed by TAB creates a source c
 * Language Integration LSP, Treesitter 
 #+begin_src emacs-lisp
 (use-package rust-mode)
+
+(use-package terraform-mode
+  :ensure t
+  :mode (("\\.tf\\'" . terraform-mode)
+         ("\\.tf\\.erb\\'" . terraform-mode)))
+;;(use-package ruby-mode)
 (use-package lsp-mode
   :ensure t
   :commands (lsp lsp-deferred)
@@ -636,12 +774,18 @@ insert mode keychords for creating blocks. <s followed by TAB creates a source c
          (rust-mode . lsp-deferred)    ;; And for Rust
          (cc-mode . lsp-deferred)    ;; And for C/C++
          (js-mode . lsp-deferred)        ;; And for JavaScript
+         (terraform-mode . lsp-deferred) ;; And for Terraform
+         (ruby-mode . lsp-deferred) ;; And for ruby
          ;; Add other major modes that you want LSP to support
          )
   :config
   (setq lsp-enable-symbol-highlighting t)
   (setq lsp-signature-auto-activate nil)
-  (setq lsp-auto-guess-root t))
+  (setq lsp-auto-guess-root t)
+  (setq +format-with-lsp nil)
+  (setq lsp-enable-indentation nil)
+  (setq lsp-enable-on-type-formatting nil)
+)
  ;; You can adjust LSP settings here
 
 (use-package tree-sitter

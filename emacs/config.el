@@ -1,71 +1,35 @@
-(defvar elpaca-installer-version 0.6)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                 ((zerop (call-process "git" nil buffer t "clone"
-                                       (plist-get order :repo) repo)))
-                 ((zerop (call-process "git" nil buffer t "checkout"
-                                       (or (plist-get order :ref) "--"))))
-                 (emacs (concat invocation-directory invocation-name))
-                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                 ((require 'elpaca))
-                 ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+(add-to-list 'load-path "~/.config/emacs/setup_scripts")
 
-;; Install use-package support
-(elpaca elpaca-use-package
-  ;; Enable :elpaca use-package keyword.
-  (elpaca-use-package-mode)
-  ;; Assume :elpaca t unless otherwise specified.
-  (setq elpaca-use-package-by-default t))
+;; Elpaca package manager!
+(require 'elpaca-setup)
+;; Move buffers around!
+(require 'buffer-move)
 
-;; Block until current queue processed.
-(elpaca-wait)
-
-;;When installing a package which modifies a form used at the top-level
-;;(e.g. a package which adds a use-package key word),
-;;use `elpaca-wait' to block until that package has been installed/configured.
-;;For example:
-;;(use-package general :demand t)
-;;(elpaca-wait)
-
-;; Expands to: (elpaca evil (use-package evil :demand t))
+(use-package undo-tree
+  :init
+  (global-undo-tree-mode)
+  )
 (use-package evil
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
   (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below t)
-  (evil-mode))
+  (setq evil-undo-system 'undo-tree)
+
+  (evil-mode)
+  )
 (use-package evil-collection
   :after evil
   :config
   (setq evil-collection-mode-list '(dashhboard dired ibuffer))
   (evil-collection-init))
 (use-package evil-tutor)
+;;(with-eval-after-load 'evil-maps
+;;(define-key evil-motion-state-map (kbd "SPC") nil)
+;;(define-key evil-motion-state-map (kbd "RET") nil)
+;;(define-key evil-motion-state-map (kbd "TAB") nil)
+;;)
+
 
 ;;Turns off elpaca-use-package-mode current declaration
 ;;Note this will cause the declaration to be interpreted immediately (not deferred).
@@ -74,6 +38,11 @@
 
 ;; Don't install anything. Defer execution of BODY
 ;; (elpaca nil (message "deferred"))
+
+(use-package evil-commentary
+  :config
+  (setq evil-commentary-mode t)
+  )
 
 (use-package general
   :config
@@ -85,11 +54,20 @@
     :prefix "SPC" ;; set leader
     :global-prefix "M-SPC") ;; access leader in insert mode
 
+  ;; Basic QOL maps
+  (pwl/leader-keys
+    "wq" '((lambda () (interactive) (save-buffer) (kill-emacs)) :wk "Write and quit")
+    )
+
   ;; Buffer Navigation
   (pwl/leader-keys
+    "SPC" '(counsel-M-x :wk "Counsel M-x")
     "." '(find-file :wk "Find file")
     "fc" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
     "fr" '(counsel-recentf :wk "Find recent files")
+    "ff" '(helm-multi-files :wk "Fuzzy find files in helm")
+    "fg" '(helm-rg :wk "rip grep for files with helm")
+    "rg" '(helm-rg :wk "rip grep for files with helm")
     "TAB TAB" '(comment-line :wk "Comment lines")
     )
 
@@ -101,7 +79,9 @@
     "bk" '(kill-this-buffer :wk "Kill this buffer")
     "bn" '(next-buffer :wk "Next buffer")
     "bp" '(previous-buffer :wk "Previous buffer")
+    "bl" '((lambda () (interactive) (switch-to-buffer (other-buffer (current-buffer) 1))) :wk "Last buffer")
     "br" '(revert-buffer :wk "Reload buffer")
+
     )
 
   ;; elisp evaluation
@@ -118,8 +98,14 @@
     "h" '(:ignore t :wk "Help")
     "hf" '(describe-function :wk "Describe function")
     "hv" '(describe-variable :wk "Describe variable")
-    "hrr" '((lambda () (interactive) (load-file user-init-file)) :wk "Reload emacs config"))
+    "hb" '(describe-bindings :wk "Describe bindings")
+    ;;"hrr" '((lambda () (interactive) (load-file user-init-file)) :wk "Reload emacs config"))
+    "hrr" '((lambda () (interactive) 
+              (load-file user-init-file)
+              (ignore (elpaca-process-queues)) )
+            :wk "Reload emacs config"))
 
+  ;; window movement
   (pwl/leader-keys
     "w" '(:ignore t :wk "Windows")
     ;; Window splits
@@ -139,83 +125,112 @@
     "w K" '(buf-move-up :wk "Buffer move up")
     "w L" '(buf-move-right :wk "Buffer move right"))
 
+  (pwl/leader-keys
+    "m" '(:ignore t :wk "Org")
+    "m a" '(org-agenda :wk "Org agenda")
+    "m e" '(org-export-dispatch :wk "Org export dispatch")
+    "m i" '(org-toggle-item :wk "Org toggle item")
+    "m t" '(org-todo :wk "Org todo")
+    "m B" '(org-babel-tangle :wk "Org babel tangle")
+    "m T" '(org-todo-list :wk "Org todo list"))
+
+  (pwl/leader-keys
+    "m b" '(:ignore t :wk "Tables")
+    "m b -" '(org-table-insert-hline :wk "Insert hline in table"))
+
+  (pwl/leader-keys
+    "m d" '(:ignore t :wk "Date/deadline")
+    "m d t" '(org-time-stamp :wk "Org time stamp"))
+
+  (pwl/leader-keys
+    "d" '(:ignore t :wk "Dired")
+    "d d" '(dired :wk "Open dired")
+    "d j" '(dired-jump :wk "Dired jump to current")
+    "d p" '(peep-dired :wk "Peep-dired"))
+
+  (defun save-and-escape ()
+    "Save the buffer and escape from the current mode."
+    (interactive)
+    (save-buffer)
+    (evil-normal-state))
+
+  (general-define-key
+   :states '(normal insert visual)
+   "C-SPC" 'save-and-escape)
+
+  ;; Simple remaps for normal mode
+  (general-define-key
+   :states 'normal
+   "Q" 'evil-lookup
+   "J" 'evil-forward-paragraph
+   "K" 'evil-backward-paragraph
+   "H" 'evil-first-non-blank
+   "L" 'evil-end-of-line
+   "j" 'evil-next-visual-line
+   "k" 'evil-previous-visual-line
+
+)
+
+  ;; Simple remaps for visual mode
+  (general-define-key
+   :states 'visual
+   "H" 'evil-first-non-blank
+   "L" 'evil-end-of-line)
+
+  ;; S - substitute command skeleton and move the cursor between the two slashes
+  ;; this is annoyingly difficult, have to do minibuffer-with-setup-hook
+  (general-define-key
+   :states 'normal
+   :keymaps 'override
+   "S" (lambda ()
+         (interactive)
+         (minibuffer-with-setup-hook
+             (lambda () (backward-char 2))
+           (evil-ex "%s//g"))
+         )
+   )
+
+  (general-define-key
+   :states 'visual
+   :keymaps 'override
+   "S" (lambda ()
+         (interactive)
+         (minibuffer-with-setup-hook
+             (lambda () (backward-char 2))
+           (evil-ex "'<,'>s//g")
+           )
+         )
+   )
+
+  ;; nnoremap c "_c
+  (defvar my/original-evil-change-command (lookup-key evil-normal-state-map "c"))
+  (defun my/evil-change-to-blackhole ()
+    (interactive)
+    (let ((evil-this-register ?_))
+      (call-interactively my/original-evil-change-command)))
+  (general-define-key
+   :states '(normal visual)
+   "c" 'my/evil-change-to-blackhole)
+
+  ;; nnoremap C "_C
+  (defvar my/original-evil-change-to-end-of-line-command (lookup-key evil-normal-state-map "C"))
+  (defun my/evil-change-to-end-of-line-to-blackhole ()
+    (interactive)
+    (let ((evil-this-register ?_))
+      (call-interactively my/original-evil-change-to-end-of-line-command)))
+  (general-define-key
+   :states '(normal visual)
+   "C" 'my/evil-change-to-end-of-line-to-blackhole)
+
+
   )
 
-(use-package all-the-icons
-  :ensure t
-  :if (display-graphic-p))
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
 
-(use-package all-the-icons-dired
-  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
-
-(require 'windmove)
-
-;;;###autoload
-(defun buf-move-up ()
-  "Swap the current buffer and the buffer above the split.
-If there is no split, ie now window above the current one, an
-error is signaled."
-  ;;  "Switches between the current buffer, and the buffer above the
-  ;;  split, if possible."
-  (interactive)
-  (let* ((other-win (windmove-find-other-window 'up))
-         (buf-this-buf (window-buffer (selected-window))))
-    (if (null other-win)
-        (error "No window above this one")
-      ;; swap top with this one
-      (set-window-buffer (selected-window) (window-buffer other-win))
-      ;; move this one to top
-      (set-window-buffer other-win buf-this-buf)
-      (select-window other-win))))
-
-;;;###autoload
-(defun buf-move-down ()
-  "Swap the current buffer and the buffer under the split.
-If there is no split, ie now window under the current one, an
-error is signaled."
-  (interactive)
-  (let* ((other-win (windmove-find-other-window 'down))
-         (buf-this-buf (window-buffer (selected-window))))
-    (if (or (null other-win) 
-            (string-match "^ \\*Minibuf" (buffer-name (window-buffer other-win))))
-        (error "No window under this one")
-      ;; swap top with this one
-      (set-window-buffer (selected-window) (window-buffer other-win))
-      ;; move this one to top
-      (set-window-buffer other-win buf-this-buf)
-      (select-window other-win))))
-
-;;;###autoload
-(defun buf-move-left ()
-  "Swap the current buffer and the buffer on the left of the split.
-If there is no split, ie now window on the left of the current
-one, an error is signaled."
-  (interactive)
-  (let* ((other-win (windmove-find-other-window 'left))
-         (buf-this-buf (window-buffer (selected-window))))
-    (if (null other-win)
-        (error "No left split")
-      ;; swap top with this one
-      (set-window-buffer (selected-window) (window-buffer other-win))
-      ;; move this one to top
-      (set-window-buffer other-win buf-this-buf)
-      (select-window other-win))))
-
-;;;###autoload
-(defun buf-move-right ()
-  "Swap the current buffer and the buffer on the right of the split.
-If there is no split, ie now window on the right of the current
-one, an error is signaled."
-  (interactive)
-  (let* ((other-win (windmove-find-other-window 'right))
-         (buf-this-buf (window-buffer (selected-window))))
-    (if (null other-win)
-        (error "No right split")
-      ;; swap top with this one
-      (set-window-buffer (selected-window) (window-buffer other-win))
-      ;; move this one to top
-      (set-window-buffer other-win buf-this-buf)
-      (select-window other-win))))
+(global-display-line-numbers-mode 1)
+(global-visual-line-mode t)
 
 (set-face-attribute 'default nil
                     :font "JetBrains Mono"
@@ -247,58 +262,103 @@ one, an error is signaled."
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
+(use-package all-the-icons
+  :ensure t
+  :if (display-graphic-p))
 
-(global-display-line-numbers-mode 1)
-(global-visual-line-mode t)
+(use-package all-the-icons-dired
+  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+
+(add-to-list 'custom-theme-load-path "~/.config/emacs/themes")
+
+(use-package doom-themes
+  :ensure t
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-acario-dark t)
+
+  ;; Enable flashing mode-line on errors
+  ;; (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  ;; or for treemacs users
+  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 
 (setq inhibit-startup-screen t)
 
-(use-package ivy
-  :bind
-  ;; ivy-resume resumes the last Ivy-based completion.
-  (("C-c C-r" . ivy-resume)
-   ("C-x B" . ivy-switch-buffer-other-window))
-  :custom
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "(%d/%d) ")
-  (setq enable-recursive-minibuffers t)
+(use-package hl-todo
+  :hook ((org-mode . hl-todo-mode)
+         (prog-mode . hl-todo-mode))
   :config
-  (ivy-mode))
+  (setq hl-todo-highlight-punctuation ":"
+        hl-todo-keyword-faces
+        `(("TODO"       warning bold)
+          ("FIXME"      error bold)
+          ("HACK"       font-lock-constant-face bold)
+          ("REVIEW"     font-lock-keyword-face bold)
+          ("NOTE"       success bold)
+          ("DEPRECATED" font-lock-doc-face bold))))
 
-(use-package counsel
-  :after ivy
-  :config (counsel-mode))
+(use-package rainbow-mode
+  :diminish
+  :hook org-mode prog-mode)
 
-(use-package all-the-icons-ivy-rich
+(use-package doom-modeline
   :ensure t
-  :init (all-the-icons-ivy-rich-mode 1))
-
-(use-package ivy-rich
-  :after ivy
-  :ensure t
-  :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
-  :custom
-  (ivy-virtual-abbreviate 'full
-                          ivy-rich-switch-buffer-align-virtual-buffer t
-                          ivy-rich-path-style 'abbrev)
+  :init (doom-modeline-mode 1)
   :config
-  (ivy-set-display-transformer 'ivy-switch-buffer
-                               'ivy-rich-switch-buffer-transformer))
+  (setq doom-modeline-height 35      ;; sets modeline height
+        doom-modeline-bar-width 5    ;; sets right bar width
+        doom-modeline-persp-name t   ;; adds perspective name to modeline
+        doom-modeline-persp-icon t)) ;; adds folder icon next to persp name
 
-(use-package toc-org
-  :commands toc-org-enable
-  :init (add-hook 'org-mode-hook 'toc-org-enable))
+(use-package diminish)
 
-(add-hook 'org-mode-hook 'org-indent-mode)
-(use-package org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(use-package rainbow-delimiters
+  :hook ((emacs-lisp-mode . rainbow-delimiters-mode)
+  (clojure-mode . rainbow-delimiters-mode)))
 
-(electric-indent-mode -1)
+(use-package dashboard
+  :ensure t 
+  :init
+  ;;(setq initial-buffer-choice 'dashboard-open)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
+  ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
+  ;;(setq dashboard-startup-banner "/home/dt/.config/emacs/images/emacs-dash.png")  ;; use custom image as banner
+  (setq dashboard-center-content nil) ;; set to 't' for centered content
+  (setq dashboard-items '((recents . 5)
+                          (agenda . 5 )
+                          (bookmarks . 3)
+                          (projects . 3)
+                          (registers . 3)))
+  :custom
+  (dashboard-modify-heading-icons '((recents . "file-text")
+                                    (bookmarks . "book")))
+  :config
+  (dashboard-setup-startup-hook))
+(setq inhibit-startup-screen t)
 
-(require 'org-tempo)
+;; Scroll one line at a time
+(setq scroll-step 1)
+(setq scroll-conservatively 10000)
+
+;; make word mappings go past underscore
+;; ciw diw cw dw, etc.
+(modify-syntax-entry ?_ "w")
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (modify-syntax-entry ?_ "w")))
+
+;; fill in closing things
+(electric-pair-mode)
+
+(setq backup-directory-alist '((".*" . "~/.Trash")))
 
 (use-package eshell-syntax-highlighting
   :after esh-mode
@@ -321,49 +381,177 @@ one, an error is signaled."
 (use-package vterm
   :config (setq shell-file-name "/bin/bash"))
 
-(use-package vterm-toggle
-  :after vterm
-  :config
-  (setq vterm-toggle-fullscreen-p nil)
-  (setq vterm-toggle-scope 'project)
-  (add-to-list 'display-buffer-alist
-               '((lambda (buffer-or-name _)
-                   (let ((buffer (get-buffer buffer-or-name)))
-                     (with-current-buffer buffer
-                       (or (equal major-mode 'vterm-mode)
-                           (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
-                 (display-buffer-reuse-window display-buffer-at-bottom)
-                 ;;(display-buffer-reuse-window display-buffer-in-direction)
-                 ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-                 ;;(direction . bottom)
-                 ;;(dedicated . t) ;dedicated is supported in emacs27
-                 (reusable-frames . visible)
-                 (window-height . 0.3))))
-
-(use-package rainbow-mode
-  :hook org-mode prog-mode)
-
 (use-package sudo-edit)
 
-(add-to-list 'custom-theme-load-path "~/.config/emacs/themes")
+(global-set-key [escape] 'keyboard-escape-quit)
 
-(use-package doom-themes
-  :ensure t
+(use-package dired-open
   :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-acario-dark t)
+  (setq dired-open-extensions '(("gif" . "sxiv")
+                                ("jpg" . "sxiv")
+                                ("png" . "sxiv")
+                                ("mkv" . "mpv")
+                                ("mp4" . "mpv"))))
 
-  ;; Enable flashing mode-line on errors
-  ;; (doom-themes-visual-bell-config)
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  (doom-themes-neotree-config)
-  ;; or for treemacs users
-  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
-  (doom-themes-treemacs-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
+;; (use-package peep-dired
+;;   :after dired
+;;   :hook (evil-normalize-keymaps . peep-dired-hook)
+;;   :config
+;;   (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
+;;   (evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file) ; use dired-find-file instead if not using dired-open package
+;;   (evil-define-key 'normal peep-dired-mode-map (kbd "j") 'peep-dired-next-file)
+;;   (evil-define-key 'normal peep-dired-mode-map (kbd "k") 'peep-dired-prev-file)
+;;   )
+
+;;(add-hook 'peep-dired-hook 'evil-normalize-keymaps)
+
+(defun my/company-complete-or-newline ()
+  "Complete the selection if a company suggestion is highlighted, otherwise insert a newline."
+  (interactive)
+  (if (and (company-manual-begin) company-selection-changed)
+      (company-complete-selection)
+    (newline)))
+
+(use-package company
+  :defer 2
+  :diminish
+  :custom
+  (company-begin-commands '(self-insert-command))
+  (company-idle-delay .05)
+  (company-minimum-prefix-length 1)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations 't)
+  (global-company-mode t)
+  (company-tng-mode t)
+  :config
+  (define-key company-active-map (kbd "RET") #'my/company-complete-or-newline)
+  (define-key company-active-map [return] #'my/company-complete-or-newline)
+  (add-to-list 'company-backends 'company-dabbrev-code)
+  (setq company-dabbrev-code-ignore-case t)
+  (setq company-dabbrev-downcase nil)
+  (setq company-dabbrev-code-everywhere t)
+  (setq company-dabbrev-code-modes t)
+  (setq company-dabbrev-code-other-buffers 'all)
+
+  )
+
+
+;; (with-eval-after-load 'company
+
+
+(use-package company-box
+  :after company
+  :diminish
+  :hook (company-mode . company-box-mode))
+
+(use-package helm
+  :ensure t  ; Make sure the package is installed automatically
+  :init
+  ;; You can set Helm-specific initialization settings here
+  :config
+  ;; (require 'helm-config)  ; Load Helm configuration
+
+  ;; Set Helm as the default completion mechanism
+  (helm-mode 1)
+  (setq helm-mode-fuzzy-match t)
+  (setq helm-completion-in-region-fuzzy-match t)
+
+  ;; Bind the Helm command to a key combination, e.g., "C-x C-f" for `helm-find-files`
+  ;; (global-set-key (kbd "C-x C-f") #'helm-find-files)
+  ;; (global-set-key (kbd "M-x") #'helm-M-x)
+  ;; (global-set-key (kbd "C-x b") #'helm-buffers-list)
+  ;; ... and other key bindings as needed
+
+  ;; You can customize Helm further using `setq` and other configuration commands
+  )
+(use-package helm-rg
+  :ensure t  ; Automatically install the package if not already installed
+  :config
+  ;; Optional: put any configuration you want to execute after helm-rg is loaded
+)
+
+(use-package fzf
+  :bind
+    ;; Don't forget to set keybinds!
+  :config
+  (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
+        fzf/executable "fzf"
+        fzf/git-grep-args "-i --line-number %s"
+        ;; command used for `fzf-grep-*` functions
+        ;; example usage for ripgrep:
+        ;; fzf/grep-command "rg --no-heading -nH"
+        fzf/grep-command "grep -nrH"
+        ;; If nil, the fzf buffer will appear at the top of the window
+        fzf/position-bottom t
+        fzf/window-height 15))
+
+(use-package flycheck
+  :ensure t
+  :defer t
+  :diminish
+  :init (global-flycheck-mode))
+
+(use-package ivy
+  :bind
+  ;; ivy-resume resumes the last Ivy-based completion.
+  (("C-c C-r" . ivy-resume)
+   ("C-x B" . ivy-switch-buffer-other-window))
+  :custom
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  (setq enable-recursive-minibuffers t)
+  :diminish
+  :config
+  (ivy-mode))
+
+(use-package counsel
+  :after ivy
+  :diminish
+  :config (counsel-mode))
+
+(use-package ivy-rich
+  :after ivy
+  :ensure t
+  :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
+  :custom
+  (ivy-virtual-abbreviate 'full
+                          ivy-rich-switch-buffer-align-virtual-buffer t
+                          ivy-rich-path-style 'abbrev)
+  :config
+  (ivy-set-display-transformer 'ivy-switch-buffer
+                               'ivy-rich-switch-buffer-transformer))
+
+(use-package all-the-icons-ivy-rich
+  :ensure t
+  :diminish
+  :init (all-the-icons-ivy-rich-mode 1))
+
+;; TODO
+
+(use-package toc-org
+  :commands toc-org-enable
+  :init (add-hook 'org-mode-hook 'toc-org-enable))
+
+(add-hook 'org-mode-hook 'org-indent-mode)
+(use-package org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+;; ;; Enable electric indent globally
+(electric-indent-mode 1)
+
+;; Disable electric indent in org-mode by adding a hook
+(add-hook 'org-mode-hook (lambda () (electric-indent-local-mode -1)))
+(setq org-edit-src-content-indentation 0)
+
+(require 'org-tempo)
+
+(use-package projectile
+  ;;:diminish
+  :init
+  (projectile-mode +1)
+  :config
+  (setq projectile-project-search-path '("~"))
+)
 
 (use-package which-key
   :init
@@ -379,5 +567,39 @@ one, an error is signaled."
         which-key-side-window-max-height 0.25
         which-key-idle-delay 0.8
         which-key-max-description-length 25
-        which-key-allow-imprecise-window-fit t
+        which-key-allow-imprecise-window-fit nil
         which-key-separator " → " ))
+
+(use-package rust-mode)
+
+(use-package terraform-mode
+  :ensure t
+  :mode (("\\.tf\\'" . terraform-mode)
+         ("\\.tf\\.erb\\'" . terraform-mode)))
+;;(use-package ruby-mode)
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  :hook ((python-mode . lsp-deferred)  ;; LSP start automatically for Python
+         (rust-mode . lsp-deferred)    ;; And for Rust
+         (cc-mode . lsp-deferred)    ;; And for C/C++
+         (js-mode . lsp-deferred)        ;; And for JavaScript
+         (terraform-mode . lsp-deferred) ;; And for Terraform
+         (ruby-mode . lsp-deferred) ;; And for ruby
+         ;; Add other major modes that you want LSP to support
+         )
+  :config
+  (setq lsp-enable-symbol-highlighting t)
+  (setq lsp-signature-auto-activate nil)
+  (setq lsp-auto-guess-root t)
+  (setq +format-with-lsp nil)
+  (setq lsp-enable-indentation nil)
+  (setq lsp-enable-on-type-formatting nil)
+)
+ ;; You can adjust LSP settings here
+
+(use-package tree-sitter
+  :ensure t
+  :config
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
