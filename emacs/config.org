@@ -27,7 +27,6 @@
   - [[#backup][BACKUP]]
   - [[#shells-and-terminals][SHELLS AND TERMINALS]]
   - [[#eshell][Eshell]]
-  - [[#vterm][Vterm]]
   - [[#sudo-edit][SUDO EDIT]]
   - [[#minibuffer-escape][MINIBUFFER ESCAPE]]
   - [[#dired][DIRED]]
@@ -500,12 +499,6 @@ Unimportant things that are helpful, improve quality of life, etc.
       eshell-scroll-to-bottom-on-input t
       eshell-destroy-buffer-when-process-dies t
       eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
-#+end_src
-
-** Vterm
-#+begin_src emacs-lisp
-(use-package vterm
-  :config (setq shell-file-name "/bin/bash"))
 #+end_src
 
 ** SUDO EDIT
