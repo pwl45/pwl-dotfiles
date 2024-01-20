@@ -11,7 +11,6 @@
   - [[#evil-packages][Evil Packages]]
   - [[#keybindings][Keybindings]]
 - [[#gui][GUI]]
-  - [[#disable-menubar-toolbars-and-scrollbars][Disable Menubar, Toolbars, and Scrollbars]]
   - [[#display-line-numbers-and-truncated-lines][Display Line Numbers and Truncated Lines]]
   - [[#fonts][FONTS]]
   - [[#theme][THEME]]
@@ -22,6 +21,7 @@
   - [[#diminish][DIMINISH]]
   - [[#rainbow-delimiters][RAINBOW Delimiters]]
   - [[#dashboard][DASHBOARD]]
+  - [[#disable-menubar-toolbars-and-scrollbars][Disable Menubar, Toolbars, and Scrollbars]]
 - [[#misc][MISC]]
   - [[#misc-variables][Misc. Variables]]
   - [[#backup][BACKUP]]
@@ -55,7 +55,7 @@
 ;; Elpaca package manager!
 (require 'elpaca-setup)
 ;; Move buffers around!
-(require 'buffer-move)
+;; (require 'buffer-move)
 #+end_src
 ** Load Evil Mode
 #+begin_src emacs-lisp
@@ -105,6 +105,21 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
 *** Basic Keybindings 
 *** Keybindings with General
 #+begin_src emacs-lisp
+
+  (defun home-manager-switch () (interactive)
+	 "Run `home-manager switch` when saving specific files."
+	 (shell-command-to-string "home-manager switch -f $HOME/pwl-dotfiles/test.nix"))
+
+  (defun dispatch-and-notify (func)
+    "Dispatch FUNC, messaging start, success, or failure."
+    (interactive)
+    (message "Starting %s" (symbol-name func))
+    (condition-case err
+	(progn
+          (funcall func)
+          (message "%s completed successfully" (symbol-name func)))
+      (error
+       (message "Execution of %s failed: %s" (symbol-name func) (error-message-string err)))))
 (use-package general
   :config
   (general-evil-setup)
@@ -120,11 +135,12 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
     "wq" '((lambda () (interactive) (save-buffer) (kill-emacs)) :wk "Write and quit")
     )
 
+
   ;; Buffer Navigation
   (pwl/leader-keys
     "SPC" '(counsel-M-x :wk "Counsel M-x")
     "." '(find-file :wk "Find file")
-    "fc" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
+    "fc" '((lambda () (interactive) (find-file "~/pwl-dotfiles/emacs/config.org")) :wk "Edit emacs config")
     "fr" '(counsel-recentf :wk "Find recent files")
     "ff" '(helm-multi-files :wk "Fuzzy find files in helm")
     "fg" '(helm-rg :wk "rip grep for files with helm")
@@ -154,18 +170,30 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
     "el" '(eval-last-sexp :wk "Evaluate elisp expression before point")
     "er" '(eval-last-sexp :wk "Evaluate elisp in region"))
 
+
   ;; help
   (pwl/leader-keys
     "h" '(:ignore t :wk "Help")
     "hf" '(describe-function :wk "Describe function")
     "hv" '(describe-variable :wk "Describe variable")
     "hb" '(describe-bindings :wk "Describe bindings")
-    ;;"hrr" '((lambda () (interactive) (load-file user-init-file)) :wk "Reload emacs config"))
+    "hs" '((lambda () (interactive) (dispatch-and-notify 'home-manager-switch)):wk "Run home-manager switch")
     "hrr" '((lambda () (interactive) 
               (load-file user-init-file)
               (ignore (elpaca-process-queues)) )
-            :wk "Reload emacs config"))
+            :wk "Reload emacs config")
+    )
 
+  (pwl/leader-keys
+    "R" '((lambda () (interactive) 
+            (message "Starting home-manager-switch")
+            (home-manager-switch)
+            (message "done... reloading config")
+            (load-file user-init-file)
+            (message "done")
+            (ignore (elpaca-process-queues)) )
+          :wk "Reload emacs config")
+    )
   ;; window movement
   (pwl/leader-keys
     "w" '(:ignore t :wk "Windows")
@@ -230,7 +258,7 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
    "j" 'evil-next-visual-line
    "k" 'evil-previous-visual-line
 
-)
+   )
 
   ;; Simple remaps for visual mode
   (general-define-key
@@ -282,19 +310,33 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
   (general-define-key
    :states '(normal visual)
    "C" 'my/evil-change-to-end-of-line-to-blackhole)
+(defun evil-change-blackhole (beg end &optional type register yank-handler)
+  "Change text from BEG to END with TYPE without affecting the clipboard.
+   Works like `evil-change' but does not modify the kill-ring."
+  (interactive "r")
+  (let ((kill-ring (cons "" kill-ring))
+        (kill-ring-yank-pointer kill-ring))
+    (evil-change beg end type register yank-handler)))
 
+
+;; (with-eval-after-load 'evil-maps
+;;   (define-key evil-normal-state-map "c" 'evil-change-blackhole)
+;;   (define-key evil-visual-state-map "c" 'evil-change-blackhole))
+
+;; (general-nmap "c" (general-key-dispatch 'evil-change
+;;                     "ow" 'toggle-word-wrap
+;;                     "." (lambda () (interactive) (evil-change-blackhole (point) (progn (evil-find-char 1 ?.) (point))))
+;;                     ";" (lambda () (interactive) (evil-change-blackhole (point) (progn (evil-find-char 1 ?\;) (point))))
+;;                     ":" (lambda () (interactive) (evil-change-blackhole (point) (progn (evil-find-char 1 ?\:) (point))))
+;;                     ;; "c" 'evil-change-whole-line
+;;                     ;; alternatively if there was no linewise version:
+;;                     "c" (general-simulate-key ('evil-change "c"))))
 
   )
-   #+end_src
+#+end_src
 
 * GUI
 Making GNU Emacs look a little better.
-** Disable Menubar, Toolbars, and Scrollbars
-#+begin_src emacs-lisp
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-#+end_src
 
 ** Display Line Numbers and Truncated Lines
 #+begin_src emacs-lisp
@@ -426,7 +468,7 @@ Adding rainbow coloring to parens
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
   :hook ((emacs-lisp-mode . rainbow-delimiters-mode)
-  (clojure-mode . rainbow-delimiters-mode)))
+	 (clojure-mode . rainbow-delimiters-mode)))
 #+end_src
 ** DASHBOARD
 Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items and an Emacs banner.
@@ -454,6 +496,15 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
   (dashboard-setup-startup-hook))
 (setq inhibit-startup-screen t)
 #+end_src
+** Disable Menubar, Toolbars, and Scrollbars
+#+begin_src emacs-lisp
+;; warning: the order of these two lines matters, for some reason
+;; sometimes there's a blank space at the top if you turn off the menu bar mode first
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+
+(scroll-bar-mode -1)
+#+end_src
 
 * MISC
 Unimportant things that are helpful, improve quality of life, etc.
@@ -475,10 +526,10 @@ Unimportant things that are helpful, improve quality of life, etc.
 
 #+end_src
 ** BACKUP
-    Make emacs store its clutter-y backup files in the trash
-    #+begin_src emacs-lisp
-    (setq backup-directory-alist '((".*" . "~/.Trash")))
-    #+end_src
+Make emacs store its clutter-y backup files in the trash
+#+begin_src emacs-lisp
+(setq backup-directory-alist '((".*" . "~/.Trash")))
+#+end_src
 ** SHELLS AND TERMINALS
 ** Eshell
 #+begin_src emacs-lisp
@@ -601,7 +652,7 @@ By default, Emacs requires you to hit ESC thre times to quite the minibuffer. Ch
   :ensure t  ; Automatically install the package if not already installed
   :config
   ;; Optional: put any configuration you want to execute after helm-rg is loaded
-)
+  )
 
 
 #+end_src
@@ -609,7 +660,7 @@ By default, Emacs requires you to hit ESC thre times to quite the minibuffer. Ch
 #+begin_src emacs-lisp
 (use-package fzf
   :bind
-    ;; Don't forget to set keybinds!
+  ;; Don't forget to set keybinds!
   :config
   (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
         fzf/executable "fzf"
@@ -729,7 +780,7 @@ insert mode keychords for creating blocks. <s followed by TAB creates a source c
   (projectile-mode +1)
   :config
   (setq projectile-project-search-path '("~"))
-)
+  )
 
 #+end_src
 * WHICH-KEY
@@ -753,7 +804,19 @@ insert mode keychords for creating blocks. <s followed by TAB creates a source c
 #+end_src
 * Language Integration LSP, Treesitter 
 #+begin_src emacs-lisp
-(use-package rust-mode)
+;; This is required for nix-mode, for some reason. 
+;; (use-package seq
+;;   :ensure t
+;;   ;; :defer t
+;;   :pin melpa-stable
+;;   :ensure-system-package (seq . "version-2.24"))
+
+(use-package nix-mode
+  :mode "\\.nix\\'")
+
+(use-package rust-mode
+  :ensure t)
+
 
 (use-package terraform-mode
   :ensure t
@@ -778,8 +841,8 @@ insert mode keychords for creating blocks. <s followed by TAB creates a source c
   (setq +format-with-lsp nil)
   (setq lsp-enable-indentation nil)
   (setq lsp-enable-on-type-formatting nil)
-)
- ;; You can adjust LSP settings here
+  )
+;; You can adjust LSP settings here
 
 (use-package tree-sitter
   :ensure t
@@ -787,4 +850,6 @@ insert mode keychords for creating blocks. <s followed by TAB creates a source c
   (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
+;; bad idea
+(setq warning-minimum-level :error)
 #+end_src
