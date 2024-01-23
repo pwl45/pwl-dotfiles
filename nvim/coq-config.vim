@@ -2,7 +2,7 @@
 " remap this later:
 " I want an insert only remap; this maps insert and normal mode
 " may be a better way
-let g:coq_settings = { "keymap.jump_to_mark": "",  "keymap.manual_complete": ""  }
+let g:coq_settings = { "keymap.jump_to_mark": "",  "keymap.manual_complete": "", "xdg":v:true  }
 
 " let g:coq_settings = {}
 
