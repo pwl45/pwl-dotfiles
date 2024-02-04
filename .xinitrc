@@ -3,20 +3,12 @@ xset r rate 300 50 # Set repeated keystroke rate.
 setxkbmap -option ctrl:nocaps
 xcape -e 'Control_L=Escape'
 
-nitrogen --restore # sets wallpaper
 redshift & # nightshift stuff
 sxhkd &  # hotkeys
 unclutter &
-./.screenlayout/3monitor-layout.sh # set up monitor layout
+$HOME/pwl-dotfiles/xrandr-do.sh # set up monitor layout
 mkfifo /tmp/dwm.fifo
 xinput disable "ELAN Touchscreen"
-# xterm
-# cinnamon
-# cinnammon-session
-# cinnamon
-
-
-# exec /home/paul/twm-1.0.12/src/twm & st;
 
 ret=0 # 
 while [ $ret -eq 0 ]; do
