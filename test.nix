@@ -44,6 +44,9 @@
     # # symlink to the Nix store copy.
     ".screenrc".source = ./.screenrc;
     ".config/emacs/config.org".source = ./emacs/config.org;
+    ".config/emacs/init.el".source = ./emacs/init.el;
+    ".config/emacs/early-init.el".source = ./emacs/early-init.el;
+    ".config/emacs/setup_scripts".source = ./emacs/setup_scripts;
     ".config/nvim/init.vim".source = ./nvim/init.vim;
     ".config/nvim/coq-config.vim".source = ./nvim/coq-config.vim;
     ".config/nvim/lsp.lua".source = ./nvim/lsp.lua;
