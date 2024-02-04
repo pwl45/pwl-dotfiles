@@ -82,6 +82,8 @@ alias cal3="cal -3"
 alias calf="cal -A 3"
 alias calb="cal -B 3"
 alias mkc='mkdir-cd'
+
+alias hsf='home-manager switch --flake $HOME/pwl-dotfiles'
 lsd(){
  ls -d $@ */
 }

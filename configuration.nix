@@ -14,6 +14,15 @@
           }; 
         });
       })
+      (self: super: {
+        st = super.st.overrideAttrs (oldattrs: rec {
+          buildInputs = oldattrs.buildInputs ++ [ pkgs.harfbuzz ];
+          src = fetchGit {
+            url = "https://github.com/pwl45/pwl-st";
+            rev = "7ab4862a38df97915924ee2a5f32307ce0aec170";
+          }; 
+        });
+      })
     ]; 
   imports =
     [ # Include the results of the hardware scan.
@@ -100,12 +109,14 @@
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     home-manager
+    harfbuzz
     neovim
     xclip
     dmenu
     xterm
     xorg.xinit
     dwm
+    st
     wget
     git
     xterm

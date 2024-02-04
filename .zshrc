@@ -101,6 +101,7 @@ if [ -n "${commands[fzf-share]}" ]; then
   source "$(fzf-share)/key-bindings.zsh"
   source "$(fzf-share)/completion.zsh"
 fi
+bindkey '^I' expand-or-complete
 export FZF_DEFAULT_COMMAND="fd -HI"
 export FZF_DEFAULT_OPTS="--reverse --height 70%"
 export FZF_COMPLETION_TRIGGER=''
