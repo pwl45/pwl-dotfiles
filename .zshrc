@@ -108,10 +108,17 @@ export FZF_COMPLETION_TRIGGER=''
 xset r rate 300 50
 setxkbmap -option ctrl:nocaps
 
-[ -e "$HOME/.zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh" ] || 
+# zsh-system-clipboard
+[ -e "$HOME/.zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh" ] ||
     ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/kutsan/zsh-system-clipboard $HOME/.zsh/plugins/zsh-system-clipboard )
 source "$HOME/.zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh"
-# Load zsh-syntax-highlighting; should be last.
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh 2>/dev/null 
-export PATH="$HOME/.local/share/gem/ruby/3.0.0/bin:$PATH"
+
+# zsh-syntax-highlighting
+[ -e "$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] ||
+    ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.zsh/plugins/zsh-syntax-highlighting )
+source "$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+# zsh-autosuggestions
+[ -e "$HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ] ||
+    ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.zsh/plugins/zsh-autosuggestions )
+source "$HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
