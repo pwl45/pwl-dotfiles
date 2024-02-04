@@ -113,7 +113,6 @@
     neovim
     xclip
     dmenu
-    xterm
     xorg.xinit
     dwm
     st

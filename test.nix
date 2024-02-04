@@ -3,6 +3,25 @@
 {
   home.username = "alice";
   home.homeDirectory = "/home/alice";
+    nixpkgs.overlays = [
+      # (self: super: {
+      #   dwmblocks = super.dwmblocks.overrideAttrs (oldattrs: {
+      #     src = fetchGit {
+      #       url = "https://github.com/pwl45/pwl-dwmblocks";
+      #       rev = "289e25e70131773d935510303d187409912520a5";
+      #     }; 
+      #   });
+      # })
+      # (self: super: {
+      #   st = super.st.overrideAttrs (oldattrs: rec {
+      #     buildInputs = oldattrs.buildInputs ++ [ pkgs.harfbuzz ];
+      #     src = fetchGit {
+      #       url = "https://github.com/pwl45/pwl-st";
+      #       rev = "7ab4862a38df97915924ee2a5f32307ce0aec170";
+      #     }; 
+      #   });
+      # })
+    ]; 
 
 
   # This value determines the Home Manager release that your configuration is
@@ -27,6 +46,10 @@
     zsh
     fzf
     fd
+    sxhkd
+    redshift
+    dwmblocks
+    unclutter
     #
     #Use Emacs from the overlay
     # (emacsOverlay.emacsGit)
@@ -56,6 +79,7 @@
     ".config/sxhkd/sxhkdrc".source = ./sxhkd/sxhkdrc;
     ".config/aliasrc".source = ./aliasrc;
     ".zshrc".source = ./.zshrc;
+    ".xinitrc".source = ./.xinitrc;
 
     # # You can also set the file content immediately.
     # ".gradle/gradle.properties".text = ''
