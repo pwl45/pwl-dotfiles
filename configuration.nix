@@ -5,6 +5,16 @@
 { config, lib, pkgs, ... }:
 
 {
+    nixpkgs.overlays = [
+      (self: super: {
+        dwm = super.dwm.overrideAttrs (oldattrs: {
+          src = fetchGit {
+            url = "https://github.com/pwl45/pwl-dwm";
+            rev = "4c09983c128f80f6c1670bc7540f941fe8c56629";
+          }; 
+        });
+      })
+    ]; 
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
