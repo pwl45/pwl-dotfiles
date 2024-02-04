@@ -174,7 +174,8 @@
 		  dina-font
 		  proggyfonts
   ];
-
+  programs.zsh.enable = true;
+  users.users.alice.shell = pkgs.zsh;
 
   system.stateVersion = "23.11"; # Did you read the comment?
 
