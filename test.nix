@@ -24,6 +24,9 @@
     glibcLocales
     locale 
     python3 
+    zsh
+    fzf
+    fd
     #
     #Use Emacs from the overlay
     # (emacsOverlay.emacsGit)
@@ -63,5 +66,4 @@
 
 
   programs.home-manager.enable = true;
-
 }
