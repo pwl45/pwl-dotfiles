@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 status=$( xrandr -q )
 
@@ -15,10 +15,16 @@ declare -a monitor_order=(
 "DP2-1"
 "DP2-2"
 "DP2-3"
+"DP-1-1"
+"DP-1-2"
+"DP-1-3"
+"DP-2-1"
+"DP-2-2"
+"DP-2-3"
 "HDMI1"
 "HDMI2"
 "HDMI-1"
-"eDP1"
+"eDP1" # We want this last, that's the most important thing.
 "LVDS-1"
 )
 
@@ -27,10 +33,17 @@ echo "${outputs[@]}"
 
 # Add elements from monitor_order that exist in outputs to sorted array
 for mon in "${monitor_order[@]}"; do
+    echo
+    echo "checking $mon... "
     for out in "${outputs[@]}"; do
+	echo -n "  == $out... "
         if [[ "$mon" == "$out" ]]; then
+	    echo 'true.'
             sorted+=("$out")
+	else
+	    echo 'false'
         fi
+
     done
 done
 
