@@ -2,10 +2,6 @@
 let mapleader =" "
 let g:EasyMotion_do_mapping = 0
 let g:polyglot_disabled = ['autoindent', 'sensible']
-" TODO:
-" Give yourself some nice insert mode bindings!"  
-  " EOL, newl, left, right, etc. 
-  " may be challenging with how fucking [REDACTED] terminals are with their six total characters
 
 "Folded by default: Plugin installation, variable settings {{{
   " plugshit ---------------------- {{{
@@ -19,15 +15,10 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
     call plug#begin(system('echo -n "${XDG_CONFIG_HOME:-$HOME/.config}/nvim/plugged"'))
     Plug 'airblade/vim-rooter'
     Plug 'vim-airline/vim-airline'
-    Plug 'easymotion/vim-easymotion'
     Plug 'flazz/vim-colorschemes'
-    Plug 'jreybert/vimagit'
     Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
     Plug 'junegunn/fzf.vim'
     Plug 'neovim/nvim-lspconfig'
-    " Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
-    " Plug 'poliquin/stata-vim'
-    " Plug 'preservim/nerdtree'
     Plug 'vim-airline/vim-airline-themes'
     Plug 'sheerun/vim-polyglot'
     " tpope plugins are simple, essential, and portable. amazing.
@@ -39,13 +30,8 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
     " kinda sucks, but use sometimes anyway
     Plug 'yegappan/mru'
 
-    Plug 'nvim-lua/plenary.nvim'
-    Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.0' }
-    " Plug 'frazrepo/vim-rainbow'
-    " Plug 'kana/vim-textobj-user'
-
     " coq: its own beast
-    Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
+    " Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
     Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
     Plug 'ms-jpq/coq.thirdparty', {'branch': '3p'}
     " Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -128,6 +114,8 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
 
   vnoremap H ^
   vnoremap L $
+  onoremap J }
+  onoremap K {
   " " lets you use C-Enter (with my st binding) like o
   " inoremap <C-CR> <C-o>o
   " nnoremap <C-CR> o
@@ -166,35 +154,17 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
   " (s)earch (w)hole word
   nnoremap <leader>sw /\<\><Left><Left>
 
-  " vim-easymotion:
-  " easymotion-s2: bidirectional search for two characters over multiple lines.
-  " honestly hardly ever use this, mmight remove
-  " nnoremap s <Plug>(easymotion-s2)
-  " easymotion-sl: bidrectional search for signle char over current line.
-    " nnoremap f <Plug>(easymotion-sl) 
-    " This is TERRIBLE for making macros and whatnot
-    " Use only if you're really dumb; find another binding probably.
-  " easymotion-sl: bidrectional search for signle char over current line.
-    " nnoremap t <Plug>(easymotion-tl)
-    " This is TERRIBLE for making macros and whatnot
-    " Use only if you're really dumb; find another binding probably.
-" Remaps for around/in next/last parentheses. Not very useful, but cool.
-
+  " Remaps for around/in next/last parentheses. Not very useful, but cool.
   onoremap in( :<c-u>normal! f(vi(<cr>
   onoremap in) :<c-u>normal! f(vi(<cr>
   onoremap an( :<c-u>normal! f(va(<cr>
   onoremap an) :<c-u>normal! f(va(<cr>
   onoremap if :<c-u>normal!  ?\\begin{figure}<cr>V/\\end{figure}<cr>
-
-   
-  " negro eth negro eth(b8i)
-
+  " Remaps for around/in next/last $. Not very useful, but cool.
   onoremap n$ :<c-u>normal! f$vf$<cr>
   onoremap i$ :<c-u>normal! T$vt$<cr>
   onoremap a$ :<c-u>normal! F$vf$<cr>
 
-  onoremap J }
-  onoremap K {
 
   " onoremap i<space> iW
   onoremap <space> W
@@ -220,12 +190,8 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
 
   " (w)rite and (q)uit
   :nnoremap <leader>wq :wq<cr>
-  " (q)uit
-  :nnoremap <leader>qq :bd<cr>
-  "careful with this one
-  :nnoremap <leader>Q :q!<cr>
 
-" 
+  " emulate C-a and C-e from emacs
   inoremap <C-a> <C-o>^
   inoremap <C-e> <C-o>$
 
