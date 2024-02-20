@@ -1,6 +1,5 @@
 " let fortune = system('/home/paul/scripts/line-fortunes.sh')
 let mapleader =" "
-let g:EasyMotion_do_mapping = 0
 let g:polyglot_disabled = ['autoindent', 'sensible']
 
 "Folded by default: Plugin installation, variable settings {{{
@@ -34,11 +33,6 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
     " Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
     Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
     Plug 'ms-jpq/coq.thirdparty', {'branch': '3p'}
-    " Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-    " Plug 'vim-syntastic/syntastic'
-    " Plug 'neoclide/coc.nvim', {'branch': 'release'}
-    " Plug 'osyo-manga/vim-over'
-    " call PlugDisable()
     call plug#end()
   " }}}
 
@@ -77,9 +71,6 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
     let g:airline_powerline_fonts = 1
     let g:EasyMotion_smartcase = 1
     let g:rooter_change_directory_for_non_project_files = 'current'
-
-
-
       " end setting plugin variables}}}
     "}}}
     "let g:python3_host_prog = "python3.9"
@@ -125,7 +116,6 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
   " center on searches
   nnoremap n nzz
   nnoremap N Nzz
-  inoremap <C-f> <Esc>n
 
   " maybe not necessary, but "go to reference" is a solid mnemonic
   nnoremap gr *
@@ -183,7 +173,7 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
   :vnoremap <leader>ss :<c-u>update<cr>
   :nnoremap <leader>ss :update<cr>
   :nnoremap <leader>mm :update<cr>:!make<cr>
-      :nnoremap <leader>ma :Make! all<CR>
+  :nnoremap <leader>ma :Make! all<CR>
   :vnoremap <leader>ss :<c-u>update<cr>
   :nnoremap <leader>su :sort u <cr>
   :vnoremap <leader>su :sort u <cr>
@@ -209,8 +199,6 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
   :nnoremap c; ct;
   :nnoremap d; dt;
 
-
-
 " Uncategorized leader maps
   " Spell-check: (o)rthography
   nmap <leader>o :setlocal spell! spelllang=en_us<CR>
@@ -225,7 +213,6 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
   nmap <leader>F :Files ~<CR>
   nmap <leader>fg :Rg<CR>
   " (n)erd tree
-  " nmap <leader>n :NERDTreeToggle<CR>
   nmap <leader>p :!pdflatex %<CR>
   nmap <leader>P :!pdflatex main.tex<CR>
 
@@ -349,8 +336,6 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
   " nmap <Leader>l :ls<CR>:b<space>
   nmap <Leader>. :e<Space><c-r>=getcwd()<cr>/
   nmap <Leader>, :e<Space>
-  nmap <leader>dd :let g:rooter_manual_only = 1<cr>:cd %:p:h<cr>:echo getcwd() ';' GetManual()<cr>
-  nmap <leader>rr :RooterToggle<cr> :echo GetManual() 'dirs'<cr>
   nmap <Leader>bl <c-^>
   nmap <Leader>bb :Buffers<CR>
 " Turns off highlighting on the bits of code that are changed, so the line that is changed is highlighted but the actual text that has changed stands out on the line and is readable.
@@ -368,7 +353,6 @@ endfunction
 
 function s:moveout()
     let saved_unnamed_register = @@
-
 
     " save name of original file
     let original_file=expand('%')
