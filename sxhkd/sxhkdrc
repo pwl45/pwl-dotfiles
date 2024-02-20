@@ -1,35 +1,35 @@
 super + y
-	$HOME/dynamic-bookmarks/bookmarks.sh -c
+    $HOME/dynamic-bookmarks/bookmarks.sh -c
 super + b
-	$HOME/dynamic-bookmarks/bookmarks.sh 
+    $HOME/dynamic-bookmarks/bookmarks.sh 
 super + ctrl + b
-	brave-browser
+    brave-browser
 super + shift + b
-	$HOME/dynamic-bookmarks/bookmarks.sh  -n
+    $HOME/dynamic-bookmarks/bookmarks.sh  -n
 # super + q
-# 	$HOME/pwl-dotfiles/scripts/qrclip.sh
+#     $HOME/pwl-dotfiles/scripts/qrclip.sh
 super + shift + d
-	$HOME/dynamic-bookmarks/bookclip.sh
+    $HOME/dynamic-bookmarks/bookclip.sh
 super + shift + s
-	$HOME/pwl-dotfiles/scripts/scrot-cb.sh
+    $HOME/pwl-dotfiles/scripts/scrot-cb.sh
 super + s; s
-	scrot "$HOME/Pictures/$(date +"%F-%T")_scrot.png"
+    scrot "$HOME/Pictures/$(date +"%F-%T")_scrot.png"
 super + s; u
-	scrot -u "$HOME/Pictures/$(date +"%F-%T")_scrot.png"
+    scrot -u "$HOME/Pictures/$(date +"%F-%T")_scrot.png"
 super + slash
-	$HOME/pwl-dotfiles/scripts/search.sh
+    $HOME/pwl-dotfiles/scripts/search.sh
 # super + z
-# 	zathura $( xclip -selection c -out )
+#     zathura $( xclip -selection c -out )
 super + x
-	$HOME/pwl-dotfiles/scripts/switchex.sh
+    $HOME/pwl-dotfiles/scripts/switchex.sh
 super + n; c
-	$HOME/pwl-dotfiles/scripts/network/wifi-connect.sh connect
+    $HOME/pwl-dotfiles/scripts/network/wifi-connect.sh connect
 super + n; C
-	$HOME/pwl-dotfiles/scripts/network/device-connect.sh connect
+    $HOME/pwl-dotfiles/scripts/network/device-connect.sh connect
 super + n; d
-	$HOME/pwl-dotfiles/scripts/network/device-connect.sh disconnect
+    $HOME/pwl-dotfiles/scripts/network/device-connect.sh disconnect
 super + shift + k;
-	$HOME/pwl-dotfiles/scripts/dkill.sh
+    $HOME/pwl-dotfiles/scripts/dkill.sh
 super + shift + x;
     $HOME/pwl-dotfiles/scripts/xrandr-do.sh
 super + shift + t;
@@ -37,7 +37,7 @@ super + shift + t;
 super + ctrl + h;
     st -e htop
 super + ctrl + Return;
-	st -d "$( tail -n 1 $HOME/.shell-dir )"
+    st -d "$( tail -n 1 $HOME/.shell-dir )"
 
 XF86AudioRaiseVolume
     pactl set-sink-volume @DEFAULT_SINK@ +5%
@@ -50,8 +50,8 @@ XF86AudioMicMute
 
 # Increase brightness
 XF86MonBrightnessUp
-    xbacklight -inc 5
+    brightnessctl s +10%
 
 # Decrease brightness
 XF86MonBrightnessDown
-    xbacklight -dec 5
+    brightnessctl s 10%-
