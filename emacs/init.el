@@ -1,7 +1,8 @@
+(let ((config-el (expand-file-name "config.el" user-emacs-directory)))
+  (when (file-exists-p config-el)
+    (delete-file config-el)))
 (org-babel-load-file
-     (expand-file-name
-      "config.org"
-      user-emacs-directory))
+ (expand-file-name "config.org" user-emacs-directory))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
