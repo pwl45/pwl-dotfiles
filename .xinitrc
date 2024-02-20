@@ -3,12 +3,13 @@ xset r rate 300 50 # Set repeated keystroke rate.
 setxkbmap -option ctrl:nocaps
 xcape -e 'Control_L=Escape'
 
+
 redshift & # nightshift stuff
 sxhkd &  # hotkeys
-unclutter &
-$HOME/pwl-dotfiles/xrandr-do.sh # set up monitor layout
+$HOME/pwl-dotfiles/scripts/xrandr-do.sh # set up monitor layout
 mkfifo /tmp/dwm.fifo
 xinput disable "ELAN Touchscreen"
+# xinput set-prop "Synaptics TM3276-022" "libinput Tapping Enabled" 0
 
 ret=0 # 
 while [ $ret -eq 0 ]; do
