@@ -33,15 +33,9 @@ echo "${outputs[@]}"
 
 # Add elements from monitor_order that exist in outputs to sorted array
 for mon in "${monitor_order[@]}"; do
-    echo
-    echo "checking $mon... "
     for out in "${outputs[@]}"; do
-	echo -n "  == $out... "
         if [[ "$mon" == "$out" ]]; then
-	    echo 'true.'
             sorted+=("$out")
-	else
-	    echo 'false'
         fi
 
     done
