@@ -30,6 +30,7 @@ gacap(){
     git add -u
     git commit -m $1
     git push
+    git rev-parse HEAD | tr -d '\n' | xclip -selection c
 }
 alias so="source $HOME/.zshrc"
 alias sa="source $HOME/.config/aliasrc"
@@ -82,8 +83,10 @@ alias cal3="cal -3"
 alias calf="cal -A 3"
 alias calb="cal -B 3"
 alias mkc='mkdir-cd'
+alias ggh="git rev-parse HEAD | tr -d '\n' | cb"
 
 alias hsf='home-manager switch --flake $HOME/pwl-dotfiles'
+alias snrs='sudo nixos-rebuild switch'
 lsd(){
  ls -d $@ */
 }
@@ -262,3 +265,15 @@ bindkey '^h' bk-z
 bindkey '^k' up-line-or-search
 bindkey '^j' down-line-or-search
 
+### Make ctrl a, ctrl e, and ctrl k do what they do in emacs
+# Bind Ctrl-a to move to the beginning of the line in vi mode
+bindkey -M viins '^A' beginning-of-line
+bindkey -M vicmd '^A' beginning-of-line
+
+# Bind Ctrl-e to move to the end of the line in vi mode
+bindkey -M viins '^E' end-of-line
+bindkey -M vicmd '^E' end-of-line
+
+# Bind Ctrl-k to kill the line from the cursor to the end in vi mode
+bindkey -M viins '^K' kill-line
+# In vicmd mode, the behavior is already similar to Emacs, so you might not need to bind Ctrl-k specifically for vicmd mode.
