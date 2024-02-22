@@ -25,7 +25,7 @@
     custom-dwmblocks.flake = false;
   };
 
-  outputs = { nixpkgs, home-manager, firefox-addons, custom-dwmblocks, nixvim,... }:
+  outputs = { nixpkgs, home-manager, firefox-addons, custom-dwmblocks, nixvim,nixpkgs-unstable,... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -38,6 +38,7 @@
           inherit firefox-addons;
           inherit nixvim;
           inherit system;
+          unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
         };
         # specialArgs = {
         #   # inherit firefox-addons;
