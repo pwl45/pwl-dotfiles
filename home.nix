@@ -1,10 +1,37 @@
-{ config, pkgs, ... }:
-
-{
-  # Home Manager needs a bit of information about you and the paths it should
-  # manage.
+{ config, pkgs, firefox-addons,custom-dwmblocks,nixvim,unstablePkgs,... }:
+let
+  vim-airline-themes = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-airline-themes";
+    src = pkgs.fetchFromGitHub {
+      owner = "vim-airline";
+      repo = "vim-airline-themes";
+      rev = "a9aa25ce323b2dd04a52706f4d1b044f4feb7617";
+      hash = "sha256-XwlNwTawuGvbwq3EbsLmIa76Lq5RYXzwp9o3g7urLqM";
+    };
+  };
+in
+  {
+    imports = [
+    # For home-manager
+    nixvim.homeManagerModules.nixvim
+  ];
   home.username = "alice";
   home.homeDirectory = "/home/alice";
+  nixpkgs.overlays = [
+    (self: super: {
+      dwmblocks = super.dwmblocks.overrideAttrs (oldattrs: {
+        src = custom-dwmblocks; 
+      });
+    })
+  ]; 
+  nixpkgs.config = {
+
+      allowUnfree = true;
+
+      permittedInsecurePackages = [
+        "openssl-1.1.1w"
+      ];
+    };
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -14,62 +41,87 @@
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
   home.stateVersion = "23.11"; # Please read the comment before changing.
-
-  # The home.packages option allows you to install Nix packages into your
-  # environment.
-  home.packages = with pkgs;[
-    hello
-    htop
-    fortune
-    cowsay
-    emacs
-    neovim
-    perl
-    glibcLocales
-    locale 
+  home.packages = with pkgs; [
+     hello
+      htop
+      fortune
+      cowsay
+      unstablePkgs.emacs
+      perl
+      glibcLocales
+      locale 
+      python3 
+      zsh
+      fzf
+      bat
+      fd
+      eza
+      sxhkd
+      redshift
+      dwmblocks
+      firefox
+      scrot
+      aws-workspaces
+      gnome.cheese
+      mpv
+      sxiv
+      pavucontrol
+      pulsemixer
+      brightnessctl
+      cargo
+      rustc
+      zathura
+      nerdfonts
+      qbittorrent
+    
+    #Use Emacs from the overlay
+    # (emacsOverlay.emacsGit)
   ];
+  programs.vim = {
+    enable = true; 
+    plugins = with pkgs.vimPlugins; [
+      nvim-base16
+    ];
+  };
 
-  # Home Manager is pretty good at managing dotfiles. The primary way to manage
-  # plain files is through 'home.file'.
+    programs.neovim = {
+      enable = false;
+      withPython3 = true;
+      # # viAlias = true;
+      # # vimAlias = true;
+      # # vimdiffAlias = true;
+       plugins = with pkgs.vimPlugins; [
+         coq_nvim
+         nvim-base16
+       ];
+    };
+
   home.file = {
     # # Building this configuration will create a copy of 'dotfiles/screenrc' in
     # # the Nix store. Activating the configuration will then make '~/.screenrc' a
     # # symlink to the Nix store copy.
     ".screenrc".source = ./.screenrc;
-    # ".config/emacs/config.org".source = ./emacs/config.org;
+    ".config/emacs/config.org".source = ./emacs/config.org;
+    ".config/emacs/init.el".source = ./emacs/init.el;
+    ".config/emacs/early-init.el".source = ./emacs/early-init.el;
+    ".config/emacs/setup_scripts".source = ./emacs/setup_scripts;
     # ".config/nvim/init.vim".source = ./nvim/init.vim;
     # ".config/nvim/coq-config.vim".source = ./nvim/coq-config.vim;
     # ".config/nvim/lsp.lua".source = ./nvim/lsp.lua;
-    # ".config/sxhkd/sxhkdrc".source = ./sxhkd/sxhkdrc;
-    # ".config/aliasrc".source = ./aliasrc;
-    # ".zshrc".source = ./.zshrc;
+    ".config/sxhkd/sxhkdrc".source = ./sxhkd/sxhkdrc;
+    ".config/aliasrc".source = ./aliasrc;
+    ".zshrc".source = ./.zshrc;
+    ".xinitrc".source = ./.xinitrc;
 
-    # # You can also set the file content immediately.
-    # ".gradle/gradle.properties".text = ''
-    #   org.gradle.console=verbose
-    #   org.gradle.daemon.idletimeout=3600000
-    # '';
   };
 
-  # Home Manager can also manage your environment variables through
-  # 'home.sessionVariables'. If you don't want to manage your shell through Home
-  # Manager then you have to manually source 'hm-session-vars.sh' located at
-  # either
-  #
-  #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  ~/.local/state/nix/profiles/profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  /etc/profiles/per-user/alice/etc/profile.d/hm-session-vars.sh
-  #
-  home.sessionVariables = {
-    # EDITOR = "emacs";
+  programs.firefox = {
+    enable = true;
   };
 
-  # Let Home Manager install and manage itself.
+  programs.nixvim = {
+    enable = true;
+  };
+
   programs.home-manager.enable = true;
 }
