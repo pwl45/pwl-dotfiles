@@ -1,7 +1,7 @@
 { pkgs, ... }: {
   enable = true;
   plugins = {
-    # bufferline.enable = true;
+    bufferline.enable = true;
     lsp = {
       enable = true;
       servers = {
@@ -67,7 +67,7 @@
     vim-colorschemes
     mru
     fzf-vim
-    vim-airline-themes
+    # vim-airline-themes
   ];
 
   extraConfigLuaPost = ''
@@ -85,8 +85,8 @@
     set ignorecase
     set smartcase
      let g:polyglot_disabled = ['autoindent', 'sensible']
-     let g:airline_powerline_fonts = 1
-    let g:airline#extensions#tabline#enabled = 1
+"      let g:airline_powerline_fonts = 1
+"     let g:airline#extensions#tabline#enabled = 1
 
      " Keybindings
      ino <silent><expr> <Esc>   pumvisible() ? "\<C-e><Esc>" : "\<Esc>"
@@ -245,7 +245,7 @@
      :nnoremap <leader>ez :vs $HOME/.zshrc<cr>
      :nnoremap <leader>cc :!make<cr>
      " (s)ource (v)imrc
-     :nnoremap <leader>sv :source $MYVIMRC<cr>:AirlineRefresh<cr>
+     " :nnoremap <leader>sv :source $MYVIMRC<cr>:AirlineRefresh<cr>
 
      " Shortcutting split navigation, saving a keypress:
      nmap <Leader>w <C-w>

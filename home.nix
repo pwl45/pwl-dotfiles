@@ -1,15 +1,5 @@
 { config, pkgs, firefox-addons, custom-dwmblocks, nixvim, unstablePkgs, ... }:
-let
-  vim-airline-themes = pkgs.vimUtils.buildVimPlugin {
-    name = "vim-airline-themes";
-    src = pkgs.fetchFromGitHub {
-      owner = "vim-airline";
-      repo = "vim-airline-themes";
-      rev = "a9aa25ce323b2dd04a52706f4d1b044f4feb7617";
-      hash = "sha256-XwlNwTawuGvbwq3EbsLmIa76Lq5RYXzwp9o3g7urLqM";
-    };
-  };
-in {
+{
   imports = [
     # For home-manager
     nixvim.homeManagerModules.nixvim
