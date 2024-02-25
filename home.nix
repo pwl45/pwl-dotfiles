@@ -26,40 +26,8 @@
   # release notes.
   home.stateVersion = "23.11"; # Please read the comment before changing.
 
-  home.packages = with pkgs; [
-    hello
-    htop
-    fortune
-    nixfmt
-    cowsay
-    unstablePkgs.emacs
-    perl
-    glibcLocales
-    locale
-    python3
-    zsh
-    fzf
-    bat
-    fd
-    eza
-    sxhkd
-    redshift
-    dwmblocks
-    firefox
-    scrot
-    aws-workspaces
-    gnome.cheese
-    mpv
-    sxiv
-    pavucontrol
-    pulsemixer
-    brightnessctl
-    cargo
-    rustc
-    zathura
-    nerdfonts
-    qbittorrent
-  ];
+  home.packages = import ./packages.nix { inherit pkgs unstablePkgs; };
+
 
   programs.neovim = {
     enable = false;

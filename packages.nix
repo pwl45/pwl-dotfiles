@@ -1,0 +1,35 @@
+{ pkgs, unstablePkgs, ... }: 
+with pkgs; [
+  hello
+  htop
+  fortune
+  nixfmt
+  cowsay
+  unstablePkgs.emacs
+  perl
+  glibcLocales
+  locale
+  python3
+  zsh
+  fzf
+  bat
+  fd
+  eza
+  sxhkd
+  redshift
+  dwmblocks
+  firefox
+  scrot
+  aws-workspaces
+  gnome.cheese
+  mpv
+  sxiv
+  pavucontrol
+  pulsemixer
+  brightnessctl
+  cargo
+  rustc
+  zathura
+  nerdfonts
+  qbittorrent
+]
