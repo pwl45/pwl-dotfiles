@@ -32,34 +32,66 @@ gacap(){
     git push
     git rev-parse HEAD | tr -d '\n' | xclip -selection c
 }
+replecho(){
+    echo -e "\e[1A\e[K$@"
+}
+alias curlpj='curl -X POST -H "Content-Type: application/json"'
+# sepl OLD NEW [OPTIONS] [FILE...]
+# example: 
+# sepl old-string new-string -i file.txt
+# =>
+# sed "s/old-string/new-string/g" -i file.txt
+# except with a non-printable character used as the sed delimiter instead of /
+sepl(){
+    # \x7 is the ASCII value 7, a non-printable character. 
+    # This means it is a character that will not occurr in any normal string we're using for sed
+    SEP=$(echo -e '\x7')
+
+    OLD=$1 # pattern to replace - first argument
+    NEW=$2 # pattern to replace with - second argument
+
+    # shift all arguments down two: 
+    shift; shift
+    # now $@ (all arguments to sepl) is all arguments except the first two
+
+    # run sed to replace old with new using non-printable delimiter
+    # pass $@ (now all arguments except first two) to sed normally
+    sed "s${SEP}${OLD}${SEP}${NEW}${SEP}g" $@
+}
+
 alias so="source $HOME/.zshrc"
 alias sa="source $HOME/.config/aliasrc"
 alias va="vim $HOME/.config/aliasrc"
 alias ev="vim $MYVIMRC"
 alias std="st -d . >/dev/null 2>/dev/null &"
 alias duh="du -h"
-alias duskstat='duskc run_command setstatus'
-# alias duskmenu='dmenu_run -fn monospace:size=10 -nb #180A13 -nf #BE89AE -sb #440000 -sf #FFF7D4'
-# alias duskmenu_run='dmenu -fn monospace:size=10 -nb #180A13 -nf #BE89AE -sb #440000 -sf #FFF7D4'
+alias awksum="awk '{s+=\$1} END {print s}'"
+alias awkfc="awk -F ','"
+alias awklast="awk '{print \$NF}'"
 
+gcb(){
+    git branch | sed 's/^\*\?\s*//g' | fzf | xargs -r git checkout
+}
+
+alias gau="git add -u"
 alias glap="git log --patch -1"
 alias glp="git log --patch"
 alias gcm="git commit -m"
 alias gp="git push"
 alias gd="git diff"
 alias ggm='git status -uno'
+alias gres='git checkout $(git branch --show-current) --'
 alias chx="echo 'chimken' && chmod 755"
 alias fzf='fzf --reverse --prompt=">> "'
 alias q='qutebrowser'
 alias z='zathura'
 alias gr='grep -r'
-alias texskel="cp ${HOME}/closet/tex.tex"
-gcb(){
+gccb(){
     cmd="git clone $( xclip -selection c -out )"
     echo "$cmd"
     eval $cmd && echo "$cmd" >> .zhistory
 }
-alias G='gcb'
+alias G='gccb'
 alias pyi='python3 -i'
 alias py3='python3'
 alias ec='devour emacsclient -c'
@@ -78,7 +110,7 @@ alias qf="qmk flash && xset r rate 300 50"
 alias fm="qmk flash && echo '\n----------DONE----------\n' && qmk flash && xset r rate 300 50"
 alias cdd='cd $HOME && cd'
 alias fzk="ps aux | fzf | awk '{print \$2}' | xargs -r kill"
-alias dkill="ps aux | dmenu -l 20 | awk '{print \$2}' | xargs -r kill"
+alias dkill="ps aux | dmenu -l 56 | awk '{print \$2}' | xargs -r kill"
 alias cal3="cal -3"
 alias calf="cal -A 3"
 alias calb="cal -B 3"
@@ -90,15 +122,14 @@ alias snrs='sudo nixos-rebuild switch'
 lsd(){
  ls -d $@ */
 }
-# alias lsd='ls -d -- */'
 
 mkdir-cd(){
     mkdir $1 && cd $1
 }
 # alias fixaudio="pactl set-card-profile 0 output:analog-stereo && pactl set-card-profile 0 input:analog-stereo"
 
-zf() { fd -H ".*.pdf" | fzf  | xargs -d '\n' -r zathura }
-vf() { fd -H | fzf  | xargs -r $EDITOR }
+zf() { fd -HI ".*.pdf" | fzf  | xargs -d '\n' -r zathura }
+vf() { fd -HI | fzf  | xargs -d '\n' -r $EDITOR }
 gf() { 
     file=$( fd -H | fzf ) 
     # read program
@@ -106,7 +137,7 @@ gf() {
     echo $char
     case $char in
 	v)
-	    program="neovim"
+	    program="nvim"
 	    ;;
 	z)
 	    program="zathura"
@@ -160,51 +191,6 @@ cdlr(){
     fi
 }
 
-
-# l() {
-#     if [ -z $1 ]; then
-# 	ls
-#     else
-# 	ls *.$1
-#     fi
-# }
-
-getmr() {
-    digit_re='^[0-9]+$'
-    if [ -z $2 ]; then
-	if [ -z $1 ]; then # zero 
-	    # zero arguments
-	    ls --sort=time | head -n 1
-	else
-	    # one argument
-	    if [[ $1 =~ $digit_re ]] ; then
-		# argument is a number: list that many of everything
-		ls --sort=time | head -n $1
-	    else 
-		# argument is not a number
-		ls *.$1 --sort=time | head -n 1
-	    fi
-	fi
-    else
-	# two arguments
-	if [[ $1 =~ $digit_re ]] ; then
-	    # first is a number: list that many of *.$2
-	    ls *.$2 --sort=time | head -n $1
-	else
-	    if [[ $2 =~ $digit_re ]] ; then
-		# argument is a number: list that many
-		ls *.$1 --sort=time | head -n $2
-	    else 
-		# neither is a number: warn
-		echo "invalid format"
-		return 1
-	    fi
-	fi
-	# ls *.$1 --sort=time | head -n 1
-    fi
-}
-alias grab=getmr
-
 rerun() {
     killall $1 && $1
 }
@@ -232,6 +218,33 @@ ccc(){
     fi
 }
 
+docgrep(){
+    docker ps -a | grep "$1" | awk '{print $1}'
+}
+
+docex(){
+    if [ -z $1 ]; then
+	echo "docex: Must specify a (partial) container name"
+	return 1
+    fi
+
+    container=$(docker ps -a | grep "$1"  | awk '{print $1}')
+    if [ -z $2 ]; 
+    then
+	docker exec -it "$container" /bin/bash
+    else 
+	docker exec -it "$container" $2
+    fi
+}
+swap(){echo $1 $2; fl=$(mktemp); mv $1 $fl; mv $2 $1; mv $fl $2}
+
+grep_to_from(){
+    start_pattern=$1
+    shift
+    end_pattern=$1
+    shift
+    awk -v print_start="$start_pattern" -v print_end="$end_pattern" '$0 ~ print_start{doprint=1} doprint{print} $0 ~ print_end{doprint=0}' $@
+}
 # ZLE Bindings are annoying
 function vf-z() { vf ; zle reset-prompt; zle redisplay; zle-keymap-select}
 zle -N vf-z
@@ -248,12 +261,11 @@ bindkey '^p' cdg-z
 
 function cdlr-z() { cdlr ; zle reset-prompt; zle redisplay; zle-keymap-select}
 zle -N cdlr-z
-bindkey '\eg' cdlr-z
-# bindkey '\ej' cdlr-z
 
+function gccb-z(){zle reset-prompt; gccb ; zle reset-prompt; zle redisplay; zle-keymap-select}
+zle -N gccb-z
 function gcb-z(){zle reset-prompt; gcb ; zle reset-prompt; zle redisplay; zle-keymap-select}
 zle -N gcb-z
-# bindkey '\eg' gcb-z
 
 # remap control enter to do autosuggest
 bindkey '[13;5u' autosuggest-execute
@@ -262,8 +274,8 @@ function bk-z() { cd .. ; zle reset-prompt; zle redisplay; zle-keymap-select}
 zle -N bk-z
 bindkey '^h' bk-z
 
-bindkey '^k' up-line-or-search
-bindkey '^j' down-line-or-search
+bindkey -a H beginning-of-line
+bindkey -a L end-of-line
 
 ### Make ctrl a, ctrl e, and ctrl k do what they do in emacs
 # Bind Ctrl-a to move to the beginning of the line in vi mode
@@ -276,4 +288,4 @@ bindkey -M vicmd '^E' end-of-line
 
 # Bind Ctrl-k to kill the line from the cursor to the end in vi mode
 bindkey -M viins '^K' kill-line
-# In vicmd mode, the behavior is already similar to Emacs, so you might not need to bind Ctrl-k specifically for vicmd mode.
+source "$HOME/.config/grab.sh"

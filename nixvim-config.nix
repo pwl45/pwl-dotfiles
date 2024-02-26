@@ -5,12 +5,12 @@
     lsp = {
       enable = true;
       servers = {
-        rust-analyzer = {
-          enable = true;
-          installCargo = true;
-          installRustc = true;
-        };
-        clangd.enable = true;
+        # rust-analyzer = {
+        #   enable = true;
+        #   installCargo = true;
+        #   installRustc = true;
+        # };
+        # clangd.enable = true;
         nixd.enable = true;
         pyright.enable = true;
       };
@@ -33,13 +33,42 @@
       enable = true;
     };
     fugitive.enable = true;
-    coq-nvim = {
+    # coq-nvim = {
+    #   enable = false;
+    #   installArtifacts = true;
+    #   autoStart = true;
+    #   recommendedKeymaps = false;
+    # };
+    nvim-cmp = {
       enable = true;
-      installArtifacts = true;
-      autoStart = true;
-      recommendedKeymaps = false;
+      sources = [
+        {name = "nvim_lsp";}
+        {name = "path";}
+        {name = "buffer";}
+      ];
+      mapping = {
+        "<C-Space>" = "cmp.mapping.complete()";
+        "<C-d>" = "cmp.mapping.scroll_docs(-4)";
+        "<C-e>" = "cmp.mapping.close()";
+        "<C-f>" = "cmp.mapping.scroll_docs(4)";
+        "<CR>" = "cmp.mapping.confirm({ select = false })";
+        "<S-Tab>" = {
+          action = "cmp.mapping.select_prev_item()";
+          modes = [
+            "i"
+            "s"
+          ];
+        };
+        "<Tab>" = {
+          action = "cmp.mapping.select_next_item()";
+          modes = [
+            "i"
+            "s"
+          ];
+        };
+      };
     };
-    coq-thirdparty.enable = true;
+    # coq-thirdparty.enable = true;
   };
   colorschemes.ayu.enable = true;
   # colorschemes.oxocarbon.enable = true;
@@ -67,6 +96,7 @@
     vim-colorschemes
     mru
     fzf-vim
+    # coq_nvim
     # vim-airline-themes
   ];
 
@@ -80,6 +110,8 @@
 
   extraConfigVim = ''
 
+    " let g:python3_host_prog = '/home/paul.lapey/anaconda3/bin/python3' 
+    let g:python3_host_prog = trim(system('which python3'))
     set hlsearch
     set inccommand=nosplit
     set ignorecase
@@ -271,5 +303,7 @@
       \   'gitbranch': 'FugitiveHead'
       \ },
       \ }
+  " Tab and Shift-Tab to navigate through the popup menu
+
   '';
 }
