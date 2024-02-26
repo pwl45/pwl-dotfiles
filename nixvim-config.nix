@@ -22,23 +22,10 @@
       ];
     };
     surround.enable = true;
-    # airline = {
-    #   enable = true;
-    #   theme = "serene";
-    # };
-    # lightline = {
-    #   enable = true;
-    # };
     lualine = {
       enable = true;
     };
     fugitive.enable = true;
-    # coq-nvim = {
-    #   enable = false;
-    #   installArtifacts = true;
-    #   autoStart = true;
-    #   recommendedKeymaps = false;
-    # };
     nvim-cmp = {
       enable = true;
       sources = [
@@ -68,7 +55,6 @@
         };
       };
     };
-    # coq-thirdparty.enable = true;
   };
   colorschemes.ayu.enable = true;
   # colorschemes.oxocarbon.enable = true;
@@ -96,49 +82,26 @@
     vim-colorschemes
     mru
     fzf-vim
-    # coq_nvim
-    # vim-airline-themes
   ];
 
   extraConfigLuaPost = ''
     vim.cmd[[
-    " This needs to run after COQ is loaded by nixvim, so it goes in POST
-    " Nixvim will put in settings that I don't like, so we override them after it loads
-    let g:coq_settings = { "keymap.jump_to_mark": "",  "keymap.manual_complete": "", "xdg":v:true  }
     ]]
   '';
 
   extraConfigVim = ''
-
-    " let g:python3_host_prog = '/home/paul.lapey/anaconda3/bin/python3' 
     let g:python3_host_prog = trim(system('which python3'))
     set hlsearch
     set inccommand=nosplit
     set ignorecase
     set smartcase
      let g:polyglot_disabled = ['autoindent', 'sensible']
-"      let g:airline_powerline_fonts = 1
-"     let g:airline#extensions#tabline#enabled = 1
-
-     " Keybindings
-     ino <silent><expr> <Esc>   pumvisible() ? "\<C-e><Esc>" : "\<Esc>"
-     ino <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
-     ino <silent><expr> <BS>    pumvisible() ? "\<C-e><BS>"  : "\<BS>"
-     ino <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "\<C-e><CR>" : "\<C-y>") : "\<CR>"
-     ino <silent><expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-     ino <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<BS>"
 
      " C-h is what the teriminal reads as shift backspace - I don't like that being used for nav marks
      " replacing that with C-f or C-d
      inoremap <silent><expr> <C-h>   pumvisible() ? "\<C-e><BS>"  : "\<BS>"
-     " ino <C-f>                  <C-\><C-N><Cmd>lua COQ.Nav_mark()<CR>
-
-     "hooooo boy is this nice.
-     ino jkl                  <C-\><C-N><Cmd>lua COQ.Nav_mark()<CR>
-     ino lkj                  <C-\><C-N><Cmd>lua COQ.Nav_mark()<CR>
 
      " Remaps
-
      " use Q for (q)uestions
      nnoremap Q K 
 
@@ -303,7 +266,5 @@
       \   'gitbranch': 'FugitiveHead'
       \ },
       \ }
-  " Tab and Shift-Tab to navigate through the popup menu
-
   '';
 }
