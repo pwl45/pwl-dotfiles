@@ -12,7 +12,14 @@ autoload -U colors && colors
 # startp=$( echo -n "\x11" )
 # endp=$( echo -n "\x14" )
 # PS1="${startp}%F{160%}%~%{$reset_color%}:%b ${endp}"
-PS1="%F{160%}%~%{$reset_color%}: "
+# PS1="%F{160%}%~%{$reset_color%}: "
+if [[ -n $SSH_CONNECTION ]]; then
+  # Include user@hostname in the prompt for SSH sessions
+  PS1="%F{160}%n@%m%{$reset_color%}:%F{160%}%~%{$reset_color%}: "
+else
+  # Keep your original prompt for non-SSH sessions
+  PS1="%F{160%}%~%{$reset_color%}: "
+fi
 # History in cache directory:
 HISTSIZE=1000000
 SAVEHIST=1000000
@@ -108,6 +115,7 @@ export FZF_COMPLETION_TRIGGER=''
 
 xset r rate 300 50
 setxkbmap -option ctrl:nocaps
+killall xcape 2>/dev/null && xcape -e 'Control_L=Escape'
 
 # zsh-system-clipboard
 [ -e "$HOME/.zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh" ] ||
