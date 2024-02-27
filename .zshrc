@@ -4,7 +4,7 @@
 # fortune | cowsay
 # $HOME/scripts/simple-unix
 autoload -U colors && colors
-# PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[red]%}]%{$reset_color%}$%b "
+# PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[green]%}%~%{$fg[red]%}]%{$reset_color%}:%b "
 # PS1="%B%{$fg[green]%}%n%{$fg[green]%}@%{$fg[green]%}%M%{$fg[white]%}:%{$fg[blue]%}%~%{$reset_color%}$%b "
 # PS1="%B%{$fg[green]%}%n%{$fg[green]%}: %{$fg[blue]%}%~%{$reset_color%}$%b "
 # PS1='%~: '
@@ -15,7 +15,7 @@ autoload -U colors && colors
 # PS1="%F{160%}%~%{$reset_color%}: "
 if [[ -n $SSH_CONNECTION ]]; then
   # Include user@hostname in the prompt for SSH sessions
-  PS1="%F{160}%n@%m%{$reset_color%}:%F{160%}%~%{$reset_color%}: "
+  PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[magenta]%}@%{$fg[blue]%}%M %{$fg[green]%}%~%{$fg[red]%}]%{$reset_color%}:%b "
 else
   # Keep your original prompt for non-SSH sessions
   PS1="%F{160%}%~%{$reset_color%}: "
