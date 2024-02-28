@@ -113,14 +113,17 @@ export FZF_DEFAULT_COMMAND="fd -HI"
 export FZF_DEFAULT_OPTS="--reverse --height 70%"
 export FZF_COMPLETION_TRIGGER=''
 
-xset r rate 300 50
-setxkbmap -option ctrl:nocaps
-killall xcape 2>/dev/null && xcape -e 'Control_L=Escape'
 
-# zsh-system-clipboard
-[ -e "$HOME/.zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh" ] ||
-    ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/kutsan/zsh-system-clipboard $HOME/.zsh/plugins/zsh-system-clipboard )
-source "$HOME/.zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh"
+if [[ -n $DISPLAY ]]; then
+    # zsh-system-clipboard
+    [ -e "$HOME/.zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh" ] || ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/kutsan/zsh-system-clipboard $HOME/.zsh/plugins/zsh-system-clipboard )
+    source "$HOME/.zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh"
+    
+    # other X things
+    xset r rate 300 50
+    setxkbmap -option ctrl:nocaps
+    killall xcape 2>/dev/null && xcape -e 'Control_L=Escape'
+fi
 
 # zsh-syntax-highlighting
 [ -e "$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] ||
