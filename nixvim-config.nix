@@ -5,14 +5,15 @@
     lsp = {
       enable = true;
       servers = {
-        # rust-analyzer = {
-        #   enable = true;
-        #   installCargo = true;
-        #   installRustc = true;
-        # };
-        # clangd.enable = true;
+        rust-analyzer = {
+          enable = true;
+          installCargo = true;
+          installRustc = true;
+        };
+        clangd.enable = true;
         nixd.enable = true;
         pyright.enable = true;
+        bashls.enable = true;
       };
     };
     treesitter = {
@@ -72,6 +73,22 @@
 
   extraConfigLuaPost = ''
     vim.cmd[[
+      nnoremap S :%s//g<Left><Left>
+      vnoremap S :s//g<Left><Left>
+
+      nmap ds  <Plug>Dsurround
+      nmap cs  <Plug>Csurround
+      nmap cS  <Plug>CSurround
+      nmap ys  <Plug>Ysurround
+      nmap yS  <Plug>YSurround
+      nmap yss <Plug>Yssurround
+      nmap ySs <Plug>YSsurround
+      nmap ySS <Plug>YSsurround
+      " xmap S   <Plug>VSurround
+      xmap gS  <Plug>VgSurround
+      imap    <C-S> <Plug>Isurround
+      imap      <C-G>s <Plug>Isurround
+      imap      <C-G>S <Plug>ISurround
     ]]
   '';
 

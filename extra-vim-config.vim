@@ -1,4 +1,6 @@
     let g:python3_host_prog = trim(system('which python3'))
+    let g:surround_no_mappings = v:true
+
     set hlsearch
     set inccommand=nosplit
     set ignorecase
