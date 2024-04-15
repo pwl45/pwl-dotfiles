@@ -13,6 +13,7 @@ autoload -U colors && colors
 # endp=$( echo -n "\x14" )
 # PS1="${startp}%F{160%}%~%{$reset_color%}:%b ${endp}"
 # PS1="%F{160%}%~%{$reset_color%}: "
+
 if [[ -n $SSH_CONNECTION ]]; then
   # Include user@hostname in the prompt for SSH sessions
   PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[magenta]%}@%{$fg[blue]%}%M %{$fg[green]%}%~%{$fg[red]%}]%{$reset_color%}:%b "
@@ -20,6 +21,22 @@ else
   # Keep your original prompt for non-SSH sessions
   PS1="%F{160%}%~%{$reset_color%}: "
 fi
+
+if [[ -n $IN_NIX_SHELL ]]; then
+  PS1="%B%{$fg[cyan]%}[nix-shell]%} $PS1"
+fi
+
+
+# if [[ -n $IN_NIX_SHELL ]]; then
+#   # Indicate nix-shell presence with a special marker
+#   PS1="%B%{$fg[cyan]%}[nix-shell] %{$fg[green]%}%~%{$reset_color%}:%b "
+# elif [[ -n $SSH_CONNECTION ]]; then
+#   # Include user@hostname in the prompt for SSH sessions
+#   PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[magenta]%}@%{$fg[blue]%}%M %{$fg[green]%}%~%{$fg[red]%}]%{$reset_color%}:%b "
+# else
+#   # Keep your original prompt for non-SSH sessions
+#   PS1="%F{160%}%~%{$reset_color%}: "
+# fi
 # History in cache directory:
 HISTSIZE=1000000
 SAVEHIST=1000000
@@ -96,12 +113,6 @@ alias history="history 1"
 
 
 fpath=(~/zsh-completions/src $fpath)
-
-
-# preexec() {
-#     exec > >(tee ~/.command.out&)
-# }
-
 
 # [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 if [ -n "${commands[fzf-share]}" ]; then
