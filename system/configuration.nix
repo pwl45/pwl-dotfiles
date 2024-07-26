@@ -28,6 +28,7 @@
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ./binbash-configuration.nix
+    ./postgresql-configuration.nix
   ];
 
   nix = {
@@ -52,7 +53,9 @@
   # Set your time zone.
   # time.timeZone = "Europe/Amsterdam";
   # time.timeZone = "Europe/Madrid";
+  # time.timeZone = "America/Los_Angeles";
   time.timeZone = "America/New_York";
+  # time.timeZone = "Asia/Tokyo";
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -78,6 +81,7 @@
 
   # xorg.xbac
   programs.light.enable = true;
+  programs.thunar.enable = true;
 
   # Configure keymap in X11
   # services.xserver.xkb.layout = "us";
@@ -90,6 +94,11 @@
   # sound.enable = true;
   hardware.pulseaudio.enable = true;
   hardware.pulseaudio.extraConfig = "load-module module-combine-sink";
+  hardware.keyboard.qmk.enable = true;
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
 
   # Enable touchpad support (enabled default in most desktopManager).
 
@@ -118,16 +127,23 @@
     #   tree
     # ];
   };
+  services.usbmuxd = {
+    enable = true;
+    package = pkgs.usbmuxd2;
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    libimobiledevice
+    ifuse # optional, to mount using 'ifuse'
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     libinput
     home-manager
     harfbuzz
     # neovim
+    ntfs3g
     xclip
     dmenu
     xorg.xinit
@@ -151,6 +167,7 @@
     zip
     unzip
     docker
+    openssl
   ];
   environment.binbash = pkgs.bash;
   virtualisation.docker.enable = true;
@@ -159,7 +176,11 @@
     setSocketVariable = true;
   };
   # services.docker.enable = true;
-
+  fileSystems."/mnt/windows" = {
+    fsType = "ntfs";
+    device = "/dev/nvme0n1p3";
+    options = [ "windows_names" "uid=1000" "gid=100" "fmask=133" "dmask=022" ];
+  };
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -187,7 +208,7 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
-  networking.firewall.allowedTCPPorts = [ 22 ]; # Default SSH port
+  networking.firewall.allowedTCPPorts = [ 22 80 443 ]; # Default SSH port
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
@@ -211,6 +232,8 @@
   # and migrated your data accordingly.
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
+  system.stateVersion = "23.11"; # Did you read the comment?
+
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk
@@ -228,17 +251,9 @@
   users.users.alice.shell = pkgs.zsh;
   users.users.paul.shell = pkgs.zsh;
 
-  # environment.etc."polkit-1/rules.d/50-org.freedesktop.NetworkManager.rules".text =
-  #   ''
-  #     polkit.addRule(function(action, subject) {
-  #     if (action.id.indexOf("org.freedesktop.NetworkManager.") == 0 &&
-  #         subject.isInGroup("wheel")) {
-  #       return polkit.Result.YES;
-  #     }
-  #     });
-  #   '';
+  services.udev.extraRules = "";
+  # services.nginx.enable = true;
 
-  system.stateVersion = "23.11"; # Did you read the comment?
   services.pcscd.enable = true;
   programs.gnupg = {
     agent = {
