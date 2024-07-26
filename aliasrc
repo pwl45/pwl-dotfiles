@@ -119,6 +119,7 @@ alias ggh="git rev-parse HEAD | tr -d '\n' | cb"
 
 alias hsf='home-manager switch --flake $HOME/pwl-dotfiles'
 alias snrs='sudo nixos-rebuild switch'
+alias ns='nix-shell --run zsh'
 lsd(){
  ls -d $@ */
 }
@@ -188,6 +189,22 @@ cdlr(){
     tmp=$( fd -H -t d | fzf )
     if [ ! -z $tmp ]; then
 	cdl $tmp
+    fi
+}
+
+bak() {
+    if [ $# -eq 0 ]; then
+        echo "Usage: bak filename"
+        return 1
+    fi
+    
+    local filename="$1"
+    if [ -e "$filename" ]; then
+        mv "$filename" "${filename}.bak"
+        echo "Moved $filename to ${filename}.bak"
+    else
+        echo "Error: $filename does not exist"
+        return 1
     fi
 }
 
@@ -289,3 +306,4 @@ bindkey -M vicmd '^E' end-of-line
 # Bind Ctrl-k to kill the line from the cursor to the end in vi mode
 bindkey -M viins '^K' kill-line
 source "$HOME/.config/grab.sh"
+source "$HOME/.config/unroll.sh"
