@@ -39,6 +39,7 @@
   - [[#nice-keybindings][Nice Keybindings]]
   - [[#enabling-table-of-contents][Enabling Table of Contents]]
   - [[#enabling-org-bullets][Enabling Org Bullets]]
+  - [[#evil-org][Evil-org]]
   - [[#disable-electric-indent][Disable Electric Indent]]
   - [[#org-tempo][Org-Tempo]]
 - [[#projectile][PROJECTILE]]
@@ -106,20 +107,19 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
 *** Keybindings with General
 #+begin_src emacs-lisp
 
-  (defun home-manager-switch () (interactive)
-	 "Run `home-manager switch` when saving specific files."
-	 (shell-command-to-string "home-manager switch -f $HOME/pwl-dotfiles/test.nix"))
+(defun home-manager-switch () (interactive)
+       (shell-command-to-string "home-manager switch --flake $HOME/pwl-dotfiles"))
 
-  (defun dispatch-and-notify (func)
-    "Dispatch FUNC, messaging start, success, or failure."
-    (interactive)
-    (message "Starting %s" (symbol-name func))
-    (condition-case err
-	(progn
-          (funcall func)
-          (message "%s completed successfully" (symbol-name func)))
-      (error
-       (message "Execution of %s failed: %s" (symbol-name func) (error-message-string err)))))
+(defun dispatch-and-notify (func)
+  "Dispatch FUNC, messaging start, success, or failure."
+  (interactive)
+  (message "Starting %s" (symbol-name func))
+  (condition-case err
+      (progn
+        (funcall func)
+        (message "%s completed successfully" (symbol-name func)))
+    (error
+     (message "Execution of %s failed: %s" (symbol-name func) (error-message-string err)))))
 (use-package general
   :config
   (general-evil-setup)
@@ -257,59 +257,72 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
    "L" 'evil-end-of-line
    "j" 'evil-next-visual-line
    "k" 'evil-previous-visual-line
-
    )
+  (with-eval-after-load 'org
+    ;; Set keybindings for org-mode specific actions in Evil insert mode
+    (general-def :states 'insert :keymaps 'org-mode-map
+      "M-h" 'org-promote-subtree
+      "M-l" 'org-demote-subtree)
+    (general-def :states 'normal :keymaps 'org-mode-map
+      "M-h" 'org-promote-subtree
+      "M-l" 'org-demote-subtree)
+    (general-def :states 'normal :keymaps 'org-mode-map
+      "M-h" 'org-promote-subtree
+      "M-l" 'org-demote-subtree
+      "<<" 'org-promote-subtree
+      ">>" 'org-demote-subtree)
+    )
 
-  ;; Simple remaps for visual mode
-  (general-define-key
-   :states 'visual
-   "H" 'evil-first-non-blank
-   "L" 'evil-end-of-line)
+;; Simple remaps for visual mode
+(general-define-key
+ :states 'visual
+ "H" 'evil-first-non-blank
+ "L" 'evil-end-of-line)
 
-  ;; S - substitute command skeleton and move the cursor between the two slashes
-  ;; this is annoyingly difficult, have to do minibuffer-with-setup-hook
-  (general-define-key
-   :states 'normal
-   :keymaps 'override
-   "S" (lambda ()
-         (interactive)
-         (minibuffer-with-setup-hook
-             (lambda () (backward-char 2))
-           (evil-ex "%s//g"))
+;; S - substitute command skeleton and move the cursor between the two slashes
+;; this is annoyingly difficult, have to do minibuffer-with-setup-hook
+(general-define-key
+ :states 'normal
+ :keymaps 'override
+ "S" (lambda ()
+       (interactive)
+       (minibuffer-with-setup-hook
+           (lambda () (backward-char 2))
+         (evil-ex "%s//g"))
+       )
+ )
+
+(general-define-key
+ :states 'visual
+ :keymaps 'override
+ "S" (lambda ()
+       (interactive)
+       (minibuffer-with-setup-hook
+           (lambda () (backward-char 2))
+         (evil-ex "'<,'>s//g")
          )
-   )
+       )
+ )
 
-  (general-define-key
-   :states 'visual
-   :keymaps 'override
-   "S" (lambda ()
-         (interactive)
-         (minibuffer-with-setup-hook
-             (lambda () (backward-char 2))
-           (evil-ex "'<,'>s//g")
-           )
-         )
-   )
+;; nnoremap c "_c
+(defvar my/original-evil-change-command (lookup-key evil-normal-state-map "c"))
+(defun my/evil-change-to-blackhole ()
+  (interactive)
+  (let ((evil-this-register ?_))
+    (call-interactively my/original-evil-change-command)))
+(general-define-key
+ :states '(normal visual)
+ "c" 'my/evil-change-to-blackhole)
 
-  ;; nnoremap c "_c
-  (defvar my/original-evil-change-command (lookup-key evil-normal-state-map "c"))
-  (defun my/evil-change-to-blackhole ()
-    (interactive)
-    (let ((evil-this-register ?_))
-      (call-interactively my/original-evil-change-command)))
-  (general-define-key
-   :states '(normal visual)
-   "c" 'my/evil-change-to-blackhole)
-
-  ;; nnoremap C "_C
-  (defvar my/original-evil-change-to-end-of-line-command (lookup-key evil-normal-state-map "C"))
-  (defun my/evil-change-to-end-of-line-to-blackhole ()
-    (interactive)
-    (let ((evil-this-register ?_))
-      (call-interactively my/original-evil-change-to-end-of-line-command)))
-  (general-define-key
-   :states '(normal visual)
-   "C" 'my/evil-change-to-end-of-line-to-blackhole)
+;; nnoremap C "_C
+(defvar my/original-evil-change-to-end-of-line-command (lookup-key evil-normal-state-map "C"))
+(defun my/evil-change-to-end-of-line-to-blackhole ()
+  (interactive)
+  (let ((evil-this-register ?_))
+    (call-interactively my/original-evil-change-to-end-of-line-command)))
+(general-define-key
+ :states '(normal visual)
+ "C" 'my/evil-change-to-end-of-line-to-blackhole)
 (defun evil-change-blackhole (beg end &optional type register yank-handler)
   "Change text from BEG to END with TYPE without affecting the clipboard.
    Works like `evil-change' but does not modify the kill-ring."
@@ -332,7 +345,7 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
 ;;                     ;; alternatively if there was no linewise version:
 ;;                     "c" (general-simulate-key ('evil-change "c"))))
 
-  )
+)
 #+end_src
 
 * GUI
@@ -725,7 +738,13 @@ By default, Emacs requires you to hit ESC thre times to quite the minibuffer. Ch
 * ORG MODE
 ** Nice Keybindings
 #+begin_src emacs-lisp
-;; TODO
+(use-package evil-org
+  :ensure t
+  :after org
+  :hook (org-mode . (lambda () evil-org-mode))
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 #+end_src
 ** Enabling Table of Contents
 #+begin_src emacs-lisp
@@ -742,6 +761,18 @@ Org-bullets gives us attractive bullets rather than asterisks.
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+end_src
 
+
+** Evil-org
+Org mode 
+#+begin_src emacs-lisp
+(use-package evil-org
+  :ensure t
+  :after org
+  :hook (org-mode . (lambda () evil-org-mode))
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+#+end_src>
 ** Disable Electric Indent
 Electric indent behaves weirdly in org mode. Let's turn it off for org-mode but on otherwise.
 #+begin_src emacs-lisp
