@@ -1,5 +1,7 @@
-Google	google.com
 Youtube	youtube.com
+Anthropic Claude (cld)	claude.ai
+OpenAI ChatGPT (oai)	chat.openai.com
+Google	google.com
 PMP Website	purplemountainpartners.com
 Calories	https://docs.google.com/spreadsheets/d/1RjTKNiLROhl3Ygv6K99Zp91eEksDw7-Ma3MGfQ5b1GM/edit#gid=177213305
 Personal Gmail	https://mail.google.com/mail/u/0/#inbox
@@ -30,8 +32,6 @@ funny xorg article	https://who-t.blogspot.com/2014/12/why-255-keycode-limit-in-x
 Redox Keyset... Sexy but 84$.....	https://pimpmykeyboard.com/sa-1976-keyset-two-shot/
 Split Ergo Keyboard List	https://github.com/diimdeep/awesome-split-keyboards
 Amazon	amazon.com
-Session Talia	https://twitter.com/GoddessTalia00/
-villainelle session	https://thevillainelle.com/queer-femme-mistress-nyc-about/
 DWM Stacker patchh	https://dwm.suckless.org/patches/stacker/
 QMK Keycodes List	https://github.com/qmk/qmk_firmware/blob/master/docs/keycodes.md
 tikz triangulations of polygons for latex	https://texample.net/tikz/examples/polygon-division/
@@ -45,7 +45,7 @@ Allen Family Slaves	https://www.loc.gov/resource/rbpe.08600200/?st=text
 Allen Lapey Harvard Catalyst	https://connects.catalyst.harvard.edu/Profiles/display/Person/43437
 KeyCap Calendar	https://keycaplendar.firebaseapp.com/
 index.html	file:///home/paul/paullapey/index.html
-paullapey.com	http://paullapey.com/
+paullapey.com	https://paullapey.com/
 apt install without sudo	https://askubuntu.com/questions/440118/why-does-apt-get-require-sudo
 Roivant email	https://outlook.office.com/mail/
 Lily Zoom	https://williams.zoom.us/j/9870793928?pwd=TytEM3U4bU0zSmpjMTNqNWNCd2JJZz09
@@ -60,3 +60,5 @@ Avalanche keyboard build guide	https://docs.beekeeb.com/build-guide/avalanche-v4
 usb-c pro micro controller 10$	https://keeb.io/products/pro-micro-usb-c-version-5v-16mhz-arduino-compatible-atmega32u4
 pro micro sockets	https://keeb.io/products/peel-a-way-sockets-for-pro-micros?_pos=2&_sid=eada7be9d&_ss=r
 roiv stock	https://finance.yahoo.com/quote/ROIV/
+please	please write a resume and cover letter for this role. Make sure to include: 
+
