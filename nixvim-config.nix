@@ -11,14 +11,23 @@
           installRustc = true;
         };
         clangd.enable = true;
+        tsserver.enable = true;
         nixd.enable = true;
         pyright.enable = true;
         bashls.enable = true;
       };
+      keymaps.lspBuf = {
+        "gD" = "definition";
+        "gI" = "implementation";
+        "gC" = "code_action";
+        "<leader>rn" = "rename";
+        "Q" = "hover";
+      };
     };
+    copilot-vim.enable = true;
     treesitter = {
       enable = true;
-      disabledLanguages = [ "nix" ];
+      # disabledLanguages = [ "nix" ];
     };
     surround.enable = true;
     lualine = { enable = true; };
@@ -62,6 +71,7 @@
   clipboard.providers.xclip.enable = true;
   extraPlugins = with pkgs.vimPlugins; [
     vim-commentary
+    # nerdcommenter
     vim-sleuth
     vim-dispatch
     polyglot
@@ -90,6 +100,8 @@
       imap      <C-G>s <Plug>Isurround
       imap      <C-G>S <Plug>ISurround
     ]]
+    vim.g.copilot_no_tab_map = true
+    vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true})
   '';
 
   extraConfigVim = builtins.readFile ./extra-vim-config.vim;
