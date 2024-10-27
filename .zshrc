@@ -146,4 +146,4 @@ source "$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
     ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.zsh/plugins/zsh-autosuggestions )
 source "$HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 # Source local zshrc if it exists
-[ -f "$HOME/.local.zshrc" ] && source "$HOME/.local.zshrc"
+[ -f "$HOME/.config/zsh/.local.zshrc" ] && source "$HOME/.config/zsh/.local.zshrc"
