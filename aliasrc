@@ -19,13 +19,15 @@ alias la='eza -al --color=always --group-directories-first'
 alias cb='xclip -selection c'
 alias cbo='xclip -selection c -out'
 # alias l='ls -CF'
-# alias debugoff="find -name settings.py -exec sed -i 's/DEBUG\s*=\s*True/DEBUG=False/g' {} \+"
-# alias debugon="find -name settings.py -exec sed -i 's/DEBUG\s*=\s*False/DEBUG=True/g' {} \+"
+# alias debugoff="find -name settings.py -exec sed -i 's/DEBUG\s*=\s*True/DEBUG=false/g' {} \+"
+# alias debugon="find -name settings.py -exec sed -i 's/DEBUG\s*=\s*false/DEBUG=True/g' {} \+"
 alias wttr="curl wttr.in"
 alias stw='st -e zstart "curl wttr.in"'
 alias gits="git status"
 alias gac="git add -u && git commit -m"
 alias gau="git add -u"
+alias gdm="git diff origin/master...HEAD"
+alias gdmf="git diff origin/master...HEAD --name-only"
 gacap(){
     git add -u
     git commit -m $1
@@ -69,6 +71,7 @@ alias awksum="awk '{s+=\$1} END {print s}'"
 alias awkfc="awk -F ','"
 alias awklast="awk '{print \$NF}'"
 
+unalias gcb 2>/dev/null || true
 gcb(){
     git branch | sed 's/^\*\?\s*//g' | fzf | xargs -r git checkout
 }
@@ -132,37 +135,37 @@ mkdir-cd(){
 
 zf() { fd -HI ".*.pdf" | fzf  | xargs -d '\n' -r zathura }
 vf() { fd -HI | fzf  | xargs -d '\n' -r $EDITOR }
-gf() { 
-    file=$( fd -H | fzf ) 
-    # read program
-    read -sk char
-    echo $char
-    case $char in
-	v)
-	    program="nvim"
-	    ;;
-	z)
-	    program="zathura"
-	    ;;
-	m)
-	    program="mpv"
-	    ;;
-	e)
-	    program="emacs"
-	    ;;
-	c)
-	    cd "$file"
-	    return 0
-	    ;;
-	*)
-	    echo "Usage: $0 {start|stop|restart|status}"
-	    return 1
-	    ;;
-    esac
-    echo $program $file
+# gf() { 
+#     file=$( fd -H | fzf ) 
+#     # read program
+#     read -sk char
+#     echo $char
+#     case $char in
+# 	v)
+# 	    program="nvim"
+# 	    ;;
+# 	z)
+# 	    program="zathura"
+# 	    ;;
+# 	m)
+# 	    program="mpv"
+# 	    ;;
+# 	e)
+# 	    program="emacs"
+# 	    ;;
+# 	c)
+# 	    cd "$file"
+# 	    return 0
+# 	    ;;
+# 	*)
+# 	    echo "Usage: $0 {start|stop|restart|status}"
+# 	    return 1
+# 	    ;;
+#     esac
+#     echo $program $file
 
-    $program $file
-}
+#     $program $file
+# }
 
 ef() { fd -H | fzf  | xargs -r emacs }
 vff() { fd -H . $HOME | fzf  | xargs -r $EDITOR }
@@ -178,6 +181,7 @@ cdl() {
     echo "cd $1" >> $HISTFILE
 }
 alias cd='cdl'
+alias mdcodecat='python3 $HOME/pwl-dotfiles/mdcodecat.py'
 
 cdg(){
     tmp=$( tail -n 10000 $HOME/.shell-dir | awk '!seen[$0]++' | tac | fzf )
@@ -240,20 +244,87 @@ docgrep(){
     docker ps -a | grep "$1" | awk '{print $1}'
 }
 
-docex(){
-    if [ -z $1 ]; then
-	echo "docex: Must specify a (partial) container name"
-	return 1
-    fi
-
-    container=$(docker ps -a | grep "$1"  | awk '{print $1}')
-    if [ -z $2 ]; 
-    then
-	docker exec -it "$container" /bin/bash
-    else 
-	docker exec -it "$container" $2
+# Function to run an existing container and start a bash shell
+docrun() {
+    local container_id=$(docgrep "$@" | head -n 1)
+    if [ -n "$container_id" ]; then
+        echo "Starting container $container_id"
+        docker start "$container_id"
+        docker exec -it "$container_id" /bin/bash
+    else
+        echo "No matching container found"
     fi
 }
+
+docip(){
+    local container_id=$(docgrep "$@" | head -n 1)
+    if [ -n "$container_id" ]; then
+	docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$container_id"
+    else
+        echo "No matching container found"
+    fi
+
+}
+
+
+# Function to exec into an existing container with a bash shell
+docex() {
+    local container_id=$(docgrep "$1" | head -n 1)
+    if [ -n "$container_id" ]; then
+        if [ $# -gt 1 ]; then
+            echo "Executing command in container $container_id"
+            docker exec -it "$container_id" /bin/bash -c "${@:2}"
+        else
+            echo "Executing bash in container $container_id"
+            docker exec -it "$container_id" /bin/bash
+        fi
+    else
+        echo "No matching container found"
+    fi
+}
+
+docpurge() {
+    local container_id=$(docgrep "$@" | head -n 1)
+    local prune_images=false
+
+    # Check if the --prune flag is provided
+    if [[ "$1" == "--prune" ]]; then
+        prune_images=true
+        shift  # Remove the --prune argument
+        container_id=$(docgrep "$@" | head -n 1)
+    fi
+
+    if [ -n "$container_id" ]; then
+        echo "Purging container $container_id and associated resources"
+        
+        # Stop the container if it's running
+        docker stop "$container_id" 2>/dev/null
+
+        # Remove the container
+        docker rm -f "$container_id"
+
+        # Get the image ID associated with the container
+        local image_id=$(docker inspect --format='{{.Image}}' "$container_id" 2>/dev/null)
+        
+        if [ -n "$image_id" ]; then
+            # Remove the image
+            docker rmi -f "$image_id"
+            
+            # Remove any dangling images if --prune was specified
+            if $prune_images; then
+                echo "Removing dangling images..."
+                docker image prune -f
+            fi
+        else
+            echo "Associated image not found or already removed"
+        fi
+
+        echo "Purge complete"
+    else
+        echo "No matching container found"
+    fi
+}
+
 swap(){echo $1 $2; fl=$(mktemp); mv $1 $fl; mv $2 $1; mv $fl $2}
 
 grep_to_from(){
@@ -308,3 +379,4 @@ bindkey -M vicmd '^E' end-of-line
 bindkey -M viins '^K' kill-line
 source "$HOME/.config/grab.sh"
 source "$HOME/.config/unroll.sh"
+
