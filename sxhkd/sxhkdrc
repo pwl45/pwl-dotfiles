@@ -38,6 +38,8 @@ super + ctrl + h;
     st -e htop
 super + ctrl + Return;
     st -d "$( tail -n 1 $HOME/.shell-dir )"
+super + ctrl + l;
+    slock
 
 XF86AudioRaiseVolume
     pactl set-sink-volume @DEFAULT_SINK@ +5%
