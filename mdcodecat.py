@@ -48,17 +48,18 @@ FILE_TYPES = {
 
 def get_file_info(file_path):
     _, ext = os.path.splitext(file_path)
-    return FILE_TYPES.get(ext, ('plaintext', '#'))
+    return FILE_TYPES.get(ext, ('', '#'))
 
 def mdcodecat(file_paths):
     for file_path in file_paths:
         try:
             with open(file_path, 'r') as file:
                 content = file.read()
-            
+
             lang, comment = get_file_info(file_path)
-            filename = os.path.basename(file_path)
-            
+            # filename = os.path.basename(file_path)
+            filename = file_path
+
             print(f"```{lang}")
             if lang == 'html':
                 print(f"{comment} {filename} -->")
@@ -78,5 +79,5 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: mdcodecat <file1> <file2> ...", file=sys.stderr)
         sys.exit(1)
-    
+
     mdcodecat(sys.argv[1:])
