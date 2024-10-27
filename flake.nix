@@ -2,16 +2,16 @@
   description = "Home Manager configuration of alice";
 
   inputs = {
-    # Specify the source of Home Manager and Nixpkgs.
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
-      url = "github:nix-community/home-manager/release-23.11";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url =
+        "github:nix-community/home-manager"; # Remove release-24.05 to use latest
+      inputs.nixpkgs.follows = "nixpkgs"; # Changed to follow unstable
     };
     nixvim = {
-      url = "github:nix-community/nixvim/nixos-23.11";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/nixvim"; # Remove nixos-24.05 to use latest
+      inputs.nixpkgs.follows = "nixpkgs"; # Changed to follow unstable
     };
     # nixvim = {
     #   url = "github:nix-community/nixvim";
