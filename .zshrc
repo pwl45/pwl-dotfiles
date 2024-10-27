@@ -43,6 +43,7 @@ SAVEHIST=1000000
 HISTFILE=$HOME/.zhistory
 MYVIMRC=$HOME/.config/nvim/init.vim
 export EDITOR=nvim
+export SUDO_EDITOR=$(which nvim)
 
 # Basic auto/tab complete:
 autoload -U compinit && compinit
