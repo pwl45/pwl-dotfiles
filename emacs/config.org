@@ -258,11 +258,24 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
    "j" 'evil-next-visual-line
    "k" 'evil-previous-visual-line
    )
+
+  (defun insert-org-checkbox-below ()
+    (interactive)
+    (let ((current-indentation (current-indentation)))
+      (end-of-line)
+      (newline)
+      (indent-to current-indentation)
+      (insert "- [ ] ")
+      (evil-insert-state)
+      ))
+
   (with-eval-after-load 'org
     ;; Set keybindings for org-mode specific actions in Evil insert mode
     (general-def :states 'insert :keymaps 'org-mode-map
       "M-h" 'org-promote-subtree
-      "M-l" 'org-demote-subtree)
+      "M-l" 'org-demote-subtree
+      "M-c" 'insert-org-checkbox-below
+      )
     (general-def :states 'normal :keymaps 'org-mode-map
       "M-h" 'org-promote-subtree
       "M-l" 'org-demote-subtree)
@@ -270,82 +283,84 @@ Vim has lots of great packages. Many of them have good emacs counterparts/emulat
       "M-h" 'org-promote-subtree
       "M-l" 'org-demote-subtree
       "<<" 'org-promote-subtree
-      ">>" 'org-demote-subtree)
+      ">>" 'org-demote-subtree
+      "M-c" 'insert-org-checkbox-below
+      )
     )
 
-;; Simple remaps for visual mode
-(general-define-key
- :states 'visual
- "H" 'evil-first-non-blank
- "L" 'evil-end-of-line)
+  ;; Simple remaps for visual mode
+  (general-define-key
+   :states 'visual
+   "H" 'evil-first-non-blank
+   "L" 'evil-end-of-line)
 
-;; S - substitute command skeleton and move the cursor between the two slashes
-;; this is annoyingly difficult, have to do minibuffer-with-setup-hook
-(general-define-key
- :states 'normal
- :keymaps 'override
- "S" (lambda ()
-       (interactive)
-       (minibuffer-with-setup-hook
-           (lambda () (backward-char 2))
-         (evil-ex "%s//g"))
-       )
- )
+  ;; S - substitute command skeleton and move the cursor between the two slashes
+  ;; this is annoyingly difficult, have to do minibuffer-with-setup-hook
+  (general-define-key
+   :states 'normal
+   :keymaps 'override
+   "S" (lambda ()
+	 (interactive)
+	 (minibuffer-with-setup-hook
+             (lambda () (backward-char 2))
+           (evil-ex "%s//g"))
+	 )
+   )
 
-(general-define-key
- :states 'visual
- :keymaps 'override
- "S" (lambda ()
-       (interactive)
-       (minibuffer-with-setup-hook
-           (lambda () (backward-char 2))
-         (evil-ex "'<,'>s//g")
-         )
-       )
- )
+  (general-define-key
+   :states 'visual
+   :keymaps 'override
+   "S" (lambda ()
+	 (interactive)
+	 (minibuffer-with-setup-hook
+             (lambda () (backward-char 2))
+           (evil-ex "'<,'>s//g")
+           )
+	 )
+   )
 
-;; nnoremap c "_c
-(defvar my/original-evil-change-command (lookup-key evil-normal-state-map "c"))
-(defun my/evil-change-to-blackhole ()
-  (interactive)
-  (let ((evil-this-register ?_))
-    (call-interactively my/original-evil-change-command)))
-(general-define-key
- :states '(normal visual)
- "c" 'my/evil-change-to-blackhole)
+  ;; nnoremap c "_c
+  (defvar my/original-evil-change-command (lookup-key evil-normal-state-map "c"))
+  (defun my/evil-change-to-blackhole ()
+    (interactive)
+    (let ((evil-this-register ?_))
+      (call-interactively my/original-evil-change-command)))
+  (general-define-key
+   :states '(normal visual)
+   "c" 'my/evil-change-to-blackhole)
 
-;; nnoremap C "_C
-(defvar my/original-evil-change-to-end-of-line-command (lookup-key evil-normal-state-map "C"))
-(defun my/evil-change-to-end-of-line-to-blackhole ()
-  (interactive)
-  (let ((evil-this-register ?_))
-    (call-interactively my/original-evil-change-to-end-of-line-command)))
-(general-define-key
- :states '(normal visual)
- "C" 'my/evil-change-to-end-of-line-to-blackhole)
-(defun evil-change-blackhole (beg end &optional type register yank-handler)
-  "Change text from BEG to END with TYPE without affecting the clipboard.
+  ;; nnoremap C "_C
+  (defvar my/original-evil-change-to-end-of-line-command (lookup-key evil-normal-state-map "C"))
+  (defun my/evil-change-to-end-of-line-to-blackhole ()
+    (interactive)
+    (let ((evil-this-register ?_))
+      (call-interactively my/original-evil-change-to-end-of-line-command)))
+  (general-define-key
+   :states '(normal visual)
+   "C" 'my/evil-change-to-end-of-line-to-blackhole)
+  (defun evil-change-blackhole (beg end &optional type register yank-handler)
+    "Change text from BEG to END with TYPE without affecting the clipboard.
    Works like `evil-change' but does not modify the kill-ring."
-  (interactive "r")
-  (let ((kill-ring (cons "" kill-ring))
-        (kill-ring-yank-pointer kill-ring))
-    (evil-change beg end type register yank-handler)))
+    (interactive "r")
+    (let ((kill-ring (cons "" kill-ring))
+          (kill-ring-yank-pointer kill-ring))
+      (evil-change beg end type register yank-handler)))
 
 
-;; (with-eval-after-load 'evil-maps
-;;   (define-key evil-normal-state-map "c" 'evil-change-blackhole)
-;;   (define-key evil-visual-state-map "c" 'evil-change-blackhole))
+  ;; (with-eval-after-load 'evil-maps
+  ;;   (define-key evil-normal-state-map "c" 'evil-change-blackhole)
+  ;;   (define-key evil-visual-state-map "c" 'evil-change-blackhole))
 
-;; (general-nmap "c" (general-key-dispatch 'evil-change
-;;                     "ow" 'toggle-word-wrap
-;;                     "." (lambda () (interactive) (evil-change-blackhole (point) (progn (evil-find-char 1 ?.) (point))))
-;;                     ";" (lambda () (interactive) (evil-change-blackhole (point) (progn (evil-find-char 1 ?\;) (point))))
-;;                     ":" (lambda () (interactive) (evil-change-blackhole (point) (progn (evil-find-char 1 ?\:) (point))))
-;;                     ;; "c" 'evil-change-whole-line
-;;                     ;; alternatively if there was no linewise version:
-;;                     "c" (general-simulate-key ('evil-change "c"))))
+  ;; (general-nmap "c" (general-key-dispatch 'evil-change
+  ;;                     "ow" 'toggle-word-wrap
+  ;;                     "." (lambda () (interactive) (evil-change-blackhole (point) (progn (evil-find-char 1 ?.) (point))))
+  ;;                     ";" (lambda () (interactive) (evil-change-blackhole (point) (progn (evil-find-char 1 ?\;) (point))))
+  ;;                     ":" (lambda () (interactive) (evil-change-blackhole (point) (progn (evil-find-char 1 ?\:) (point))))
+  ;;                     ;; "c" 'evil-change-whole-line
+  ;;                     ;; alternatively if there was no linewise version:
+  ;;                     "c" (general-simulate-key ('evil-change "c"))))
 
-)
+  )
 #+end_src
 
 * GUI
