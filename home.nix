@@ -1,4 +1,5 @@
-{ config, pkgs, custom-dwmblocks, custom-dmenu, nixvim, unstablePkgs, ... }:
+{ config, pkgs, custom-dwmblocks, custom-dmenu, custom-dwm, custom-st, nixvim
+, customPkgs, unstablePkgs, ... }:
 let
   mdcodecat =
     pkgs.writeScriptBin "mdcodecat" (builtins.readFile ./mdcodecat.py);
@@ -7,15 +8,24 @@ in {
     # For home-manager
     nixvim.homeManagerModules.nixvim
   ];
-  home.username = "paul";
-  home.homeDirectory = "/home/paul";
+  home.username = "paul_lapey";
+  home.homeDirectory = "/home/paul_lapey";
   nixpkgs.overlays = [
     (self: super: {
       dwmblocks =
         super.dwmblocks.overrideAttrs (oldattrs: { src = custom-dwmblocks; });
     })
+    # (self: super: {
+    #   dmenu = super.dmenu.overrideAttrs (oldAttrs: { src = custom-dmenu; });
+    # })
     (self: super: {
-      dmenu = super.dmenu.overrideAttrs (oldattrs: { src = custom-dmenu; });
+      dwm = super.dwm.overrideAttrs (oldattrs: { src = custom-dwm; });
+    })
+    (self: super: {
+      st = super.st.overrideAttrs (oldattrs: {
+        buildInputs = oldattrs.buildInputs ++ [ pkgs.harfbuzz ];
+        src = custom-st;
+      });
     })
   ];
   nixpkgs.config = {
@@ -32,14 +42,17 @@ in {
   # release notes.
   home.stateVersion = "23.11"; # Please read the comment before changing.
 
-  home.packages =
-    import ./packages.nix { inherit pkgs unstablePkgs mdcodecat; };
+  # fonts.fontconfig.enable = true;
+  home.packages = import ./packages.nix {
+    inherit pkgs unstablePkgs customPkgs custom-st mdcodecat custom-dmenu;
+  };
 
   programs.neovim = {
     enable = false;
     withPython3 = true;
     plugins = with pkgs.vimPlugins; [ coq_nvim ];
   };
+  programs.zsh.enable = true;
 
   home.file = {
     ".config/emacs/config.org".source = ./emacs/config.org;
@@ -59,26 +72,16 @@ in {
     ".config/unroll.sh".source = ./unroll.sh;
     ".zshrc".source = ./.zshrc;
     ".xinitrc".source = ./.xinitrc;
-    ".ssh/config".source = ./ssh/config;
+    ".ssh/config.def".source = ./ssh/config;
 
   };
 
-  programs.git = {
-    enable = true;
-    userName = "Paul Lapey";
-    userEmail = "plapey45@gmail.com";
-  };
+  # programs.git = {
+  #   enable = true;
+  #   userName = "Paul Lapey";
+  #   userEmail = "plapey45@gmail.com";
+  # };
   programs.home-manager.enable = true;
 
-  services.redshift = {
-    enable = true;
-    dawnTime = "08:00";
-    duskTime = "23:00";
-    temperature = {
-      day = 5500;
-      night = 3700;
-    };
-    provider = "geoclue2";
-  };
   programs.nixvim = import ./nixvim-config.nix { inherit pkgs; };
 }

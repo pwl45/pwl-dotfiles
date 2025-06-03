@@ -1,10 +1,14 @@
 { pkgs, ... }: {
+  nixpkgs.config.allowUnfree = true;
   enable = true;
   plugins = {
     # neotest.adapters.plenary.enable = true;
     # plenary.enable = true;
     bufferline.enable = true;
-    web-devicons.enable = true;
+    web-devicons = {
+      enable = true;
+      autoLoad = true;
+    };
     lsp = {
       enable = true;
       servers = {
@@ -28,12 +32,31 @@
       };
     };
     copilot-vim.enable = true;
-    avante.enable = true;
+    avante = {
+      enable = true;
+      luaConfig.post = builtins.readFile ./avante_config.lua;
+    };
     treesitter = {
       enable = true;
-      settings.highlight.disable = [ "nix" ];
+      settings = {
+        highlight = {
+          enable = true;
+          disable = [ "dockerfile" "nix" ];
+        };
+        indent = { enable = true; };
+      };
     };
-    render-markdown.enable = true;
+    render-markdown = {
+      enable = true;
+      luaConfig.post = let fileTypes = [ "markdown" "vimwiki" ];
+      in ''
+        require('render-markdown').setup({
+            file_types = { ${
+              builtins.concatStringsSep "," (map (x: "'" + x + "'") fileTypes)
+            } },
+            })
+      '';
+    };
     vim-surround.enable = true;
     lualine = { enable = true; };
     fugitive.enable = true;
@@ -83,6 +106,7 @@
     fzf-vim
     plenary-nvim
     nvim-spectre
+    vim-devicons
   ];
 
   extraConfigLuaPost = builtins.readFile ./extra-lua-config.lua;

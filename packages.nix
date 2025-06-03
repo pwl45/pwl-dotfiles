@@ -1,15 +1,13 @@
-{ pkgs, unstablePkgs, ... }: 
+{ pkgs, unstablePkgs, customPkgs, custom-st, ... }:
 with pkgs; [
   hello
   htop
   fortune
-  nixfmt
+  nixfmt-classic
   cowsay
-  unstablePkgs.emacs
   perl
   glibcLocales
   locale
-  python3
   zsh
   fzf
   bat
@@ -20,8 +18,6 @@ with pkgs; [
   dwmblocks
   firefox
   scrot
-  aws-workspaces
-  gnome.cheese
   mpv
   sxiv
   pavucontrol
@@ -30,6 +26,46 @@ with pkgs; [
   cargo
   rustc
   zathura
-  nerdfonts
-  qbittorrent
+  xclip
+  # dmenu
+  customPkgs.dmenu
+  dwmblocks
+  dwm
+  ripgrep
+  tree
+  shellcheck
+  st
+  slock
+  i3lock
+  xscreensaver
+  lightlocker
+  xlockmore
+  physlock
+
+  # fonts
+  noto-fonts
+  noto-fonts-cjk-sans
+  noto-fonts-emoji
+  liberation_ttf
+  fira-code
+  fira-code-symbols
+  mplus-outline-fonts.githubRelease
+  # dina-font
+  proggyfonts
+  ubuntu_font_family
+  jetbrains-mono
+  xclip
+  (ffmpeg.override { withXcb = true; })
+  slop
+  ghostty
+  peek
+  devour
+  pamixer
+  tmux
+  pamixer
+  # powerline-fonts
+  # alacritty
+  ghostty
 ]
+# ++ builtins.filter lib.attrsets.isDerivation
+# (builtins.attrValues pkgs.nerd-fonts)
