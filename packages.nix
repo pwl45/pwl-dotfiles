@@ -1,6 +1,8 @@
-{ pkgs, unstablePkgs, customPkgs, custom-st, ... }:
-with pkgs; [
+{ pkgs, unstablePkgs, customPkgs, custom-st, mdcodecat, ... }:
+with pkgs;
+[
   hello
+  mdcodecat
   htop
   fortune
   nixfmt-classic
@@ -41,6 +43,7 @@ with pkgs; [
   lightlocker
   xlockmore
   physlock
+  ncurses
 
   # fonts
   noto-fonts
@@ -65,7 +68,8 @@ with pkgs; [
   pamixer
   # powerline-fonts
   # alacritty
-  ghostty
-]
-# ++ builtins.filter lib.attrsets.isDerivation
-# (builtins.attrValues pkgs.nerd-fonts)
+  awscli2
+  oauth2c
+  jq
+] ++ builtins.filter lib.attrsets.isDerivation
+(builtins.attrValues pkgs.nerd-fonts)
