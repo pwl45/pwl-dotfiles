@@ -9,6 +9,12 @@ autoload -U colors && colors
 # PS1="%B%{$fg[green]%}%n%{$fg[green]%}: %{$fg[blue]%}%~%{$reset_color%}$%b "
 # PS1='%~: '
 
+if [ -z "$TMUX" ]; then
+    # Generate a unique session name with the format YYYY_MM_DD
+    session_name="session_$(date +%Y_%m_%d)_$RANDOM"
+    # Start a new tmux session with the unique name
+    tmux new-session -s "$session_name"
+fi
 # startp=$( echo -n "\x11" )
 # endp=$( echo -n "\x14" )
 # PS1="${startp}%F{160%}%~%{$reset_color%}:%b ${endp}"
@@ -19,7 +25,7 @@ if [[ -n $SSH_CONNECTION ]]; then
   PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[magenta]%}@%{$fg[blue]%}%M %{$fg[green]%}%~%{$fg[red]%}]%{$reset_color%}:%b "
 else
   # Keep your original prompt for non-SSH sessions
-  PS1="%F{160%}%~%{$reset_color%}: "
+    PS1=$'%{\e[38;5;160m%}%~%{\e[0m%}: '
 fi
 
 if [[ -n $IN_NIX_SHELL ]]; then
@@ -137,6 +143,8 @@ if [[ -n $DISPLAY ]]; then
     killall xcape 2>/dev/null && xcape -e 'Control_L=Escape'
 fi
 
+[ -f "$HOME/.config/zsh/.local.zshrc" ] && source "$HOME/.config/zsh/.local.zshrc"
+
 # zsh-syntax-highlighting
 [ -e "$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] ||
     ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.zsh/plugins/zsh-syntax-highlighting )
@@ -146,5 +154,3 @@ source "$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 [ -e "$HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ] ||
     ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.zsh/plugins/zsh-autosuggestions )
 source "$HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
-# Source local zshrc if it exists
-[ -f "$HOME/.config/zsh/.local.zshrc" ] && source "$HOME/.config/zsh/.local.zshrc"

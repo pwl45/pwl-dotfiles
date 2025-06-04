@@ -5,6 +5,8 @@ set hlsearch
 set inccommand=nosplit
 set ignorecase
 set smartcase
+set scrolloff=10
+set autoread
 let g:polyglot_disabled = ['autoindent', 'sensible']
 
 " C-h is what the teriminal reads as shift backspace - I don't like that being used for nav marks
@@ -21,6 +23,9 @@ nnoremap j gj
 nnoremap k gk
 nnoremap gj j
 nnoremap gk k
+nnoremap <C-g> :let @+ = expand('%')<CR><C-g>
+nnoremap Z :let @+ = expand('%:p')<CR> C-g
+
 
 nnoremap <leader>sl yy:<c-r>"<CR>
 
@@ -131,11 +136,19 @@ nmap <leader>o :setlocal spell! spelllang=en_us<CR>
 " MRU shortcut: (f)iles (r)ecent
 nmap <leader>mr :MRU<CR>
 nmap <leader>fr :MRU<CR>
-nmap <leader>ff :Files<CR>
+if exists('g:vscode')
+  nmap <leader>ff :<Cmd>lua require('vscode').action('find-it-faster.findFiles')<CR><CR>
+else
+  nmap <leader>ff :Files<CR>
+endif
 
 " nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nmap <leader>F :Files ~<CR>
-nmap <leader>fg :Rg<CR>
+if exists('g:vscode')
+  nmap <leader>fg :<Cmd>lua require('vscode').action('find-it-faster.findWithinFiles')<CR><CR>
+else
+  nmap <leader>fg :Rg<CR>
+endif
 " (n)erd tree
 nmap <leader>p :!pdflatex %<CR>
 nmap <leader>P :!pdflatex main.tex<CR>
@@ -189,4 +202,12 @@ augroup general:
   autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 augroup end
 
+augroup filetypes:
+autocmd BufNewFile,BufRead *.sky set filetype=bzl
+augroup end
+
+
+if exists('g:vscode')
+  :Copilot disable
+endif
 filetype plugin on

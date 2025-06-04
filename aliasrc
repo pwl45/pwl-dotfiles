@@ -34,6 +34,44 @@ gacap(){
     git push
     git rev-parse HEAD | tr -d '\n' | xclip -selection c
 }
+
+ggr() {
+    git ls-files -z | xargs -0 grep --color=auto "$@"
+}
+
+ggri() {
+    git ls-files -z | xargs -0 grep -i --color=auto "$@"
+}
+
+ggrb() {
+    git ls-files -z | grep -z 'BUILD' | xargs -0 grep --color=auto "$@"
+}
+
+ggrbi() {
+    git ls-files -z | grep -z 'BUILD' | xargs -0 grep --color=auto "$@"
+}
+
+ggf() {
+    git ls-files | grep --color=auto "$@"
+}
+
+gco(){
+    if [ $# -eq 0 ]; then
+        echo "Error: Please provide at least one filename"
+        echo "Usage: gco <filename> [<filename2> ...]"
+        return 1
+    fi
+    git checkout --ours "$@" ; git add "$@"
+}
+gct(){
+    if [ $# -eq 0 ]; then
+        echo "Error: Please provide at least one filename"
+        echo "Usage: gct <filename> [<filename2> ...]" 
+        return 1
+    fi
+    git checkout --theirs "$@" ; git add "$@"
+}
+
 replecho(){
     echo -e "\e[1A\e[K$@"
 }
@@ -74,6 +112,52 @@ alias awklast="awk '{print \$NF}'"
 unalias gcb 2>/dev/null || true
 gcb(){
     git branch | sed 's/^\*\?\s*//g' | fzf | xargs -r git checkout
+}
+
+gbb(){
+    # Check if a branch name was provided
+    if [ -z "$1" ]; then
+        echo "Error: Please provide a branch name"
+        echo "Usage: gbb <new-branch-name>"
+        return 1
+    fi
+
+    # Store the new branch name
+    new_branch="$1"
+
+    # Get the default branch name
+    default_branch=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+    
+    if [ $? -ne 0 ]; then
+        echo "Error: Could not determine default branch. Are you in a git repository?"
+        return 1
+    fi
+
+    # Checkout the default branch
+    echo "Checking out ${default_branch}..."
+    git checkout "$default_branch"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to checkout ${default_branch}"
+        return 1
+    fi
+
+    # Pull latest changes
+    echo "Pulling latest changes..."
+    git pull
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to pull latest changes"
+        return 1
+    fi
+
+    # Create and checkout new branch
+    echo "Creating and checking out new branch: ${new_branch}"
+    git checkout -b "$new_branch"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to create new branch ${new_branch}"
+        return 1
+    fi
+
+    echo "Successfully created new branch '${new_branch}' from latest ${default_branch}"
 }
 
 alias gau="git add -u"
@@ -134,7 +218,14 @@ mkdir-cd(){
 # alias fixaudio="pactl set-card-profile 0 output:analog-stereo && pactl set-card-profile 0 input:analog-stereo"
 
 zf() { fd -HI ".*.pdf" | fzf  | xargs -d '\n' -r zathura }
-vf() { fd -HI | fzf  | xargs -d '\n' -r $EDITOR }
+vf() {
+  local file
+  file=$(fd -HI | fzf) || return
+  [[ -n "$file" ]] && {
+    print -s "$EDITOR $file"
+    $EDITOR "$file"
+  }
+}
 # gf() { 
 #     file=$( fd -H | fzf ) 
 #     # read program
@@ -324,6 +415,51 @@ docpurge() {
         echo "No matching container found"
     fi
 }
+
+# Helper function for s3 archive operations
+s3_archive_op() {
+    local profile="${AWS_PROFILE:-default}"
+    local url=""
+    local op=$1
+    local usage_cmd=$2
+
+    # Parse arguments
+    while [[ $# -gt 2 ]]; do
+        case "$3" in
+            --profile)
+                profile=$4
+                shift 2
+                ;;
+            *)
+                url="$3"
+                shift
+                ;;
+        esac
+    done
+
+    # Check if URL is provided
+    if [ -z "$url" ]; then
+        echo "Error: No URL provided"
+        echo "Usage: $usage_cmd [--profile aws_profile] s3_url"
+        return 1
+    fi
+
+    # Prepend s3:// if not already present
+    if [[ ! "$url" =~ ^s3:// ]]; then
+        url="s3://$url"
+    fi
+
+    aws --profile $profile s3 cp "$url" - | tar $op
+}
+
+s3tz() {
+    s3_archive_op "tz" "s3tz" "$@"
+}
+
+s3xz() {
+    s3_archive_op "xz" "s3xz" "$@"
+}
+
 
 swap(){echo $1 $2; fl=$(mktemp); mv $1 $fl; mv $2 $1; mv $fl $2}
 
