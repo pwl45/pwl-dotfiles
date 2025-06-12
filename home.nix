@@ -1,5 +1,5 @@
 { config, pkgs, custom-dwmblocks, custom-dmenu, custom-dwm, custom-st, nixvim
-, customPkgs, unstablePkgs, ... }:
+, customPkgs, unstablePkgs, username, ... }:
 let
   mdcodecat =
     pkgs.writeScriptBin "mdcodecat" (builtins.readFile ./mdcodecat.py);
@@ -8,8 +8,8 @@ in {
     # For home-manager
     nixvim.homeManagerModules.nixvim
   ];
-  home.username = "paul";
-  home.homeDirectory = "/home/paul";
+  home.username = username;
+  home.homeDirectory = "/home/${username}";
   nixpkgs.overlays = [
     (self: super: {
       dwmblocks =
@@ -45,9 +45,8 @@ in {
   # fonts.fontconfig.enable = true;
   home.packages = import ./packages.nix {
     inherit pkgs unstablePkgs customPkgs custom-st mdcodecat custom-dmenu;
-    environment =
-      "desktop"; # Change to "minimal", "server", "headless", or "desktop"
-    # environment = "minimal";
+    # Change to "minimal", "server", "headless", or "desktop"
+    environment = "minimal";
   };
 
   programs.neovim = {

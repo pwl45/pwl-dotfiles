@@ -1,5 +1,5 @@
 {
-  description = "Home Manager configuration of alice";
+  description = "Home Manager configuration";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -35,20 +35,23 @@
 
       };
 
-    in {
-      homeConfigurations."paul" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        extraSpecialArgs = {
-          inherit custom-dwmblocks;
-          inherit custom-dmenu;
-          inherit custom-dwm;
-          inherit custom-st;
-          inherit nixvim;
-          inherit system;
-          inherit customPkgs; # Pass the custom packages to home.nix
-          unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
+      mkHomeConfiguration = username: {
+        homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = {
+            inherit custom-dwmblocks;
+            inherit custom-dmenu;
+            inherit custom-dwm;
+            inherit custom-st;
+            inherit nixvim;
+            inherit system;
+            inherit customPkgs; # Pass the custom packages to home.nix
+            inherit username;
+            unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
+          };
+          modules = [ ./home.nix ];
         };
-        modules = [ ./home.nix ];
       };
-    };
+
+    in mkHomeConfiguration "paul";
 }
