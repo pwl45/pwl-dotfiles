@@ -74,3 +74,7 @@ agents on buildkite	https://buildkite.com/organizations/mosaic/clusters
 my brain prs github	https://github.com/Ext-Applied-Frontier/brain/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
 govcloud aws 	https://865582235073.signin.amazonaws-us-gov.com/
 ami aws 	https://us-west-2.console.aws.amazon.com/ec2/home?region=us-west-2#Images:visibility=owned-by-me;v=3;$case=tags:false%5C,client:false;$regex=tags:false%5C,client:false
+traton jira 	https://jiratoolchain.collaborationlayer-traton.com/secure/RapidBoard.jspa?rapidView=3738&projectKey=LYNXION&selectedIssue=LYNXION-819&sprint=25812#
+ngp gitlab pipeline 	https://gitlab.collaborationlayer-traton.com/lynxion/projects-group/lynxion/lynxioneng/-/pipelines/new
+nsp scheduled pipeline 	https://gitlab.collaborationlayer-traton.com/lynxion/projects-group/lynxion/lynxioneng/-/pipelines/new?var[CI_PIPELINE_SOURCE]=schedule&var[RIG]=clover
+mlm my lynxion mrs 	https://gitlab.collaborationlayer-traton.com/lynxion/projects-group/lynxion/lynxioneng/-/merge_requests/?sort=created_date&state=opened&author_username=paul.lapey&first_page_size=20

@@ -71,5 +71,7 @@ with pkgs;
   awscli2
   oauth2c
   jq
+  code-cursor
+  claude-code
 ] ++ builtins.filter lib.attrsets.isDerivation
 (builtins.attrValues pkgs.nerd-fonts)

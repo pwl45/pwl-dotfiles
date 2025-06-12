@@ -8,8 +8,8 @@ in {
     # For home-manager
     nixvim.homeManagerModules.nixvim
   ];
-  home.username = "paul_lapey";
-  home.homeDirectory = "/home/paul_lapey";
+  home.username = "paul";
+  home.homeDirectory = "/home/paul";
   nixpkgs.overlays = [
     (self: super: {
       dwmblocks =

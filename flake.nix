@@ -36,20 +36,19 @@
       };
 
     in {
-      homeConfigurations."paul_lapey" =
-        home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          extraSpecialArgs = {
-            inherit custom-dwmblocks;
-            inherit custom-dmenu;
-            inherit custom-dwm;
-            inherit custom-st;
-            inherit nixvim;
-            inherit system;
-            inherit customPkgs; # Pass the custom packages to home.nix
-            unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
-          };
-          modules = [ ./home.nix ];
+      homeConfigurations."paul" = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        extraSpecialArgs = {
+          inherit custom-dwmblocks;
+          inherit custom-dmenu;
+          inherit custom-dwm;
+          inherit custom-st;
+          inherit nixvim;
+          inherit system;
+          inherit customPkgs; # Pass the custom packages to home.nix
+          unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
         };
+        modules = [ ./home.nix ];
+      };
     };
 }

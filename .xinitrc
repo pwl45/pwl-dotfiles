@@ -8,7 +8,7 @@ redshift & # nightshift stuff
 sxhkd &  # hotkeys
 $HOME/pwl-dotfiles/scripts/xrandr-do.sh # set up monitor layout
 mkfifo /tmp/dwm.fifo
-xinput disable "ELAN Touchscreen"
+xinput disable "ELAN Touchscreen" || true
 # xinput set-prop "Synaptics TM3276-022" "libinput Tapping Enabled" 0
 
 ret=0 # 
