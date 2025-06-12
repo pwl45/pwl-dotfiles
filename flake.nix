@@ -36,22 +36,23 @@
       };
 
       mkHomeConfiguration = username: {
-        homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          extraSpecialArgs = {
-            inherit custom-dwmblocks;
-            inherit custom-dmenu;
-            inherit custom-dwm;
-            inherit custom-st;
-            inherit nixvim;
-            inherit system;
-            inherit customPkgs; # Pass the custom packages to home.nix
-            inherit username;
-            unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
+        homeConfigurations.${username} =
+          home-manager.lib.homeManagerConfiguration {
+            inherit pkgs;
+            extraSpecialArgs = {
+              inherit custom-dwmblocks;
+              inherit custom-dmenu;
+              inherit custom-dwm;
+              inherit custom-st;
+              inherit nixvim;
+              inherit system;
+              inherit customPkgs; # Pass the custom packages to home.nix
+              inherit username;
+              unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
+            };
+            modules = [ ./home.nix ];
           };
-          modules = [ ./home.nix ];
-        };
       };
 
-    in mkHomeConfiguration "paul";
+    in mkHomeConfiguration "paul"; # REPLACE_USERNAME_HOOK
 }

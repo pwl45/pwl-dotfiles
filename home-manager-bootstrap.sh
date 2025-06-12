@@ -7,6 +7,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "Home Manager Bootstrap Script"
 echo "============================="
 
+USERNAME=${USER:-$(whoami)}
+INSTALL_ENVIRONMENT=${INSTALL_ENVIRONMENT:-"server"}
+
+# Ensure USER variable is set for Home Manager
+export USER=${USER:-$(whoami)}
+
+
 check_command() {
     if command -v "$1" >/dev/null 2>&1; then
         return 0
@@ -33,14 +40,24 @@ install_nix() {
     sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --no-daemon --yes
     
     echo "Sourcing Nix environment..."
+    
+    # Source Nix environment in multiple ways to ensure it works
     if [[ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
         source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
     elif [[ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]]; then
         source "$HOME/.nix-profile/etc/profile.d/nix.sh"
     fi
     
+    # Also try to add Nix to PATH directly for container environments
+    if [[ -d "$HOME/.nix-profile/bin" ]]; then
+        export PATH="$HOME/.nix-profile/bin:$PATH"
+    fi
+    
     if ! check_command nix; then
         echo "Error: Nix installation failed or not in PATH"
+        echo "Available paths:"
+        echo "PATH: $PATH"
+        ls -la "$HOME/.nix-profile/bin/" 2>/dev/null || echo "No .nix-profile/bin directory"
         echo "Please restart your shell and run this script again"
         exit 1
     fi
@@ -50,6 +67,11 @@ install_nix() {
 
 install_home_manager() {
     echo "Installing Home Manager..."
+    
+    # Ensure Nix is in PATH
+    if [[ -d "$HOME/.nix-profile/bin" ]]; then
+        export PATH="$HOME/.nix-profile/bin:$PATH"
+    fi
     
     if check_command home-manager; then
         echo "Home Manager is already installed, skipping installation."
@@ -86,6 +108,11 @@ EOF
 switch_to_flake() {
     echo "Switching to flake configuration..."
     
+    # Ensure Nix and Home Manager are in PATH
+    if [[ -d "$HOME/.nix-profile/bin" ]]; then
+        export PATH="$HOME/.nix-profile/bin:$PATH"
+    fi
+    
     if [[ ! -f "$SCRIPT_DIR/flake.nix" ]]; then
         echo "Error: flake.nix not found in $SCRIPT_DIR"
         exit 1
@@ -99,8 +126,11 @@ switch_to_flake() {
     echo "Configuring flake for user: $USER"
     cd "$SCRIPT_DIR"
     
-    # Update flake.nix to use current user
-    sed -i "s/mkHomeConfiguration \".*\"/mkHomeConfiguration \"$USER\"/" flake.nix
+    # Update flake.nix to use current user using REPLACE_USERNAME_HOOK
+    sed -i "s/mkHomeConfiguration \".*\"; # REPLACE_USERNAME_HOOK/mkHomeConfiguration \"$USERNAME\"; # REPLACE_USERNAME_HOOK/" flake.nix
+    
+    # Update home.nix to use install environment using REPLACE_ENVIRONMENT_HOOK
+    sed -i "s/environment = \".*\"; # REPLACE_ENVIRONMENT_HOOK/environment = \"$INSTALL_ENVIRONMENT\"; # REPLACE_ENVIRONMENT_HOOK/" home.nix
     
     echo "Running home-manager switch with flake..."
     
@@ -108,7 +138,7 @@ switch_to_flake() {
         echo "Warning: Flake check failed, but continuing anyway..."
     fi
     
-    home-manager switch --flake ".#$USER"
+    home-manager switch --flake .
     echo "Home Manager configuration applied successfully!"
 }
 

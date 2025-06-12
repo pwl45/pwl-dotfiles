@@ -3,7 +3,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONTAINER_NAME="hm-bootstrap-test"
+IMAGE_NAME="hm-bootstrap-test"
+CONTAINER_NAME="hm-bootstrap-test-container"
 
 echo "Home Manager Bootstrap Test Script"
 echo "=================================="
@@ -13,6 +14,11 @@ cleanup() {
     if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
         echo "Removing container: $CONTAINER_NAME"
         docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
+    fi
+    
+    if docker images --format '{{.Repository}}:{{.Tag}}' | grep -q "^${IMAGE_NAME}:latest$"; then
+        echo "Removing image: $IMAGE_NAME"
+        docker rmi "$IMAGE_NAME" >/dev/null 2>&1 || true
     fi
 }
 
@@ -30,61 +36,35 @@ check_docker() {
     fi
 }
 
-run_test() {
-    echo "Starting Ubuntu container..."
+build_and_run_test() {
+    echo "Building test Docker image..."
+    cd "$SCRIPT_DIR"
     
-    docker run -it --name "$CONTAINER_NAME" \
-        --volume "$SCRIPT_DIR:/dotfiles:ro" \
-        --workdir /home/testuser \
-        ubuntu:22.04 \
-        bash -c '
-            set -euo pipefail
-            
-            echo "Setting up test environment..."
-            apt-get update
-            apt-get install -y curl git sudo xz-utils
-            
-            # Create test user
-            useradd -m -s /bin/bash testuser
-            usermod -aG sudo testuser
-            echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-            
-            # Copy dotfiles to test user home
-            cp -r /dotfiles /home/testuser/pwl-dotfiles
-            chown -R testuser:testuser /home/testuser/pwl-dotfiles
-            
-            echo "Switching to test user and running bootstrap..."
-            # Ensure testuser home directory has correct permissions
-            chown -R testuser:testuser /home/testuser
-            
-            su - testuser -c "
-                set -euo pipefail
-                cd /home/testuser/pwl-dotfiles
-                echo \"Running bootstrap script as testuser...\"
-                # Ensure clean environment for Nix installation
-                export HOME=/home/testuser
-                ./home-manager-bootstrap.sh
-                
-                echo \"Verifying installation...\"
-                if command -v home-manager >/dev/null 2>&1; then
-                    echo \"✓ Home Manager installed successfully\"
-                    home-manager --version
-                else
-                    echo \"✗ Home Manager not found in PATH\"
-                    exit 1
-                fi
-                
-                if command -v nix >/dev/null 2>&1; then
-                    echo \"✓ Nix installed successfully\"
-                    nix --version
-                else
-                    echo \"✗ Nix not found in PATH\"
-                    exit 1
-                fi
-                
-                echo \"Bootstrap test completed successfully!\"
-            "
-        '
+    docker build -f Dockerfile.test -t "$IMAGE_NAME" .
+    
+    echo "Running bootstrap test in container..."
+    docker run --name "$CONTAINER_NAME" "$IMAGE_NAME"
+    
+    echo "Verifying installation in container..."
+    docker exec "$CONTAINER_NAME" bash -c '
+        if command -v home-manager >/dev/null 2>&1; then
+            echo "✓ Home Manager installed successfully"
+            home-manager --version
+        else
+            echo "✗ Home Manager not found in PATH"
+            exit 1
+        fi
+        
+        if command -v nix >/dev/null 2>&1; then
+            echo "✓ Nix installed successfully"  
+            nix --version
+        else
+            echo "✗ Nix not found in PATH"
+            exit 1
+        fi
+        
+        echo "Bootstrap test completed successfully!"
+    '
 }
 
 main() {
@@ -97,7 +77,7 @@ main() {
     
     cleanup
     
-    run_test
+    build_and_run_test
     
     echo
     echo "Test completed successfully!"
