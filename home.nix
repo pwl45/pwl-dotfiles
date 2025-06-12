@@ -45,6 +45,9 @@ in {
   # fonts.fontconfig.enable = true;
   home.packages = import ./packages.nix {
     inherit pkgs unstablePkgs customPkgs custom-st mdcodecat custom-dmenu;
+    environment =
+      "desktop"; # Change to "minimal", "server", "headless", or "desktop"
+    # environment = "minimal";
   };
 
   programs.neovim = {
