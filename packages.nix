@@ -20,6 +20,7 @@ let
     xclip
     tmux
     jq
+    util-linux
   ];
 
   # Development tools

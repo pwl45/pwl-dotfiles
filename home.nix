@@ -46,7 +46,7 @@ in {
   home.packages = import ./packages.nix {
     inherit pkgs unstablePkgs customPkgs custom-st mdcodecat custom-dmenu;
     # Change to "minimal", "server", "headless", or "desktop"
-    environment = "minimal"; # REPLACE_ENVIRONMENT_HOOK
+    environment = "desktop"; # REPLACE_ENVIRONMENT_HOOK
   };
 
   programs.neovim = {
