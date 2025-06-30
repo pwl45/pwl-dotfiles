@@ -75,6 +75,7 @@ in {
     ".zshrc".source = ./.zshrc;
     ".xinitrc".source = ./.xinitrc;
     ".ssh/config.def".source = ./ssh/config;
+    ".tmux.conf".source = ./.tmux.conf;
 
   };
 

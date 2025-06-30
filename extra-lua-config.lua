@@ -35,3 +35,62 @@
         sky = "bzl",
       },
     })
+
+local function move_visual_line(d)
+  return function()
+    -- Only works in charwise visual mode
+    if vim.api.nvim_get_mode().mode ~= 'v' then 
+      return 'g' .. d 
+    end
+    require('vscode-neovim').action('cursorMove', {
+      args = {
+        {
+          to = d == 'j' and 'down' or 'up',
+          by = 'wrappedLine',
+          value = vim.v.count1,
+          select = true,
+        },
+      },
+    })
+    return '<Ignore>'
+  end
+end
+
+local function move_real_line(d)
+  return function()
+    -- Only works in charwise visual mode
+    if vim.api.nvim_get_mode().mode ~= 'v' then 
+      return d 
+    end
+    require('vscode-neovim').action('cursorMove', {
+      args = {
+        {
+          to = d == 'j' and 'down' or 'up',
+          by = 'line',
+          value = vim.v.count1,
+          select = true,
+        },
+      },
+    })
+    return '<Ignore>'
+  end
+end
+
+if vim.g.vscode then
+    -- j/k move by visual line (wrapped)
+    vim.keymap.set({ 'v' }, 'j', move_visual_line('j'), { expr = true })
+    vim.keymap.set({ 'v' }, 'k', move_visual_line('k'), { expr = true })
+    
+    -- gj/gk move by real line
+    vim.keymap.set({ 'v' }, 'gj', move_real_line('j'), { expr = true })
+    vim.keymap.set({ 'v' }, 'gk', move_real_line('k'), { expr = true })
+else
+    -- Convert the vimscript keymaps to lua
+    -- j/k move by visual line (wrapped)
+    vim.keymap.set('n', 'j', 'gj')
+    vim.keymap.set('n', 'k', 'gk')
+    
+    -- gj/gk move by real line
+    vim.keymap.set('n', 'gj', 'j')
+    vim.keymap.set('n', 'gk', 'k')
+end

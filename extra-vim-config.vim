@@ -19,10 +19,7 @@ nnoremap Q K
 
 " Use j and k to jump visual lines, not actual lines. 
 " use gj and gk to do what j and k normally do
-nnoremap j gj
-nnoremap k gk
-nnoremap gj j
-nnoremap gk k
+
 nnoremap <C-g> :let @+ = expand('%')<CR><C-g>
 nnoremap Z :let @+ = expand('%:p')<CR> C-g
 

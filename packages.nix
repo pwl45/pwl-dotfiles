@@ -24,7 +24,7 @@ let
   ];
 
   # Development tools
-  development = [ cargo rustc awscli2 oauth2c claude-code ];
+  development = [ cargo rustc awscli2 oauth2c claude-code bazel-buildtools ];
 
   # Desktop environment packages
   desktop = [
