@@ -138,9 +138,13 @@ if exists('g:vscode')
 else
   nmap <leader>ff :Files<CR>
 endif
+if exists('g:vscode')
+  " TODO: Find a way to find files with --no-ignore
+  " nmap <leader>F  :<Cmd>lua require('vscode') .action('find-it-faster.findFiles', { fdArgs = { '-H', '--no-ignore' } })<CR><CR>
+else
+  nmap <leader>F :Files ~<CR>
+endif
 
-" nnoremap <leader>ff <cmd>Telescope find_files<cr>
-nmap <leader>F :Files ~<CR>
 if exists('g:vscode')
   nmap <leader>fg :<Cmd>lua require('vscode').action('find-it-faster.findWithinFiles')<CR><CR>
 else
@@ -200,8 +204,10 @@ augroup general:
 augroup end
 
 augroup filetypes:
-autocmd BufNewFile,BufRead *.sky set filetype=bzl
+  autocmd BufNewFile,BufRead *.sky set filetype=bzl
+  autocmd BufNewFile,BufRead *.arxml set filetype=xml
 augroup end
+
 
 
 if exists('g:vscode')

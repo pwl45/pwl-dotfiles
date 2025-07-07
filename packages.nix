@@ -21,6 +21,7 @@ let
     tmux
     jq
     util-linux
+    zoxide
   ];
 
   # Development tools
