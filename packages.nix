@@ -55,7 +55,7 @@ let
     peek
     devour
     pamixer
-    code-cursor
+    # code-cursor
   ];
 
   # Fonts
