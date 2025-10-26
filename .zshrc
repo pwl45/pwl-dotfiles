@@ -4,39 +4,32 @@
 # fortune | cowsay
 # $HOME/scripts/simple-unix
 autoload -U colors && colors
-# PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[green]%}%~%{$fg[red]%}]%{$reset_color%}:%b "
-# PS1="%B%{$fg[green]%}%n%{$fg[green]%}@%{$fg[green]%}%M%{$fg[white]%}:%{$fg[blue]%}%~%{$reset_color%}$%b "
-# PS1="%B%{$fg[green]%}%n%{$fg[green]%}: %{$fg[blue]%}%~%{$reset_color%}$%b "
-# PS1='%~: '
 
-# startp=$( echo -n "\x11" )
-# endp=$( echo -n "\x14" )
-# PS1="${startp}%F{160%}%~%{$reset_color%}:%b ${endp}"
-# PS1="%F{160%}%~%{$reset_color%}: "
+# Check if inside tmux
+if [ -z "$TMUX" ]; then
+    # Generate a unique session name with the format YYYY_MM_DD
+    session_name="session_$(date +%Y_%m_%d)_$RANDOM"
+    # Start a new tmux session with the unique name
+    tmux new-session -s "$session_name"
+fi
 
 if [[ -n $SSH_CONNECTION ]]; then
   # Include user@hostname in the prompt for SSH sessions
   PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[magenta]%}@%{$fg[blue]%}%M %{$fg[green]%}%~%{$fg[red]%}]%{$reset_color%}:%b "
 else
   # Keep your original prompt for non-SSH sessions
-  PS1="%F{160%}%~%{$reset_color%}: "
+    PS1="%F{160}%~%{$reset_color%}"
 fi
 
 if [[ -n $IN_NIX_SHELL ]]; then
-  PS1="%B%{$fg[cyan]%}[nix-shell]%} $PS1"
+  PS1="%B%{$fg[cyan]%}[nix-shell]%}$reset_color $PS1"
 fi
 
+PROMPT_START="⸢"
+PROMPT_END="⸥"
+PS1="${PROMPT_START}${PS1}${PROMPT_END} "
 
-# if [[ -n $IN_NIX_SHELL ]]; then
-#   # Indicate nix-shell presence with a special marker
-#   PS1="%B%{$fg[cyan]%}[nix-shell] %{$fg[green]%}%~%{$reset_color%}:%b "
-# elif [[ -n $SSH_CONNECTION ]]; then
-#   # Include user@hostname in the prompt for SSH sessions
-#   PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[magenta]%}@%{$fg[blue]%}%M %{$fg[green]%}%~%{$fg[red]%}]%{$reset_color%}:%b "
-# else
-#   # Keep your original prompt for non-SSH sessions
-#   PS1="%F{160%}%~%{$reset_color%}: "
-# fi
+
 # History in cache directory:
 HISTSIZE=1000000
 SAVEHIST=1000000
@@ -83,19 +76,6 @@ zle-line-init() {
 zle -N zle-line-init
 echo -ne '\e[5 q' # Use beam shape cursor on startup.
 preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
-
-
-# Use lf to switch directories and bind it to ctrl-o
-lfcd () {
-    tmp="$(mktemp)"
-    lf -last-dir-path="$tmp" "$@"
-    if [ -f "$tmp" ]; then
-        dir="$(cat "$tmp")"
-        rm -f "$tmp"
-        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
-    fi
-}
-# bindkey -s '^o' 'lfcd\n'
 
 
 # Set nvim as manpager
