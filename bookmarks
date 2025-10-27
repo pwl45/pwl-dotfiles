@@ -1,4 +1,5 @@
-my mosaic prs github (mep)	https://github.com/DevMosaic/mosaic-eng/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
+my core-stack prs github	https://github.com/AppliedNeuron/core-stack/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
+atlas prs github (vap)	https://github.com/ExtAppliedVehicleOS/vehicle-os-atlas/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
 Youtube	youtube.com
 Anthropic Claude (cld)	claude.ai
 OpenAI ChatGPT (oai)	chat.openai.com
@@ -62,7 +63,6 @@ usb-c pro micro controller 10$	https://keeb.io/products/pro-micro-usb-c-version-
 pro micro sockets	https://keeb.io/products/peel-a-way-sockets-for-pro-micros?_pos=2&_sid=eada7be9d&_ss=r
 roiv stock	https://finance.yahoo.com/quote/ROIV/
 aws neuron	https://933102013064.signin.aws.amazon.com/console
-my core-stack prs github	https://github.com/AppliedNeuron/core-stack/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
 new prs github	https://github.com/AppliedNeuron/core-stack/pulls?q=is%3Aopen+is%3Apr+sort%3Aupdated-desc
 slack	https://app.slack.com/client
 engops jira (ej) 	https://appliedintuition.atlassian.net/jira/plans/85/scenarios/85/timeline?vid=543
@@ -77,4 +77,7 @@ ami aws 	https://us-west-2.console.aws.amazon.com/ec2/home?region=us-west-2#Imag
 traton jira 	https://jiratoolchain.collaborationlayer-traton.com/secure/RapidBoard.jspa?rapidView=3738&projectKey=LYNXION&selectedIssue=LYNXION-819&sprint=25812#
 ngp gitlab pipeline 	https://gitlab.collaborationlayer-traton.com/lynxion/projects-group/lynxion/lynxioneng/-/pipelines/new
 nsp scheduled pipeline 	https://gitlab.collaborationlayer-traton.com/lynxion/projects-group/lynxion/lynxioneng/-/pipelines/new?var[CI_PIPELINE_SOURCE]=schedule&var[RIG]=clover
-mlm my lynxion mrs 	https://gitlab.collaborationlayer-traton.com/lynxion/projects-group/lynxion/lynxioneng/-/merge_requests/?sort=created_date&state=opened&author_username=paul.lapey&first_page_size=20
+lynxion mrs 	https://gitlab.collaborationlayer-traton.com/lynxion/projects-group/lynxion/lynxioneng/-/merge_requests/?sort=created_date&state=opened&author_username=paul.lapey&first_page_size=20
+secretsmanager	https://us-west-2.console.aws.amazon.com/secretsmanager/listsecrets?region=us-west-2
+my mosaic prs github (mep)	https://github.com/DevMosaic/mosaic-eng/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
+CI maintenance jira 	https://appliedintuition.atlassian.net/browse/AVP-4761

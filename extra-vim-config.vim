@@ -8,6 +8,7 @@ set smartcase
 set scrolloff=10
 set autoread
 let g:polyglot_disabled = ['autoindent', 'sensible']
+let g:rooter_patterns = ['.git', 'Makefile', '*.sln', 'build/env.sh', '=bazel-out']
 
 " C-h is what the teriminal reads as shift backspace - I don't like that being used for nav marks
 " replacing that with C-f or C-d
@@ -136,13 +137,13 @@ nmap <leader>fr :MRU<CR>
 if exists('g:vscode')
   nmap <leader>ff :<Cmd>lua require('vscode').action('find-it-faster.findFiles')<CR><CR>
 else
-  nmap <leader>ff :Files<CR>
+  nmap <leader>ff :GFiles<CR>
 endif
 if exists('g:vscode')
   " TODO: Find a way to find files with --no-ignore
   " nmap <leader>F  :<Cmd>lua require('vscode') .action('find-it-faster.findFiles', { fdArgs = { '-H', '--no-ignore' } })<CR><CR>
 else
-  nmap <leader>F :Files ~<CR>
+  nmap <leader>F :Files<CR>
 endif
 
 if exists('g:vscode')

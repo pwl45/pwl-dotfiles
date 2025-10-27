@@ -35,6 +35,23 @@ gacap(){
     git rev-parse HEAD | tr -d '\n' | xclip -selection c
 }
 
+gsg(){
+    local modified_files
+    modified_files=$(git status --porcelain -uno | awk '{print $2}')
+    if [ -z "$modified_files" ]; then
+        echo "No modified files"
+        return 1
+    fi
+    if [ $# -gt 0 ]; then
+        echo "$modified_files" | grep "$@"
+    else
+        echo "$modified_files"
+    fi
+}
+gsga(){
+    gsg $@ | xargs -r git add
+}
+
 ggr() {
     git ls-files -z | xargs -0 grep --color=auto "$@"
 }
@@ -269,7 +286,7 @@ ccv() { tmp=$(fd -H -t d . $HOME | fzf) && cd $tmp }
 
 cdl() {
     \cd $1 && echo $PWD >> $HOME/.shell-dir
-    echo "cd $1" >> $HISTFILE
+    echo "cd $1" >> "${HISTFILE:-$HOME/.zhistory}"
 }
 alias cd='cdl'
 alias mdcodecat='python3 $HOME/pwl-dotfiles/mdcodecat.py'
@@ -513,6 +530,6 @@ bindkey -M vicmd '^E' end-of-line
 
 # Bind Ctrl-k to kill the line from the cursor to the end in vi mode
 bindkey -M viins '^K' kill-line
-source "$HOME/.config/grab.sh"
-source "$HOME/.config/unroll.sh"
+[ -f "$HOME/.config/grab.sh" ] && source "$HOME/.config/grab.sh"
+[ -f "$HOME/.config/unroll.sh" ] && source "$HOME/.config/unroll.sh"
 

@@ -9,6 +9,8 @@ autoload -U colors && colors
 # PS1="%B%{$fg[green]%}%n%{$fg[green]%}: %{$fg[blue]%}%~%{$reset_color%}$%b "
 # PS1='%~: '
 
+export PATH="$HOME/.local/bin:$PATH"
+
 if [ -z "$TMUX" ]; then
     # Generate a unique session name with the format YYYY_MM_DD
     session_name="session_$(date +%Y_%m_%d)_$RANDOM"
@@ -32,6 +34,14 @@ if [[ -n $IN_NIX_SHELL ]]; then
   PS1="%B%{$fg[cyan]%}[nix-shell]%} $PS1"
 fi
 
+# Update history immediately after each command
+setopt INC_APPEND_HISTORY
+
+# Share history between all active zsh sessions
+setopt SHARE_HISTORY
+
+# Save timestamps in history
+setopt EXTENDED_HISTORY
 
 # if [[ -n $IN_NIX_SHELL ]]; then
 #   # Indicate nix-shell presence with a special marker
@@ -154,3 +164,5 @@ source "$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 [ -e "$HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ] ||
     ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.zsh/plugins/zsh-autosuggestions )
 source "$HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
+
