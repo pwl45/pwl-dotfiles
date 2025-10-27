@@ -1,4 +1,5 @@
-{ config, pkgs, custom-dwmblocks, custom-dmenu, nixvim, unstablePkgs, ... }:
+{ config, pkgs, custom-dwmblocks, custom-dmenu, nixvim, customPkgs, unstablePkgs
+, ... }:
 let
   mdcodecat =
     pkgs.writeScriptBin "mdcodecat" (builtins.readFile ./mdcodecat.py);
@@ -7,6 +8,10 @@ in {
     # For home-manager
     nixvim.homeManagerModules.nixvim
   ];
+
+  # error: The option `home-manager' does not exist
+  # home-manager.useGlobalPkgs = true;
+
   home.username = "paul";
   home.homeDirectory = "/home/paul";
   nixpkgs.overlays = [
@@ -20,8 +25,11 @@ in {
   ];
   nixpkgs.config = {
     allowUnfree = true;
-    permittedInsecurePackages = [ "openssl-1.1.1w" "nix-2.16.2" ];
+    allowUnfreePredicate = _: true;
+    permittedInsecurePackages =
+      [ "openssl-1.1.1w" "nix-2.16.2" "freeimage-unstable-2021-11-01" ];
   };
+  # nixvim.useGlobalPackages = true;
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -33,7 +41,7 @@ in {
   home.stateVersion = "23.11"; # Please read the comment before changing.
 
   home.packages =
-    import ./packages.nix { inherit pkgs unstablePkgs mdcodecat; };
+    import ./packages.nix { inherit pkgs unstablePkgs customPkgs mdcodecat; };
 
   programs.neovim = {
     enable = false;
@@ -80,5 +88,7 @@ in {
     };
     provider = "geoclue2";
   };
-  programs.nixvim = import ./nixvim-config.nix { inherit pkgs; };
+  programs.nixvim = import ./nixvim-config.nix {
+    pkgs = pkgs // { config.allowUnfree = true; }; # <-- ADD THIS
+  };
 }

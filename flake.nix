@@ -1,5 +1,5 @@
 {
-  description = "Home Manager configuration of alice";
+  description = "Home Manager configuration of Paul";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -27,7 +27,17 @@
     , nixpkgs-unstable, ... }:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        system = "${system}";
+        config.allowUnfree = true;
+      };
+      nixConfig = { allowUnfree = true; };
+      customPkgs = {
+        dmenu =
+          pkgs.callPackage custom-dmenu { }; # This will use your default.nix
+
+      };
+
     in {
       homeConfigurations."paul" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
@@ -36,7 +46,11 @@
           inherit custom-dmenu;
           inherit nixvim;
           inherit system;
-          unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
+          inherit customPkgs; # Pass the custom packages to home.nix
+          unstablePkgs = import nixpkgs-unstable {
+            system = "${system}";
+            config.allowUnfree = true; # <-- Add this to allow unfree packages
+          };
         };
 
         # Specify your home configuration modules here, for example,

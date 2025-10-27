@@ -1,5 +1,6 @@
 { pkgs, ... }: {
   enable = true;
+  nixpkgs.config.allowUnfree = true;
   plugins = {
     # neotest.adapters.plenary.enable = true;
     # plenary.enable = true;
@@ -32,8 +33,19 @@
     treesitter = {
       enable = true;
       settings.highlight.disable = [ "nix" ];
+      settings.highlight.enable = true;
     };
-    render-markdown.enable = true;
+    treesitter-textobjects.enable = true;
+    render-markdown = {
+      enable = true;
+      # luaConfig = { };
+      # settings = { };
+      luaConfig.post = ''
+        require('render-markdown').setup({
+          file_types = { 'markdown', 'vimwiki' , 'avante', 'Avante'},
+        })
+      '';
+    };
     vim-surround.enable = true;
     lualine = { enable = true; };
     fugitive.enable = true;
@@ -62,7 +74,7 @@
   # colorschemes.nord.enable = true;
   # colorschemes.dracula.enable = true;
   # colorschemes.catppuccin.enable = true;
-  globals.mapleader = " "; # Sets the leader key to comma
+  globals.mapleader = " "; # Sets the leader key to space
   opts = {
     number = true; # Show line numbers
     relativenumber = false; # Show relative line numbers
@@ -76,13 +88,14 @@
     # nerdcommenter
     vim-sleuth
     vim-dispatch
-    polyglot
+    # polyglot
     vim-rooter
     vim-colorschemes
     mru
     fzf-vim
     plenary-nvim
     nvim-spectre
+    # copilot-vim
   ];
 
   extraConfigLuaPost = builtins.readFile ./extra-lua-config.lua;

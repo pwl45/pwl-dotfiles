@@ -3,7 +3,7 @@ super + y
 super + b
     $HOME/dynamic-bookmarks/bookmarks.sh 
 super + ctrl + b
-    brave-browser
+    $HOME/dynamic-bookmarks/bookmarks.sh -b google-chrome-stable
 super + shift + b
     $HOME/dynamic-bookmarks/bookmarks.sh  -n
 # super + q
@@ -40,13 +40,19 @@ super + ctrl + Return;
     st -d "$( tail -n 1 $HOME/.shell-dir )"
 super + ctrl + l;
     slock
+super + ctrl + space; 
+    st -e ssh -Y work
+super + ctrl + y
+    $HOME/pwl-dotfiles/yt_dl.sh $( xclip -selection c -out )
+super + ctrl + s
+	$HOME/pwl-dotfiles/dssh.sh -t
 
 XF86AudioRaiseVolume
-    pactl set-sink-volume @DEFAULT_SINK@ +5%
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
 XF86AudioLowerVolume
-    pactl set-sink-volume @DEFAULT_SINK@ -5%
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
 XF86AudioMute
-    pactl set-sink-mute @DEFAULT_SINK@ toggle
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 XF86AudioMicMute
     amixer set Capture toggle
 
