@@ -57,6 +57,7 @@ in {
       ./emacs/setup_scripts/buffer-move.el;
     ".config/emacs/setup_scripts/elpaca-setup.el".source =
       ./emacs/setup_scripts/elpaca-setup.el;
+    ".config/.tmux.conf".source = ./.tmux.conf;
 
     # Uncomment if you want to manage neovim with config files
     # ".config/nvim/init.vim".source = ./nvim/init.vim;
@@ -73,8 +74,8 @@ in {
 
   programs.git = {
     enable = true;
-    userName = "Paul Lapey";
-    userEmail = "plapey45@gmail.com";
+    settings.user.name = "Paul Lapey";
+    settings.user.email = "plapey45@gmail.com";
   };
   programs.home-manager.enable = true;
 

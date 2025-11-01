@@ -21,6 +21,7 @@ with pkgs;
   eza
   sxhkd
   redshift
+  songrec
   dwmblocks
   customPkgs.dmenu
   firefox
@@ -97,14 +98,14 @@ with pkgs;
   mupdf
   yt-dlp
   libreoffice
-  poppler_utils
+  poppler-utils
   xorg.xhost
   tmux
   pamixer
   telegram-desktop
   ghostty
   jdk
-  rpi-imager
+  # rpi-imager
   claude-code
   ansifilter
   imagemagick
