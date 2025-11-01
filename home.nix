@@ -6,7 +6,7 @@ let
 in {
   imports = [
     # For home-manager
-    nixvim.homeManagerModules.nixvim
+    nixvim.homeModules.nixvim
   ];
   home.username = username;
   home.homeDirectory = "/home/${username}";
@@ -19,7 +19,10 @@ in {
     #   dmenu = super.dmenu.overrideAttrs (oldAttrs: { src = custom-dmenu; });
     # })
     (self: super: {
-      dwm = super.dwm.overrideAttrs (oldattrs: { src = custom-dwm; });
+      dwm = super.dwm.overrideAttrs (oldattrs: {
+        src = custom-dwm;
+        buildInputs = oldattrs.buildInputs ++ [ pkgs.xorg.libxcb ];
+      });
     })
     (self: super: {
       st = super.st.overrideAttrs (oldattrs: {
@@ -54,7 +57,7 @@ in {
     withPython3 = true;
     plugins = with pkgs.vimPlugins; [ coq_nvim ];
   };
-  programs.zsh.enable = true;
+  # programs.zsh.enable = true;
 
   home.file = {
     ".config/emacs/config.org".source = ./emacs/config.org;

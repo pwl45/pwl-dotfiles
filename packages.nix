@@ -55,20 +55,20 @@ let
     peek
     devour
     pamixer
-    # code-cursor
+    code-cursor
   ];
 
   # Fonts
   fonts = [
     noto-fonts
     noto-fonts-cjk-sans
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     liberation_ttf
     fira-code
     fira-code-symbols
     mplus-outline-fonts.githubRelease
     proggyfonts
-    ubuntu_font_family
+    ubuntu-classic
     jetbrains-mono
   ] ++ builtins.filter lib.attrsets.isDerivation
     (builtins.attrValues pkgs.nerd-fonts);
