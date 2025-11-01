@@ -224,7 +224,7 @@ alias ggh="git rev-parse HEAD | tr -d '\n' | cb"
 
 alias hsf='home-manager switch --flake $HOME/pwl-dotfiles'
 alias snrs='sudo nixos-rebuild switch'
-alias ns='nix-shell --run zsh'
+alias ns='nix develop -c zsh'
 lsd(){
  ls -d $@ */
 }
@@ -486,6 +486,40 @@ grep_to_from(){
     end_pattern=$1
     shift
     awk -v print_start="$start_pattern" -v print_end="$end_pattern" '$0 ~ print_start{doprint=1} doprint{print} $0 ~ print_end{doprint=0}' $@
+}
+
+nfn() {
+    # Check if arguments were provided
+    if [ $# -eq 0 ]; then
+        echo "Usage: nfn filename1 [filename2 ...]"
+        return 1
+    fi
+
+    # Process each filename
+    for file in "$@"; do
+        # Check if file exists
+        if [ ! -e "$file" ]; then
+            echo "Error: '$file' does not exist"
+            continue
+        fi
+
+        # Create new filename by replacing whitespace with underscores
+        dir=$(dirname "$file")
+        base=$(basename "$file")
+        newname=$(echo "$base" | tr ' \t\n\r' '_')
+        
+        # Only rename if the name would change
+        if [ "$base" != "$newname" ]; then
+            # Construct full paths
+            newpath="$dir/$newname"
+            
+            # Perform the rename
+            mv -i "$file" "$newpath"
+            echo "Renamed: '$file' → '$newpath'"
+        else
+            echo "No change needed for: '$file'"
+        fi
+    done
 }
 # ZLE Bindings are annoying
 function vf-z() { vf ; zle reset-prompt; zle redisplay; zle-keymap-select}

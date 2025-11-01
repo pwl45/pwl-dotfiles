@@ -4,6 +4,8 @@ status=$( xrandr -q )
 
 # Our custom ordering, optional
 declare -a monitor_order=(
+"eDP1" # We want this last, that's the most important thing.
+"LVDS-1"
 "DP1"
 "DP2"
 "DP-0"
@@ -18,8 +20,8 @@ declare -a monitor_order=(
 "DP2-2"
 "DP2-3"
 "DP-1-1"
-"DP-1-2"
 "DP-1-3"
+"DP-1-2"
 "DP-2-1"
 "DP-2-2"
 "DP-2-3"
@@ -27,8 +29,6 @@ declare -a monitor_order=(
 "HDMI1"
 "HDMI2"
 "HDMI-1"
-"eDP1" # We want this last, that's the most important thing.
-"LVDS-1"
 )
 
 readarray -t outputs <<< "$(xrandr -q | grep '^[^ ]\+\s*\(dis\)\?connected' | awk '{print $1}')"

@@ -12,27 +12,27 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
     endif
 
     call plug#begin(system('echo -n "${XDG_CONFIG_HOME:-$HOME/.config}/nvim/plugged"'))
-    Plug 'airblade/vim-rooter'
-    Plug 'vim-airline/vim-airline'
-    Plug 'flazz/vim-colorschemes'
-    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-    Plug 'junegunn/fzf.vim'
-    Plug 'neovim/nvim-lspconfig'
-    Plug 'vim-airline/vim-airline-themes'
-    Plug 'sheerun/vim-polyglot'
+    " Plug 'airblade/vim-rooter'
+    " Plug 'vim-airline/vim-airline'
+    " Plug 'flazz/vim-colorschemes'
+    " Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    " Plug 'junegunn/fzf.vim'
+    " Plug 'neovim/nvim-lspconfig'
+    " Plug 'vim-airline/vim-airline-themes'
+    " Plug 'sheerun/vim-polyglot'
     " tpope plugins are simple, essential, and portable. amazing.
-    Plug 'tpope/vim-commentary'
-    Plug 'tpope/vim-dispatch'
-    Plug 'tpope/vim-fugitive'
-    Plug 'tpope/vim-sleuth'
-    Plug 'tpope/vim-surround'
-    " kinda sucks, but use sometimes anyway
-    Plug 'yegappan/mru'
+    " Plug 'tpope/vim-commentary'
+    " Plug 'tpope/vim-dispatch'
+    " Plug 'tpope/vim-fugitive'
+    " Plug 'tpope/vim-sleuth'
+    " Plug 'tpope/vim-surround'
+    " " kinda sucks, but use sometimes anyway
+    " Plug 'yegappan/mru'
 
-    " coq: its own beast
-    " Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
-    Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
-    Plug 'ms-jpq/coq.thirdparty', {'branch': '3p'}
+    " " coq: its own beast
+    " " Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
+    " Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
+    " Plug 'ms-jpq/coq.thirdparty', {'branch': '3p'}
     call plug#end()
   " }}}
 

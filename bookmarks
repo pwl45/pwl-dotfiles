@@ -1,6 +1,8 @@
 my core-stack prs github	https://github.com/AppliedNeuron/core-stack/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
+mosaic aws	https://697896076420.signin.aws.amazon.com/console
 atlas prs github (vap)	https://github.com/ExtAppliedVehicleOS/vehicle-os-atlas/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
 Youtube	youtube.com
+atlas prs github (vap)	https://github.com/ExtAppliedVehicleOS/vehicle-os-atlas/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
 Anthropic Claude (cld)	claude.ai
 OpenAI ChatGPT (oai)	chat.openai.com
 Google	google.com
@@ -63,11 +65,12 @@ usb-c pro micro controller 10$	https://keeb.io/products/pro-micro-usb-c-version-
 pro micro sockets	https://keeb.io/products/peel-a-way-sockets-for-pro-micros?_pos=2&_sid=eada7be9d&_ss=r
 roiv stock	https://finance.yahoo.com/quote/ROIV/
 aws neuron	https://933102013064.signin.aws.amazon.com/console
-new prs github	https://github.com/AppliedNeuron/core-stack/pulls?q=is%3Aopen+is%3Apr+sort%3Aupdated-desc
+CA DMV Hub	https://www.dmv.ca.gov/portal/driver-education-and-safety/special-interest-driver-guides/new-to-california/
+CA DMV Driver's License 	https://www.dmv.ca.gov/portal/driver-education-and-safety/educational-materials/fast-facts/requirements-for-a-california-driver-license-ffdl-5/
+my mosaic prs github (mep)	https://github.com/DevMosaic/mosaic-eng/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
 slack	https://app.slack.com/client
 engops jira (ej) 	https://appliedintuition.atlassian.net/jira/plans/85/scenarios/85/timeline?vid=543
 my jira (mj) 	https://appliedintuition.atlassian.net/jira/your-work
-mosaic aws	https://697896076420.signin.aws.amazon.com/console
 asg autoscaling groups aws	https://us-west-2.console.aws.amazon.com/ec2/home?region=us-west-2#AutoScalingGroups:
 lambdas aws 	https://us-west-2.console.aws.amazon.com/lambda/home?region=us-west-2#/functions
 agents on buildkite	https://buildkite.com/organizations/mosaic/clusters
@@ -81,3 +84,4 @@ lynxion mrs 	https://gitlab.collaborationlayer-traton.com/lynxion/projects-group
 secretsmanager	https://us-west-2.console.aws.amazon.com/secretsmanager/listsecrets?region=us-west-2
 my mosaic prs github (mep)	https://github.com/DevMosaic/mosaic-eng/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
 CI maintenance jira 	https://appliedintuition.atlassian.net/browse/AVP-4761
+redzone	https://www.nfl.com/network/watch/nfl-redzone-live

@@ -1,7 +1,7 @@
 {
   description = "My first flake!";
 
-  inputs = { nixpkgs.url = "nixpkgs/nixos-23.11"; };
+  inputs = { nixpkgs.url = "nixpkgs/nixos-24.11"; };
 
   outputs = { self, nixpkgs, ... }:
     let lib = nixpkgs.lib;

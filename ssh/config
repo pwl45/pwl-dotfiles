@@ -1,3 +1,6 @@
+Host lynxion
+	User paul
+	HostName 100.85.115.227
 Host bastion
     HostName 150.136.174.206
     User alice
@@ -9,3 +12,26 @@ Host *
   ForwardX11 yes
   ForwardX11Trusted yes
 
+Host snuc
+    HostName 192.168.0.180
+    User snuc
+    Port 22
+Host orin
+    HostName 192.168.0.145
+    User applied
+    Port 22
+host pi
+    HostName 100.64.0.2
+    User pi
+    Port 22
+Host *
+    StrictHostKeyChecking no
+Host work
+    HostName 100.85.140.192
+    User paul_lapey
+    Port 22
+
+Host soymilk
+    User applied
+    HostName 10.115.1.227
+	ProxyJump work

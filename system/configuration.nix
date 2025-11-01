@@ -32,11 +32,18 @@
   ];
 
   nix = {
-    package = pkgs.nixFlakes;
+    package = pkgs.nixVersions.stable;
     settings.experimental-features = [ "nix-command" "flakes" ];
   };
-  nixpkgs.config = { allowUnfree = true; };
+  # nixpkgs.config = { allowUnfree = true; };
 
+  # nixpkgs.config.permittedInsecurePackages =
+  #   [ "freeimage-unstable-2021-11-01" ];
+  nixpkgs.config = {
+    allowUnfree = true;
+    permittedInsecurePackages =
+      [ "openssl-1.1.1w" "nix-2.16.2" "freeimage-unstable-2021-11-01" ];
+  };
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -52,9 +59,10 @@
 
   # Set your time zone.
   # time.timeZone = "Europe/Amsterdam";
-  # time.timeZone = "Europe/Madrid";
-  # time.timeZone = "America/Los_Angeles";
-  time.timeZone = "America/New_York";
+  # time.timeZone = "Europe/Amsterdam";
+  # time.timeZone = "Europe/Stockholm";
+  time.timeZone = "America/Los_Angeles";
+  # time.timeZone = "America/New_York";
   # time.timeZone = "Asia/Tokyo";
 
   # Configure network proxy if necessary
@@ -78,10 +86,31 @@
     displayManager.startx.enable = true;
     libinput = { touchpad.tapping = false; };
   };
+  services.tailscale.enable = true;
 
   # xorg.xbac
   programs.light.enable = true;
   programs.thunar.enable = true;
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Optional: Enable Steam Remote Play
+    dedicatedServer.openFirewall =
+      true; # Optional: Enable Steam Dedicated Server
+  };
+  hardware.opengl = {
+    enable = true;
+    # driSupport = true;
+    driSupport32Bit = true; # If you need 32-bit support
+
+    # Intel-specific settings
+    extraPackages = with pkgs; [
+      intel-media-driver # IHDA driver
+      vaapiIntel # Video acceleration
+      vaapiVdpau
+      libvdpau-va-gl
+      intel-compute-runtime # OpenCL support
+    ];
+  };
 
   # Configure keymap in X11
   # services.xserver.xkb.layout = "us";
@@ -92,26 +121,33 @@
 
   # Enable sound.
   # sound.enable = true;
-  hardware.pulseaudio.enable = true;
-  hardware.pulseaudio.extraConfig = "load-module module-combine-sink";
+  hardware.pulseaudio.enable = false;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    jack.enable = true; # Optional: for JACK compatibility
+    pulse.enable =
+      true; # PipeWire will handle PulseAudio-compatible applications
+  };
   hardware.keyboard.qmk.enable = true;
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
   };
+  # hardware.opengl.driSupport32Bit = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.alice = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "audio" ]; # Enable ‘sudo’ for the user.
-    initialPassword = "pw123";
-    # packages = with pkgs; [
-    #   firefox
-    #   tree
-    # ];
-  };
+  # users.users.paul = {
+  #   isNormalUser = true;
+  #   extraGroups = [ "wheel" "audio" ]; # Enable ‘sudo’ for the user.
+  #   initialPassword = "pw123";
+  #   # packages = with pkgs; [
+  #   #   firefox
+  #   #   tree
+  #   # ];
+  # };
 
   users.users.paul = {
     isNormalUser = true;
@@ -127,6 +163,19 @@
     #   tree
     # ];
   };
+  
+  users.users.ryan = {
+    isNormalUser = true;
+    extraGroups = [
+      "wheel"
+      "audio"
+      "docker"
+      "networkmanager"
+    ]; # Enable 'sudo' for the user.
+    initialPassword = "pw123";
+    shell = pkgs.zsh;
+  };
+  
   services.usbmuxd = {
     enable = true;
     package = pkgs.usbmuxd2;
@@ -155,7 +204,7 @@
     git
     xterm
     alacritty
-    alsaUtils
+    alsa-utils
     bash
     gnumake
     gcc
@@ -168,6 +217,9 @@
     unzip
     docker
     openssl
+    tlp
+    # tlp
+    # slock
   ];
   environment.binbash = pkgs.bash;
   virtualisation.docker.enable = true;
@@ -177,9 +229,10 @@
   };
   # services.docker.enable = true;
   fileSystems."/mnt/windows" = {
-    fsType = "ntfs";
+    fsType = "ntfs-3g";
     device = "/dev/nvme0n1p3";
-    options = [ "windows_names" "uid=1000" "gid=100" "fmask=133" "dmask=022" ];
+    options =
+      [ "rw" "windows_names" "uid=1000" "gid=100" "fmask=133" "dmask=022" ];
   };
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -188,6 +241,7 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
+  programs.slock.enable = true;
 
   # List services that you want to enable:
 
@@ -208,7 +262,8 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
-  networking.firewall.allowedTCPPorts = [ 22 80 443 ]; # Default SSH port
+  networking.firewall.allowedTCPPorts =
+    [ 22 80 443 8080 8000 ]; # Default SSH port
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
@@ -236,7 +291,6 @@
 
   fonts.packages = with pkgs; [
     noto-fonts
-    noto-fonts-cjk
     noto-fonts-emoji
     liberation_ttf
     fira-code
@@ -246,19 +300,40 @@
     proggyfonts
     ubuntu_font_family
     jetbrains-mono
+    noto-fonts-cjk-sans
   ];
   programs.zsh.enable = true;
-  users.users.alice.shell = pkgs.zsh;
   users.users.paul.shell = pkgs.zsh;
 
   services.udev.extraRules = "";
   # services.nginx.enable = true;
 
+  services.tlp = {
+    enable = true;
+    settings = {
+      CPU_SCALING_GOVERNOR_ON_AC = "powersave";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      START_CHARGE_THRESH_BAT0 = 80;
+      STOP_CHARGE_THRESH_BAT0 = 90;
+      START_CHARGE_THRESH_BAT1 = 80;
+      STOP_CHARGE_THRESH_BAT1 = 90;
+      PCIE_ASPM_ON_BAT = "powersupersave";
+      USB_AUTOSUSPEND = 1;
+      WIFI_PWR_ON_BAT = "on";
+      PLATFORM_PROFILE_ON_BAT = "low-power";
+      SOUND_POWER_SAVE_ON_BAT = 1;
+      RUNTIME_PM_ON_BAT = "auto";
+      PCIE_ASPM_ON_AC = "default";
+      PLATFORM_PROFILE_ON_AC = "performance";
+      SOUND_POWER_SAVE_ON_AC = 0;
+    };
+  };
+
   services.pcscd.enable = true;
   programs.gnupg = {
     agent = {
       enable = true;
-      pinentryFlavor = "curses";
+      # pinentryFlavor = "curses";
       enableSSHSupport = true;
     };
   };

@@ -1,5 +1,3 @@
-#!/bin/bash
-
 unroll() {
     # Check if an argument is provided
     if [ $# -eq 0 ]; then
@@ -35,8 +33,8 @@ unroll() {
     fi
 
     # Move all contents from child to parent
-    mv "$child_dir"/* "$parent_dir"/ 2>/dev/null
-    mv "$child_dir"/.* "$parent_dir"/ 2>/dev/null
+    mv "$child_dir"/* "$parent_dir"/ >/dev/null 2>/dev/null
+    mv "$child_dir"/.* "$parent_dir"/ >/dev/null 2>/dev/null
 
     # Remove the now-empty child directory
     rmdir "$child_dir"

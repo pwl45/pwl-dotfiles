@@ -1,14 +1,9 @@
 { config, lib, pkgs, ... }: {
+  environment.etc."nextcloud-admin-pass".text = "password";
   services.nextcloud = {
     enable = true;
-    hostName = "nextcloud.local";
-    config = {
-      dbtype = "pgsql";
-      dbuser = "nextcloud";
-      dbhost = "/run/postgresql";
-      dbname = "nextcloud";
-      adminuser = "admin";
-      adminpassFile = "/home/paul/testfl";
-    };
+    package = pkgs.nextcloud28;
+    hostName = "localhost";
+    config.adminpassFile = "/etc/nextcloud-admin-pass";
   };
 }
