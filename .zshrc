@@ -32,8 +32,8 @@ setopt SHARE_HISTORY
 
 # Save timestamps in history
 setopt EXTENDED_HISTORY
-PROMPT_START="⸢"
-PROMPT_END="⸥"
+export PROMPT_START="⸢"
+export PROMPT_END="⸥"
 PS1="${PROMPT_START}${PS1}${PROMPT_END} "
 
 # History in cache directory:

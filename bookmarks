@@ -2,7 +2,6 @@ my core-stack prs github	https://github.com/AppliedNeuron/core-stack/pulls?q=is%
 mosaic aws	https://697896076420.signin.aws.amazon.com/console
 atlas prs github (vap)	https://github.com/ExtAppliedVehicleOS/vehicle-os-atlas/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
 Youtube	youtube.com
-atlas prs github (vap)	https://github.com/ExtAppliedVehicleOS/vehicle-os-atlas/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
 Anthropic Claude (cld)	claude.ai
 OpenAI ChatGPT (oai)	chat.openai.com
 Google	google.com
@@ -82,6 +81,7 @@ ngp gitlab pipeline 	https://gitlab.collaborationlayer-traton.com/lynxion/projec
 nsp scheduled pipeline 	https://gitlab.collaborationlayer-traton.com/lynxion/projects-group/lynxion/lynxioneng/-/pipelines/new?var[CI_PIPELINE_SOURCE]=schedule&var[RIG]=clover
 lynxion mrs 	https://gitlab.collaborationlayer-traton.com/lynxion/projects-group/lynxion/lynxioneng/-/merge_requests/?sort=created_date&state=opened&author_username=paul.lapey&first_page_size=20
 secretsmanager	https://us-west-2.console.aws.amazon.com/secretsmanager/listsecrets?region=us-west-2
-my mosaic prs github (mep)	https://github.com/DevMosaic/mosaic-eng/pulls?q=is%3Aopen+is%3Apr+author%3Apaul-lapey-ai+sort%3Aupdated-desc
 CI maintenance jira 	https://appliedintuition.atlassian.net/browse/AVP-4761
 redzone	https://www.nfl.com/network/watch/nfl-redzone-live
+ARM user-based licensing portal	https://developer.arm.com/support/licensing/user-based/
+Inbound Dev Tooling	https://appliedintuition.atlassian.net/browse/AVP-26176

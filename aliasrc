@@ -506,7 +506,7 @@ nfn() {
         # Create new filename by replacing whitespace with underscores
         dir=$(dirname "$file")
         base=$(basename "$file")
-        newname=$(echo "$base" | tr ' \t\n\r' '_')
+        newname=$(echo -n "$base" | tr ' \t\n\r' '_')
         
         # Only rename if the name would change
         if [ "$base" != "$newname" ]; then
