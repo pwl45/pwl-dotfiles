@@ -3,6 +3,11 @@
 let
   mdcodecat =
     pkgs.writeScriptBin "mdcodecat" (builtins.readFile ./mdcodecat.py);
+
+  ntok = pkgs.writers.writePython3Bin "ntok" {
+    libraries = [ pkgs.python3Packages.tiktoken ];
+    check = false;
+  } (builtins.readFile ./ntok.py);
 in {
   imports = [
     # For home-manager
@@ -47,7 +52,7 @@ in {
 
   # fonts.fontconfig.enable = true;
   home.packages = import ./packages.nix {
-    inherit pkgs unstablePkgs customPkgs custom-st mdcodecat custom-dmenu;
+    inherit pkgs unstablePkgs customPkgs custom-st mdcodecat ntok custom-dmenu;
     # Change to "minimal", "server", "headless", or "desktop"
     environment = "desktop"; # REPLACE_ENVIRONMENT_HOOK
   };

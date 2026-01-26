@@ -1,4 +1,4 @@
-{ pkgs, unstablePkgs, customPkgs, custom-st, mdcodecat, environment ? "desktop"
+{ pkgs, unstablePkgs, customPkgs, custom-st, mdcodecat, ntok, environment ? "desktop"
 , ... }:
 with pkgs;
 let
@@ -6,6 +6,7 @@ let
   core = [
     hello
     mdcodecat
+    ntok
     htop
     fortune
     nixfmt-classic
