@@ -207,11 +207,13 @@ augroup end
 augroup filetypes:
   autocmd BufNewFile,BufRead *.sky set filetype=bzl
   autocmd BufNewFile,BufRead *.arxml set filetype=xml
+  autocmd BufNewFile,BufRead *.aidl set filetype=java
 augroup end
 
 
 
 if exists('g:vscode')
   :Copilot disable
+  :RenderMarkdown disable
 endif
 filetype plugin on

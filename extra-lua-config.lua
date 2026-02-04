@@ -84,6 +84,8 @@ if vim.g.vscode then
     -- gj/gk move by real line
     vim.keymap.set({ 'v' }, 'gj', move_real_line('j'), { expr = true })
     vim.keymap.set({ 'v' }, 'gk', move_real_line('k'), { expr = true })
+
+	require('render-markdown').disable()
 else
     -- Convert the vimscript keymaps to lua
     -- j/k move by visual line (wrapped)

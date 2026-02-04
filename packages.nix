@@ -1,11 +1,12 @@
-{ pkgs, unstablePkgs, customPkgs, custom-st, mdcodecat, environment ? "desktop"
-, ... }:
+{ pkgs, unstablePkgs, customPkgs, custom-st, mdcodecat, ntok
+, environment ? "desktop", ... }:
 with pkgs;
 let
   # Core packages needed everywhere
   core = [
     hello
     mdcodecat
+    ntok
     htop
     fortune
     nixfmt-classic
@@ -59,7 +60,7 @@ let
     physlock
     (ffmpeg.override { withXcb = true; })
     slop
-    ghostty
+    # ghostty
     peek
     devour
     pamixer

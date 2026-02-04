@@ -3,6 +3,11 @@
 let
   mdcodecat =
     pkgs.writeScriptBin "mdcodecat" (builtins.readFile ./mdcodecat.py);
+
+  ntok = pkgs.writers.writePython3Bin "ntok" {
+    libraries = [ pkgs.python3Packages.tiktoken ];
+    doCheck = false;
+  } (builtins.readFile ./ntok.py);
 in {
   imports = [
     # For home-manager
@@ -12,8 +17,10 @@ in {
   home.homeDirectory = "/home/${username}";
   nixpkgs.overlays = [
     (self: super: {
-      dwmblocks =
-        super.dwmblocks.overrideAttrs (oldattrs: { src = custom-dwmblocks; });
+      dwmblocks = super.dwmblocks.overrideAttrs (oldattrs: {
+        src = custom-dwmblocks;
+        NIX_CFLAGS_COMPILE = "-Wno-error=incompatible-pointer-types";
+      });
     })
     # (self: super: {
     #   dmenu = super.dmenu.overrideAttrs (oldAttrs: { src = custom-dmenu; });
@@ -47,7 +54,7 @@ in {
 
   # fonts.fontconfig.enable = true;
   home.packages = import ./packages.nix {
-    inherit pkgs unstablePkgs customPkgs custom-st mdcodecat custom-dmenu;
+    inherit pkgs unstablePkgs customPkgs custom-st mdcodecat ntok custom-dmenu;
     # Change to "minimal", "server", "headless", or "desktop"
     environment = "desktop"; # REPLACE_ENVIRONMENT_HOOK
   };
