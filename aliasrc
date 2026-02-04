@@ -222,6 +222,49 @@ alias calb="cal -B 3"
 alias mkc='mkdir-cd'
 alias ggh="git rev-parse HEAD | tr -d '\n' | cb"
 
+squash_last() {
+    if [ $# -eq 0 ]; then
+        echo "Usage: squash_last <num_commits> [commit_message]"
+        echo "  If commit_message is not provided, will concatenate the last <num_commits> messages"
+        return 1
+    fi
+
+    local num_commits=$1
+    local commit_msg="$2"
+
+    # Show the commits that will be squashed
+    echo "Commits to be squashed:"
+    git log -n "$num_commits" --oneline --decorate --color=always
+    echo ""
+
+    # If no commit message provided, get the last N commit messages
+    if [ -z "$commit_msg" ]; then
+        commit_msg=$(git log -n "$num_commits" --format=%B | tac | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ //;s/ $//')
+        echo "New commit message: $commit_msg"
+        echo ""
+    else
+        echo "New commit message: $commit_msg"
+        echo ""
+    fi
+
+    # Prompt for confirmation
+    echo -n "Proceed with squash? (y/N) "
+    read -r confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+        echo "Squash cancelled"
+        return 0
+    fi
+
+    # Perform the squash
+    git reset --soft HEAD~"$num_commits"
+    git commit -m "$commit_msg"
+    echo "Squash complete!"
+}
+
+cane(){
+    git commit --amend --no-edit
+}
+
 alias hsf='home-manager switch --flake $HOME/pwl-dotfiles'
 alias snrs='sudo nixos-rebuild switch'
 alias ns='nix develop -c zsh'
@@ -506,7 +549,7 @@ nfn() {
         # Create new filename by replacing whitespace with underscores
         dir=$(dirname "$file")
         base=$(basename "$file")
-        newname=$(echo "$base" | tr ' \t\n\r' '_')
+        newname=$(echo -n "$base" | tr ' \t\n\r' '_')
         
         # Only rename if the name would change
         if [ "$base" != "$newname" ]; then
@@ -515,6 +558,39 @@ nfn() {
             
             # Perform the rename
             mv -i "$file" "$newpath"
+            echo "Renamed: '$file' → '$newpath'"
+        else
+            echo "No change needed for: '$file'"
+        fi
+    done
+}
+nfng() {
+    # Check if arguments were provided
+    if [ $# -eq 0 ]; then
+        echo "Usage: nfn filename1 [filename2 ...]"
+        return 1
+    fi
+
+    # Process each filename
+    for file in "$@"; do
+        # Check if file exists
+        if [ ! -e "$file" ]; then
+            echo "Error: '$file' does not exist"
+            continue
+        fi
+
+        # Create new filename by replacing whitespace with underscores
+        dir=$(dirname "$file")
+        base=$(basename "$file")
+        newname=$(echo -n "$base" | tr ' \t\n\r' '_')
+        
+        # Only rename if the name would change
+        if [ "$base" != "$newname" ]; then
+            # Construct full paths
+            newpath="$dir/$newname"
+            
+            # Perform the rename
+            git mv -i "$file" "$newpath"
             echo "Renamed: '$file' → '$newpath'"
         else
             echo "No change needed for: '$file'"

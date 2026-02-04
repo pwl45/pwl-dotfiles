@@ -6,7 +6,7 @@ let
 
   ntok = pkgs.writers.writePython3Bin "ntok" {
     libraries = [ pkgs.python3Packages.tiktoken ];
-    check = false;
+    doCheck = false;
   } (builtins.readFile ./ntok.py);
 in {
   imports = [
@@ -17,8 +17,10 @@ in {
   home.homeDirectory = "/home/${username}";
   nixpkgs.overlays = [
     (self: super: {
-      dwmblocks =
-        super.dwmblocks.overrideAttrs (oldattrs: { src = custom-dwmblocks; });
+      dwmblocks = super.dwmblocks.overrideAttrs (oldattrs: {
+        src = custom-dwmblocks;
+        NIX_CFLAGS_COMPILE = "-Wno-error=incompatible-pointer-types";
+      });
     })
     # (self: super: {
     #   dmenu = super.dmenu.overrideAttrs (oldAttrs: { src = custom-dmenu; });
