@@ -31,7 +31,9 @@ let
 
   # Desktop environment packages
   desktop = [
+    telegram-desktop
     sxhkd
+    discord
     redshift
     dwmblocks
     cheese
