@@ -86,7 +86,10 @@
     displayManager.startx.enable = true;
     libinput = { touchpad.tapping = false; };
   };
-  services.tailscale.enable = true;
+  services.tailscale = {
+    enable = true;
+    extraUpFlags = [ ]; # This ensures no --no-logs-no-support flag is passed
+  };
 
   # xorg.xbac
   programs.light.enable = true;
@@ -163,7 +166,7 @@
     #   tree
     # ];
   };
-  
+
   users.users.ryan = {
     isNormalUser = true;
     extraGroups = [
@@ -175,7 +178,7 @@
     initialPassword = "pw123";
     shell = pkgs.zsh;
   };
-  
+
   services.usbmuxd = {
     enable = true;
     package = pkgs.usbmuxd2;
