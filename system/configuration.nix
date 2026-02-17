@@ -211,10 +211,10 @@
     bash
     gnumake
     gcc
-    xorg.libX11
-    xorg.libXext
-    xorg.libXrender
-    xorg.libXt
+    libX11
+    libXext
+    libXrender
+    libXt
     pinentry-curses
     zip
     unzip

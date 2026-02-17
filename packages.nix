@@ -9,7 +9,7 @@ let
     ntok
     htop
     fortune
-    nixfmt-classic
+    nixfmt
     zsh
     fzf
     bat
@@ -156,7 +156,7 @@ let
       llm-tools-datasette = true;
 
       # JavaScript execution as a tool for LLM <https://github.com/simonw/llm-tools-quickjs>
-      llm-tools-quickjs = true;
+      # llm-tools-quickjs = true; # Disabled due to CVE-2026-1144 and CVE-2026-1145 in quickjs
 
       # Make simple_eval available as an LLM tool <https://github.com/simonw/llm-tools-simpleeval>
       llm-tools-simpleeval = true;

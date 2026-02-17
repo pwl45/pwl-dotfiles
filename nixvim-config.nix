@@ -99,7 +99,7 @@
     # nerdcommenter
     vim-sleuth
     vim-dispatch
-    polyglot
+    vim-polyglot
     vim-rooter
     vim-colorschemes
     mru
