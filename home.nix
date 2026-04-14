@@ -28,7 +28,7 @@ in {
     (self: super: {
       dwm = super.dwm.overrideAttrs (oldattrs: {
         src = custom-dwm;
-        buildInputs = oldattrs.buildInputs ++ [ pkgs.xorg.libxcb ];
+        buildInputs = oldattrs.buildInputs ++ [ pkgs.libxcb ];
       });
     })
     (self: super: {
