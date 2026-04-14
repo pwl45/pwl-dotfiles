@@ -19,6 +19,7 @@ let
     tree
     shellcheck
     xclip
+    xsel
     tmux
     jq
     util-linux
@@ -27,8 +28,16 @@ let
   ];
 
   # Development tools
-  development =
-    [ cargo rustc awscli2 oauth2c claude-code bazel-buildtools zig ];
+  development = [
+    cargo
+    rustc
+    awscli2
+    oauth2c
+    claude-code
+    bazel-buildtools
+    zig
+    texliveFull
+  ];
 
   # Desktop environment packages
   desktop = [
@@ -38,6 +47,8 @@ let
     redshift
     dwmblocks
     cheese
+    wine
+    winetricks
     firefox
     google-chrome
     qbittorrent
@@ -158,7 +169,7 @@ let
       llm-tools-datasette = true;
 
       # JavaScript execution as a tool for LLM <https://github.com/simonw/llm-tools-quickjs>
-      llm-tools-quickjs = true;
+      # llm-tools-quickjs = true;  # disabled: quickjs has CVE-2026-1144/1145
 
       # Make simple_eval available as an LLM tool <https://github.com/simonw/llm-tools-simpleeval>
       llm-tools-simpleeval = true;
