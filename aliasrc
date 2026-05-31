@@ -339,6 +339,12 @@ cdl() {
 alias cd='cdl'
 alias mdcodecat='python3 $HOME/pwl-dotfiles/mdcodecat.py'
 alias tat='tmux attach -t'
+yto(){
+    local url="$1"
+    local output=$2
+
+    yt-dlp -o "$output" "$url"
+}
 
 cdg(){
     tmp=$( tail -n 10000 $HOME/.shell-dir | awk '!seen[$0]++' | tac | fzf )
@@ -555,7 +561,7 @@ nfn() {
         # Create new filename by replacing whitespace with underscores
         dir=$(dirname "$file")
         base=$(basename "$file")
-        newname=$(echo -n "$base" | tr ' \t\n\r' '_')
+        newname=$(echo -n "$base" | tr ' \t\r' '_' | sed 's/：/:/g')
         
         # Only rename if the name would change
         if [ "$base" != "$newname" ]; then

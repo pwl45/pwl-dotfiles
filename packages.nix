@@ -27,11 +27,14 @@ let
     tree
     shellcheck
     xclip
+    xsel
     tmux
     jq
     util-linux
     zoxide
     python3
+    dnsutils
+    bc
   ];
 
   # Development tools
@@ -48,14 +51,33 @@ let
     acli
     mermaid-cli
     # opencode
+    oauth2c
+    claude-code
+    pi-coding-agent
+    bazel-buildtools
+    zig
+    texliveFull
+    tcpdump
+    dmidecode
+    speedtest-cli
+    iw
+    ethtool
+    mtr
+    aria2
+    emacs
   ];
 
   # Desktop environment packages
   desktop = [
+    telegram-desktop
     sxhkd
+    discord
     redshift
     dwmblocks
     cheese
+    wine
+    winetricks
+    pinta
     firefox
     google-chrome
     qbittorrent
@@ -63,6 +85,7 @@ let
     scrot
     mpv
     sxiv
+    imagemagick
     pavucontrol
     pulsemixer
     brightnessctl
