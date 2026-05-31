@@ -1,5 +1,13 @@
-{ pkgs, unstablePkgs, customPkgs, custom-st, mdcodecat, ntok
-, environment ? "desktop", ... }:
+{
+  pkgs,
+  unstablePkgs,
+  customPkgs,
+  custom-st,
+  mdcodecat,
+  ntok,
+  environment ? "desktop",
+  ...
+}:
 with pkgs;
 let
   # Core packages needed everywhere
@@ -27,8 +35,20 @@ let
   ];
 
   # Development tools
-  development =
-    [ cargo rustc awscli2 oauth2c claude-code bazel-buildtools zig ];
+  development = [
+    cargo
+    rustc
+    awscli2
+    google-cloud-sdk
+    oauth2c
+    claude-code
+    bazel-buildtools
+    zig
+    gh
+    acli
+    mermaid-cli
+    # opencode
+  ];
 
   # Desktop environment packages
   desktop = [
@@ -62,7 +82,7 @@ let
     peek
     devour
     pamixer
-    code-cursor
+    # code-cursor
     steam-run
     nwjs
     zoom-us
@@ -184,11 +204,17 @@ let
     proggyfonts
     ubuntu-classic
     jetbrains-mono
-  ] ++ builtins.filter lib.attrsets.isDerivation
-    (builtins.attrValues pkgs.nerd-fonts);
+  ]
+  ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
   # System utilities (might not be needed on all systems)
-  system = [ cowsay perl glibcLocales locale ncurses ];
+  system = [
+    cowsay
+    perl
+    glibcLocales
+    locale
+    ncurses
+  ];
 
   # Environment-specific package sets
   environments = {
@@ -197,4 +223,5 @@ let
     desktop = core ++ development ++ desktop ++ fonts ++ system;
     headless = core ++ development ++ system;
   };
-in environments.${environment} or environments.desktop
+in
+environments.${environment} or environments.desktop

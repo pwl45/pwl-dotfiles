@@ -38,11 +38,11 @@
     };
     treesitter = {
       enable = true;
+      highlight = {
+        enable = true;
+        disable = [ "dockerfile" "nix" ];
+      };
       settings = {
-        highlight = {
-          enable = true;
-          disable = [ "dockerfile" "nix" ];
-        };
         indent = { enable = true; };
       };
     };

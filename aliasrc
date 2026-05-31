@@ -28,11 +28,16 @@ alias gac="git add -u && git commit -m"
 alias gau="git add -u"
 alias gdm="git diff origin/master...HEAD"
 alias gdmf="git diff origin/master...HEAD --name-only"
+alias gbsort="git branch --sort=-committerdate"
 gacap(){
     git add -u
     git commit -m $1
     git push
     git rev-parse HEAD | tr -d '\n' | xclip -selection c
+}
+
+gnb() {
+  git fetch origin master && git checkout -b "$1" origin/master --no-track
 }
 
 gsg(){
@@ -333,6 +338,7 @@ cdl() {
 }
 alias cd='cdl'
 alias mdcodecat='python3 $HOME/pwl-dotfiles/mdcodecat.py'
+alias tat='tmux attach -t'
 
 cdg(){
     tmp=$( tail -n 10000 $HOME/.shell-dir | awk '!seen[$0]++' | tac | fzf )
