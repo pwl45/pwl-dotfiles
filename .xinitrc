@@ -22,6 +22,7 @@ while [ $ret -eq 0 ]; do
     # /usr/local/bin/status_updater_dusk &
     # dusk >>.dusk.log 2>>~/.duskerr.log
     dwmblocks &
+    # /home/paul/pwl-dwm/dwm >>.dwm.log  2>> ~/.dwmerr.log 
     dwm >>.dwm.log  2>> ~/.dwmerr.log 
     # dusk
     # twm

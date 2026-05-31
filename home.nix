@@ -66,26 +66,34 @@ in {
   };
   # programs.zsh.enable = true;
 
-  home.file = {
-    ".config/emacs/config.org".source = ./emacs/config.org;
-    ".config/emacs/init.el".source = ./emacs/init.el;
-    ".config/emacs/early-init.el".source = ./emacs/early-init.el;
+  # Out-of-store symlinks: edits to the files in the dotfiles repo are live
+  # without a `home-manager switch`. Only re-switch when adding/removing files
+  # here or changing other parts of the config.
+  #
+  # Update `dotfiles` if you move the repo.
+  home.file = let
+    dotfiles = "${config.home.homeDirectory}/pwl-dotfiles";
+    link = config.lib.file.mkOutOfStoreSymlink;
+  in {
+    ".config/emacs/config.org".source = link "${dotfiles}/emacs/config.org";
+    ".config/emacs/init.el".source = link "${dotfiles}/emacs/init.el";
+    ".config/emacs/early-init.el".source = link "${dotfiles}/emacs/early-init.el";
     ".config/emacs/setup_scripts/buffer-move.el".source =
-      ./emacs/setup_scripts/buffer-move.el;
+      link "${dotfiles}/emacs/setup_scripts/buffer-move.el";
     ".config/emacs/setup_scripts/elpaca-setup.el".source =
-      ./emacs/setup_scripts/elpaca-setup.el;
+      link "${dotfiles}/emacs/setup_scripts/elpaca-setup.el";
 
     # Uncomment if you want to manage neovim with config files
-    # ".config/nvim/init.vim".source = ./nvim/init.vim;
-    # ".config/nvim/coq-config.vim".source = ./nvim/coq-config.vim;
-    ".config/sxhkd/sxhkdrc".source = ./sxhkd/sxhkdrc;
-    ".config/aliasrc".source = ./aliasrc;
-    ".config/grab.sh".source = ./grab.sh;
-    ".config/unroll.sh".source = ./unroll.sh;
-    ".zshrc".source = ./.zshrc;
-    ".xinitrc".source = ./.xinitrc;
-    ".ssh/config.def".source = ./ssh/config;
-    ".tmux.conf".source = ./.tmux.conf;
+    # ".config/nvim/init.vim".source = link "${dotfiles}/nvim/init.vim";
+    # ".config/nvim/coq-config.vim".source = link "${dotfiles}/nvim/coq-config.vim";
+    ".config/sxhkd/sxhkdrc".source = link "${dotfiles}/sxhkd/sxhkdrc";
+    ".config/aliasrc".source = link "${dotfiles}/aliasrc";
+    ".config/grab.sh".source = link "${dotfiles}/grab.sh";
+    ".config/unroll.sh".source = link "${dotfiles}/unroll.sh";
+    ".zshrc".source = link "${dotfiles}/.zshrc";
+    ".xinitrc".source = link "${dotfiles}/.xinitrc";
+    ".ssh/config.def".source = link "${dotfiles}/ssh/config";
+    ".tmux.conf".source = link "${dotfiles}/.tmux.conf";
 
   };
 

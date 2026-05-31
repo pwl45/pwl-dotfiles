@@ -1,5 +1,13 @@
-{ pkgs, unstablePkgs, customPkgs, custom-st, mdcodecat, ntok
-, environment ? "desktop", ... }:
+{
+  pkgs,
+  unstablePkgs,
+  customPkgs,
+  custom-st,
+  mdcodecat,
+  ntok,
+  environment ? "desktop",
+  ...
+}:
 with pkgs;
 let
   # Core packages needed everywhere
@@ -25,6 +33,8 @@ let
     util-linux
     zoxide
     python3
+    dnsutils
+    bc
   ];
 
   # Development tools
@@ -34,9 +44,18 @@ let
     awscli2
     oauth2c
     claude-code
+    pi-coding-agent
     bazel-buildtools
     zig
     texliveFull
+    tcpdump
+    dmidecode
+    speedtest-cli
+    iw
+    ethtool
+    mtr
+    aria2
+    emacs
   ];
 
   # Desktop environment packages
@@ -49,6 +68,7 @@ let
     cheese
     wine
     winetricks
+    pinta
     firefox
     google-chrome
     qbittorrent
@@ -56,6 +76,7 @@ let
     scrot
     mpv
     sxiv
+    imagemagick
     pavucontrol
     pulsemixer
     brightnessctl
@@ -197,11 +218,17 @@ let
     proggyfonts
     ubuntu-classic
     jetbrains-mono
-  ] ++ builtins.filter lib.attrsets.isDerivation
-    (builtins.attrValues pkgs.nerd-fonts);
+  ]
+  ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
   # System utilities (might not be needed on all systems)
-  system = [ cowsay perl glibcLocales locale ncurses ];
+  system = [
+    cowsay
+    perl
+    glibcLocales
+    locale
+    ncurses
+  ];
 
   # Environment-specific package sets
   environments = {
@@ -210,4 +237,5 @@ let
     desktop = core ++ development ++ desktop ++ fonts ++ system;
     headless = core ++ development ++ system;
   };
-in environments.${environment} or environments.desktop
+in
+environments.${environment} or environments.desktop
