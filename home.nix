@@ -1,5 +1,5 @@
 { config, pkgs, custom-dwmblocks, custom-dmenu, custom-dwm, custom-st, nixvim
-, customPkgs, unstablePkgs, username, ... }:
+, customPkgs, unstablePkgs, username, hermesAgent, ... }:
 let
   mdcodecat =
     pkgs.writeScriptBin "mdcodecat" (builtins.readFile ./mdcodecat.py);
@@ -53,11 +53,11 @@ in {
   home.stateVersion = "23.11"; # Please read the comment before changing.
 
   # fonts.fontconfig.enable = true;
-  home.packages = import ./packages.nix {
+  home.packages = (import ./packages.nix {
     inherit pkgs unstablePkgs customPkgs custom-st mdcodecat ntok custom-dmenu;
     # Change to "minimal", "server", "headless", or "desktop"
     environment = "desktop"; # REPLACE_ENVIRONMENT_HOOK
-  };
+  }) ++ [ hermesAgent ];
 
   programs.neovim = {
     enable = false;

@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   nixpkgs.config.allowUnfree = true;
   enable = true;
   plugins = {
@@ -31,7 +32,7 @@
         "Q" = "hover";
       };
     };
-    copilot-vim.enable = true;
+    # copilot-vim.enable = true;
     avante = {
       enable = true;
       luaConfig.post = builtins.readFile ./avante_config.lua;
@@ -40,32 +41,46 @@
       enable = true;
       highlight = {
         enable = true;
-        disable = [ "dockerfile" "nix" ];
+        disable = [
+          "dockerfile"
+          "nix"
+        ];
       };
       settings = {
-        indent = { enable = true; };
+        indent = {
+          enable = true;
+        };
       };
     };
     render-markdown = {
       enable = true;
-      luaConfig.post = let fileTypes = [ "markdown" "vimwiki" ];
-      in ''
-        require('render-markdown').setup({
-            file_types = { ${
-              builtins.concatStringsSep "," (map (x: "'" + x + "'") fileTypes)
-            } },
-            })
-      '';
+      luaConfig.post =
+        let
+          fileTypes = [
+            "markdown"
+            "vimwiki"
+          ];
+        in
+        ''
+          require('render-markdown').setup({
+              file_types = { ${builtins.concatStringsSep "," (map (x: "'" + x + "'") fileTypes)} },
+              })
+        '';
     };
     vim-surround.enable = true;
-    lualine = { enable = true; };
+    lualine = {
+      enable = true;
+    };
     fugitive.enable = true;
     cmp = {
       enable = true;
       autoEnableSources = true;
       settings = {
-        sources =
-          [ { name = "nvim_lsp"; } { name = "path"; } { name = "buffer"; } ];
+        sources = [
+          { name = "nvim_lsp"; }
+          { name = "path"; }
+          { name = "buffer"; }
+        ];
         mapping = {
           "<C-d>" = "cmp.mapping.scroll_docs(-4)";
           "<C-e>" = "cmp.mapping.close()";

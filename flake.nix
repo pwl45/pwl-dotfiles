@@ -21,10 +21,14 @@
     custom-st.url = "github:pwl45/pwl-st";
     custom-st.flake = false;
     custom-dwm.flake = false;
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+      inputs.nixpkgs.follows = "nixpkgs"; # Reuse our nixpkgs to avoid a second copy
+    };
   };
 
   outputs = { nixpkgs, home-manager, custom-dwmblocks, custom-dmenu, custom-dwm
-    , custom-st, nixvim, nixpkgs-unstable, ... }:
+    , custom-st, nixvim, nixpkgs-unstable, hermes-agent, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -46,6 +50,10 @@
               inherit custom-st;
               inherit nixvim;
               inherit system;
+              # Use the `messaging` variant so python-telegram-bot,
+              # discord.py, and slack-sdk are bundled — the read-only
+              # Nix store can't be pip-installed into at runtime.
+              hermesAgent = hermes-agent.packages.${system}.messaging;
               inherit customPkgs; # Pass the custom packages to home.nix
               inherit username;
               unstablePkgs = nixpkgs-unstable.legacyPackages.${system};

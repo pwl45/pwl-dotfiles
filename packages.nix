@@ -65,10 +65,12 @@ let
     mtr
     aria2
     emacs
+    # hermes
   ];
 
   # Desktop environment packages
   desktop = [
+    qrcode
     telegram-desktop
     sxhkd
     discord
