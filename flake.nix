@@ -5,8 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
-      url =
-        "github:nix-community/home-manager"; # Remove release-24.05 to use latest
+      url = "github:nix-community/home-manager"; # Remove release-24.05 to use latest
       inputs.nixpkgs.follows = "nixpkgs"; # Changed to follow unstable
     };
     nixvim = {
@@ -23,36 +22,45 @@
     custom-dwm.flake = false;
   };
 
-  outputs = { nixpkgs, home-manager, custom-dwmblocks, custom-dmenu, custom-dwm
-    , custom-st, nixvim, nixpkgs-unstable, ... }:
+  outputs =
+    {
+      nixpkgs,
+      home-manager,
+      custom-dwmblocks,
+      custom-dmenu,
+      custom-dwm,
+      custom-st,
+      nixvim,
+      nixpkgs-unstable,
+      ...
+    }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
 
       customPkgs = {
-        dmenu =
-          pkgs.callPackage custom-dmenu { }; # This will use your default.nix
+        dmenu = pkgs.callPackage custom-dmenu { }; # This will use your default.nix
 
       };
 
       mkHomeConfiguration = username: {
-        homeConfigurations.${username} =
-          home-manager.lib.homeManagerConfiguration {
-            inherit pkgs;
-            extraSpecialArgs = {
-              inherit custom-dwmblocks;
-              inherit custom-dmenu;
-              inherit custom-dwm;
-              inherit custom-st;
-              inherit nixvim;
-              inherit system;
-              inherit customPkgs; # Pass the custom packages to home.nix
-              inherit username;
-              unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
-            };
-            modules = [ ./home.nix ];
+        homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = {
+            inherit custom-dwmblocks;
+            inherit custom-dmenu;
+            inherit custom-dwm;
+            inherit custom-st;
+            inherit nixvim;
+            inherit system;
+            inherit customPkgs; # Pass the custom packages to home.nix
+            inherit username;
+            unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
           };
+          modules = [ ./home.nix ];
+        };
       };
 
-    in mkHomeConfiguration "paul"; # REPLACE_USERNAME_HOOK
+    in
+    mkHomeConfiguration "paul_lapey"; # REPLACE_USERNAME_HOOK
 }

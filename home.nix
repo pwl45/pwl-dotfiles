@@ -37,6 +37,12 @@ in {
         src = custom-st;
       });
     })
+    # claude-code straight from Anthropic's release CDN instead of nixpkgs,
+    # so updates don't wait on nixpkgs review. Bump with
+    # scripts/update-claude-code.sh.
+    (self: super: {
+      claude-code = super.callPackage ./claude-code.nix { };
+    })
   ];
   nixpkgs.config = {
     allowUnfree = true;

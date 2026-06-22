@@ -29,6 +29,7 @@ alias gau="git add -u"
 alias gdm="git diff origin/master...HEAD"
 alias gdmf="git diff origin/master...HEAD --name-only"
 alias gbsort="git branch --sort=-committerdate"
+gfc() { git fetch origin "$1" && git checkout "$1"; }
 gacap(){
     git add -u
     git commit -m $1

@@ -50,7 +50,7 @@ let
     gh
     acli
     mermaid-cli
-    # opencode
+    opencode
     oauth2c
     claude-code
     pi-coding-agent
