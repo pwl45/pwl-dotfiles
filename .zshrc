@@ -7,6 +7,7 @@ autoload -U colors && colors
 
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/pwl-dotfiles/scripts:$PATH"
+export PATH="$HOME/.hermes/bin:$PATH"
 if [ -z "$TMUX" ]; then
     # Generate a unique session name with the format YYYY_MM_DD
     session_name="session_$(date +%Y_%m_%d)_$RANDOM"
