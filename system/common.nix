@@ -25,8 +25,10 @@
     })
   ];
 
-  imports = [ # Include the results of the hardware scan.
-    ./hardware-configuration.nix
+  # Shared configuration imported by every host (see ./hosts/<name>/default.nix).
+  # The per-host hardware-configuration.nix, hostName, and stateVersion live in
+  # the host files, NOT here.
+  imports = [
     ./binbash-configuration.nix
     ./postgresql-configuration.nix
   ];
@@ -50,7 +52,7 @@
   boot.loader.grub.device = "nodev";
   boot.loader.grub.efiSupport = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
+  # networking.hostName is set per-host in ./hosts/<name>/default.nix
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -80,19 +82,20 @@
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
-    layout = "us";
+    xkb.layout = "us";
     windowManager.dwm.enable = true;
     displayManager.lightdm.enable = false;
     displayManager.startx.enable = true;
-    libinput = { touchpad.tapping = false; };
   };
+  services.libinput = { touchpad.tapping = false; };
   services.tailscale = {
     enable = true;
     extraUpFlags = [ ]; # This ensures no --no-logs-no-support flag is passed
   };
 
   # xorg.xbac
-  programs.light.enable = true;
+  # NOTE: brightness control is host-specific — programs.light (removed from
+  # nixpkgs after 24.11) is set in hosts/t480; newer hosts use brightnessctl.
   programs.thunar.enable = true;
   programs.steam = {
     enable = true;
@@ -100,16 +103,15 @@
     dedicatedServer.openFirewall =
       true; # Optional: Enable Steam Dedicated Server
   };
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    # driSupport = true;
-    driSupport32Bit = true; # If you need 32-bit support
+    enable32Bit = true; # If you need 32-bit support
 
     # Intel-specific settings
     extraPackages = with pkgs; [
       intel-media-driver # IHDA driver
-      vaapiIntel # Video acceleration
-      vaapiVdpau
+      intel-vaapi-driver # Video acceleration (was vaapiIntel)
+      libva-vdpau-driver # (was vaapiVdpau)
       libvdpau-va-gl
       intel-compute-runtime # OpenCL support
     ];
@@ -124,7 +126,9 @@
 
   # Enable sound.
   # sound.enable = true;
-  hardware.pulseaudio.enable = false;
+  # PulseAudio is disabled by default; PipeWire (below) handles audio. (The
+  # option was renamed hardware.pulseaudio -> services.pulseaudio in 25.05, so
+  # we just omit it to stay valid across releases.)
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -211,10 +215,10 @@
     bash
     gnumake
     gcc
-    libX11
-    libXext
-    libXrender
-    libXt
+    xorg.libX11
+    xorg.libXext
+    xorg.libXrender
+    xorg.libXt
     pinentry-curses
     zip
     unzip
@@ -231,12 +235,8 @@
     setSocketVariable = true;
   };
   # services.docker.enable = true;
-  fileSystems."/mnt/windows" = {
-    fsType = "ntfs-3g";
-    device = "/dev/nvme0n1p3";
-    options =
-      [ "rw" "windows_names" "uid=1000" "gid=100" "fmask=133" "dmask=022" ];
-  };
+  # NOTE: machine-specific mounts (e.g. /mnt/windows on the T480) live in the
+  # per-host file ./hosts/<name>/default.nix, not here.
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -290,18 +290,19 @@
   # and migrated your data accordingly.
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
-  system.stateVersion = "23.11"; # Did you read the comment?
+  # system.stateVersion is set per-host in ./hosts/<name>/default.nix
+  # (it records the release each machine was FIRST installed with).
 
   fonts.packages = with pkgs; [
     noto-fonts
-    noto-fonts-emoji
+    noto-fonts-color-emoji # (was noto-fonts-emoji)
     liberation_ttf
     fira-code
     fira-code-symbols
     mplus-outline-fonts.githubRelease
     dina-font
     proggyfonts
-    ubuntu_font_family
+    ubuntu-classic # (was ubuntu_font_family)
     jetbrains-mono
     noto-fonts-cjk-sans
   ];

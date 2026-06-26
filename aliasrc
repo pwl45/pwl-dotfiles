@@ -271,7 +271,7 @@ cane(){
 }
 
 alias hsf='home-manager switch --flake $HOME/pwl-dotfiles'
-alias snrs='sudo nixos-rebuild switch'
+alias snrs='sudo nixos-rebuild switch --flake $HOME/pwl-dotfiles/system#$(hostname)'
 alias ns='nix develop -c zsh'
 lsd(){
  ls -d $@ */
