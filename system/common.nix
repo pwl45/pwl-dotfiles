@@ -8,6 +8,9 @@
   nixpkgs.overlays = [
     (self: super: {
       dwm = super.dwm.overrideAttrs (oldattrs: {
+        # The pwl-dwm fork carries the swallow patch, which pulls in
+        # <X11/Xlib-xcb.h> -> <xcb/xcb.h>; stock dwm is pure Xlib, so add xcb.
+        buildInputs = oldattrs.buildInputs ++ [ self.xorg.libxcb ];
         src = fetchGit {
           url = "https://github.com/pwl45/pwl-dwm";
           rev = "4c09983c128f80f6c1670bc7540f941fe8c56629";
