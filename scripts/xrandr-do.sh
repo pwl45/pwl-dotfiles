@@ -9,6 +9,8 @@ declare -a monitor_order=(
 "DP1"
 "DP2"
 "DP-0"
+"DP-0.3"
+"DP-0.2"
 "DP-1"
 "DP-2"
 "DP-3"

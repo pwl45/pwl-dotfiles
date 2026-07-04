@@ -16,7 +16,19 @@
   hardware.acpilight.enable = true;
   environment.systemPackages = [ pkgs.brightnessctl ];
 
-  # The P53 has an NVIDIA Quadro + Intel iGPU. If you want the discrete GPU /
-  # PRIME offload, add `hardware.nvidia` + `services.xserver.videoDrivers`
-  # config here once the machine is up.
+  # NVIDIA Quadro RTX 3000 + Intel UHD 630 — PRIME Sync mode.
+  # Sync keeps the dGPU always on but external monitors via the USB-C dock
+  # (physically wired through the NVIDIA GPU) work without any xrandr hacks.
+  # Bus IDs from `dmesg`: Intel 0000:00:02.0, NVIDIA 0000:01:00.0.
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.nvidia = {
+    modesetting.enable = true;
+    open = false;
+    nvidiaSettings = true;
+    prime = {
+      sync.enable = true;
+      intelBusId = "PCI:0:2:0";
+      nvidiaBusId = "PCI:1:0:0";
+    };
+  };
 }
