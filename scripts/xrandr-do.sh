@@ -20,6 +20,8 @@ declare -a monitor_order=(
 "DP2-2"
 "DP2-3"
 "DP-1-1"
+"DP-1-1-2"
+"DP-1-1-3"
 "DP-1-3"
 "DP-1-2"
 "DP-2-1"
