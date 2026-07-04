@@ -253,6 +253,15 @@
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    publish = {
+      enable = true;
+      addresses = true;
+    };
+  };
+
   services.openssh = {
     enable = true;
     # You can add additional configuration options here.

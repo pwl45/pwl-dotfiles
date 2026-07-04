@@ -40,6 +40,7 @@ let
   # Development tools
   development = [
     cargo
+    upower
     rustc
     awscli2
     google-cloud-sdk
