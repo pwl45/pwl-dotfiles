@@ -34,6 +34,7 @@
   imports = [
     ./binbash-configuration.nix
     ./postgresql-configuration.nix
+    ./authorized-keys.nix
   ];
 
   nix = {
@@ -61,6 +62,13 @@
 
   # Easiest to use and most distros use this by default.
   networking.networkmanager.enable = true;
+
+  # Don't block boot / fail `nixos-rebuild switch` waiting for the network to be
+  # "fully online". nm-online times out (exit 1) when an autoconnect profile
+  # (e.g. wired-dhcp with no cable plugged in) never connects, which is
+  # cosmetic on a laptop. Disable the wait service unless something actually
+  # needs network-online.target.
+  systemd.services.NetworkManager-wait-online.enable = false;
 
   # Declarative wired profile: plain DHCP client on whatever Ethernet NIC the
   # host has (no interface-name binding, so it's host-agnostic). This prevents
