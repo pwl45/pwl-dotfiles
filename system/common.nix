@@ -62,6 +62,24 @@
   # Easiest to use and most distros use this by default.
   networking.networkmanager.enable = true;
 
+  # Declarative wired profile: plain DHCP client on whatever Ethernet NIC the
+  # host has (no interface-name binding, so it's host-agnostic). This prevents
+  # a stray "Shared to other computers" (ipv4.method = shared, 10.42.0.x)
+  # profile from being the active wired connection. Lower route metric than
+  # Wi-Fi, so Ethernet is preferred automatically when plugged in.
+  networking.networkmanager.ensureProfiles.profiles = {
+    wired-dhcp = {
+      connection = {
+        id = "wired-dhcp";
+        type = "ethernet";
+        autoconnect = true;
+        autoconnect-priority = 10;
+      };
+      ipv4.method = "auto";
+      ipv6.method = "auto";
+    };
+  };
+
   # Set your time zone.
   # time.timeZone = "Europe/Amsterdam";
   # time.timeZone = "Europe/Amsterdam";

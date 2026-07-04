@@ -24,6 +24,8 @@ super + x
     $HOME/pwl-dotfiles/scripts/switchex.sh
 super + n; c
     $HOME/pwl-dotfiles/scripts/network/wifi-connect.sh connect
+super + a; c
+    $HOME/pwl-dotfiles/scripts/audio/audio-connect.sh
 super + n; C
     $HOME/pwl-dotfiles/scripts/network/device-connect.sh connect
 super + n; d
