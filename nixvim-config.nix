@@ -33,10 +33,10 @@
       };
     };
     # copilot-vim.enable = true;
-    avante = {
-      enable = true;
-      luaConfig.post = builtins.readFile ./avante_config.lua;
-    };
+    # avante = {
+    #   enable = true;
+    #   luaConfig.post = builtins.readFile ./avante_config.lua;
+    # };
     treesitter = {
       enable = true;
       highlight = {

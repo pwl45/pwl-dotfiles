@@ -87,3 +87,5 @@ redzone	https://www.nfl.com/network/watch/nfl-redzone-live
 ARM user-based licensing portal	https://developer.arm.com/support/licensing/user-based/
 Inbound Dev Tooling	https://appliedintuition.atlassian.net/browse/AVP-26176
 Adaptive migration 	https://github.com/AppliedNeuron/core-stack/pull/78130
+Palm queue 	https://buildkite.com/organizations/mosaic/jobs?q=state%3Ascheduled%2Cassigned%2Caccepted%2Cwaiting%2Crunning%2Ccanceling+connected_dut%3Dpalm_proto
+FW Hil waits honeycomb 	https://ui.honeycomb.io/applied-intuition/environments/core-stack-buildkite/datasets/honeycomb/result/xrjZ9ybgtHd?expd_col=_hny.ts&expd_fwd=false&expd_id=mZbKLHYPkmE&expd_page=100&expd_vc=_hny.ts&expd_vc=trace.trace_id&expd_vc=duration_min&tab=explore
