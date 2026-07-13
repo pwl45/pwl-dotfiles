@@ -5,13 +5,14 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
-      url =
-        "github:nix-community/home-manager"; # Remove release-24.05 to use latest
+      url = "github:nix-community/home-manager"; # Remove release-24.05 to use latest
       inputs.nixpkgs.follows = "nixpkgs"; # Changed to follow unstable
     };
     nixvim = {
       url = "github:nix-community/nixvim"; # Remove nixos-24.05 to use latest
-      inputs.nixpkgs.follows = "nixpkgs"; # Changed to follow unstable
+      # Deliberately NOT following our nixpkgs: nixvim's modules are coupled to
+      # the nixpkgs it pins/tests against, so let it use its own (which tracks
+      # unstable anyway). Overriding it is unsupported and triggers a warning.
     };
     custom-dwmblocks.url = "github:pwl45/pwl-dwmblocks";
     custom-dwmblocks.flake = false;
@@ -27,40 +28,50 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, custom-dwmblocks, custom-dmenu, custom-dwm
-    , custom-st, nixvim, nixpkgs-unstable, hermes-agent, ... }:
+  outputs =
+    {
+      nixpkgs,
+      home-manager,
+      custom-dwmblocks,
+      custom-dmenu,
+      custom-dwm,
+      custom-st,
+      nixvim,
+      nixpkgs-unstable,
+      hermes-agent,
+      ...
+    }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
 
       customPkgs = {
-        dmenu =
-          pkgs.callPackage custom-dmenu { }; # This will use your default.nix
+        dmenu = pkgs.callPackage custom-dmenu { }; # This will use your default.nix
 
       };
 
       mkHomeConfiguration = username: {
-        homeConfigurations.${username} =
-          home-manager.lib.homeManagerConfiguration {
-            inherit pkgs;
-            extraSpecialArgs = {
-              inherit custom-dwmblocks;
-              inherit custom-dmenu;
-              inherit custom-dwm;
-              inherit custom-st;
-              inherit nixvim;
-              inherit system;
-              # Use the `messaging` variant so python-telegram-bot,
-              # discord.py, and slack-sdk are bundled — the read-only
-              # Nix store can't be pip-installed into at runtime.
-              hermesAgent = hermes-agent.packages.${system}.messaging;
-              inherit customPkgs; # Pass the custom packages to home.nix
-              inherit username;
-              unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
-            };
-            modules = [ ./home.nix ];
+        homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = {
+            inherit custom-dwmblocks;
+            inherit custom-dmenu;
+            inherit custom-dwm;
+            inherit custom-st;
+            inherit nixvim;
+            inherit system;
+            # Use the `messaging` variant so python-telegram-bot,
+            # discord.py, and slack-sdk are bundled — the read-only
+            # Nix store can't be pip-installed into at runtime.
+            hermesAgent = hermes-agent.packages.${system}.messaging;
+            inherit customPkgs; # Pass the custom packages to home.nix
+            inherit username;
+            unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
           };
+          modules = [ ./home.nix ];
+        };
       };
 
-    in mkHomeConfiguration "paul"; # REPLACE_USERNAME_HOOK
+    in
+    mkHomeConfiguration "paul_lapey"; # REPLACE_USERNAME_HOOK
 }

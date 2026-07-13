@@ -104,5 +104,5 @@ in {
   # };
   programs.home-manager.enable = true;
 
-  programs.nixvim = import ./nixvim-config.nix { inherit pkgs; };
+  programs.nixvim = import ./nixvim-config.nix { inherit pkgs nixvim; };
 }

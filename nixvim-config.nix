@@ -1,5 +1,12 @@
-{ pkgs, ... }:
+{ pkgs, nixvim, ... }:
 {
+  # Build nixvim against its OWN pinned nixpkgs (the combo it's tested with),
+  # not our flake's. Setting this explicitly is required: with the
+  # `inputs.nixvim.inputs.nixpkgs.follows` removed from flake.nix, nixvim's
+  # default `nixpkgs.source` recurses while computing its `follows` warning.
+  # Pointing at nixvim's pinned source sidesteps both the warning and the
+  # recursion. See flake.nix for the matching `follows` removal.
+  nixpkgs.source = import "${nixvim}/nixpkgs.nix";
   nixpkgs.config.allowUnfree = true;
   enable = true;
   plugins = {
@@ -33,9 +40,38 @@
       };
     };
     # copilot-vim.enable = true;
-    avante = {
+    # Copilot: provides the LSP for sidekick's Next Edit Suggestions (NES)
+    # AND inline ghost-text completion. auto_trigger shows ghost text as you
+    # type; accept with <C-j> (sidekick still owns <Tab> for NES). Panel (the
+    # multi-suggestion split) stays off.
+    copilot-lua = {
       enable = true;
-      luaConfig.post = builtins.readFile ./avante_config.lua;
+      settings = {
+        panel.enabled = false;
+        suggestion = {
+          enabled = true;
+          auto_trigger = true;
+          keymap = {
+            accept = "<C-j>";
+            accept_word = false;
+            accept_line = false;
+            next = "<M-]>";
+            prev = "<M-[>";
+            dismiss = "<C-]>";
+          };
+        };
+      };
+    };
+    # AI sidekick: Copilot NES + integrated AI CLI terminal.
+    # Keymaps (<tab>, <leader>a*, <c-.>) live in extra-lua-config.lua.
+    sidekick = {
+      enable = true;
+      settings = {
+        cli.mux = {
+          backend = "tmux";
+          enabled = true;
+        };
+      };
     };
     treesitter = {
       enable = true;

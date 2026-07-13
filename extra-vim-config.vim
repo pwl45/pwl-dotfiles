@@ -168,7 +168,9 @@ nmap <leader>P :!pdflatex main.tex<CR>
 " :nnoremap <leader>sv :source $MYVIMRC<cr>:AirlineRefresh<cr>
 
 " Shortcutting split navigation, saving a keypress:
-nmap <Leader>w <C-w>
+" nnoremap (not nmap) so this stays the builtin window prefix even though
+" <C-w> itself is remapped to 'cycle windows' in extra-lua-config.lua.
+nnoremap <Leader>w <C-w>
 nmap <Leader>wf :vs<cr>:Files<cr>
 nmap <Leader>wg :vs<cr>:Files ~<cr>
 nmap <Leader>wF :vs<cr>:Files ~<cr>
