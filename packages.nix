@@ -46,6 +46,8 @@ let
     google-cloud-sdk
     oauth2c
     claude-code
+    grok-build
+    codex
     bazel-buildtools
     zig
     gh
@@ -53,7 +55,6 @@ let
     mermaid-cli
     # opencode
     oauth2c
-    claude-code
     pi-coding-agent
     bazel-buildtools
     zig

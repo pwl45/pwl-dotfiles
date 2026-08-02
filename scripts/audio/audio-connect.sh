@@ -5,25 +5,41 @@
 status="$HOME/.status-msg"
 echo -n "scanning audio outputs..." > "$status"
 
-# the sound card's pipewire device id
-card=$(pw-dump | jq 'first(.[] | select(.info.props["media.class"] == "Audio/Device") | .id)')
+dump=$(pw-dump)
 
-# available output profiles as "<index><TAB><name>", one row per output: the
-# highest-priority variant per destination (which keeps the mic on), labelled
-# with pipewire's own profile name minus the redundant "+input:..." half.
-profiles=$(pw-dump | jq -r --argjson c "$card" '
-  [ .[] | select(.id == $c) | .info.params.EnumProfile[]
-    | select(.available == "yes" and (.name | startswith("output:"))) ]
-  | group_by(.name | split("+")[0])
+# Collect available output profiles from ALL audio cards.
+# Deduped by (card, dest) — picks the highest-priority profile variant per output on each card.
+# USB audio devices (e.g. dock) report available=="unknown" since they can't detect jacks; include those too.
+# TSV: <card_id>  <profile_index>  <display_name>
+profiles=$(printf '%s' "$dump" | jq -r '
+  [ .[] | select(.info.props["media.class"] == "Audio/Device") ] as $devs
+  | [ $devs[]
+      | .id as $cid
+      | (.info.props["device.description"] // "Unknown Device") as $desc
+      | .info.params.EnumProfile[]?
+      | select(.available != "no" and (.name | startswith("output:")))
+      | {cid: $cid, desc: $desc, index, priority, dest: (.name | ltrimstr("output:") | split("+")[0])}
+    ]
+  | group_by([.cid, .dest])
   | map(max_by(.priority))[]
-  | [.index, (.name | ltrimstr("output:") | split("+")[0])] | @tsv')
+  | [(.cid|tostring), (.index|tostring), (.desc + ": " + .dest)] | @tsv')
 
-choice=$(printf '%s\n' "$profiles" | cut -f2- | dmenu -i -p "audio output:")
+echo "Profiles: $profiles"
+choice=$(printf '%s\n' "$profiles" | cut -f3- | dmenu -i -p "audio output:")
 [ -z "$choice" ] && { rm -f "$status"; exit 0; }
 
-index=$(printf '%s\n' "$profiles" | awk -F'\t' -v c="$choice" '$2 == c { print $1; exit }')
+read -r card index <<< "$(printf '%s\n' "$profiles" | awk -F'\t' -v c="$choice" '$3 == c { print $1, $2; exit }')"
 
 echo -n "switching to $choice..." > "$status"
-wpctl set-profile "$card" "$index"   # the new sink auto-becomes the default output
+wpctl set-profile "$card" "$index"
+
+# wpctl set-profile doesn't auto-switch the default sink, so find and set it explicitly
+sleep 0.3
+sink_id=$(pw-dump | jq -r --argjson cid "$card" '
+  .[] | select(
+    .info.props["media.class"] == "Audio/Sink" and
+    (.info.props["device.id"] | numbers) == $cid
+  ) | .id' | head -1)
+[ -n "$sink_id" ] && wpctl set-default "$sink_id"
 
 rm -f "$status"

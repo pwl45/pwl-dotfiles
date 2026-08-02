@@ -1,14 +1,26 @@
-{ config, pkgs, custom-dwmblocks, custom-dmenu, custom-dwm, custom-st, nixvim
-, customPkgs, unstablePkgs, username, hermesAgent, ... }:
+{
+  config,
+  pkgs,
+  custom-dwmblocks,
+  custom-dmenu,
+  custom-dwm,
+  custom-st,
+  nixvim,
+  customPkgs,
+  unstablePkgs,
+  username,
+  hermesAgent,
+  ...
+}:
 let
-  mdcodecat =
-    pkgs.writeScriptBin "mdcodecat" (builtins.readFile ./mdcodecat.py);
+  mdcodecat = pkgs.writeScriptBin "mdcodecat" (builtins.readFile ./mdcodecat.py);
 
   ntok = pkgs.writers.writePython3Bin "ntok" {
     libraries = [ pkgs.python3Packages.tiktoken ];
     doCheck = false;
   } (builtins.readFile ./ntok.py);
-in {
+in
+{
   imports = [
     # For home-manager
     nixvim.homeModules.nixvim
@@ -40,7 +52,10 @@ in {
   ];
   nixpkgs.config = {
     allowUnfree = true;
-    permittedInsecurePackages = [ "openssl-1.1.1w" "nix-2.16.2" ];
+    permittedInsecurePackages = [
+      "openssl-1.1.1w"
+      "nix-2.16.2"
+    ];
   };
 
   # This value determines the Home Manager release that your configuration is
@@ -53,11 +68,21 @@ in {
   home.stateVersion = "23.11"; # Please read the comment before changing.
 
   # fonts.fontconfig.enable = true;
-  home.packages = (import ./packages.nix {
-    inherit pkgs unstablePkgs customPkgs custom-st mdcodecat ntok custom-dmenu;
-    # Change to "minimal", "server", "headless", or "desktop"
-    environment = "desktop"; # REPLACE_ENVIRONMENT_HOOK
-  }) ++ [ hermesAgent ];
+  home.packages =
+    (import ./packages.nix {
+      inherit
+        pkgs
+        unstablePkgs
+        customPkgs
+        custom-st
+        mdcodecat
+        ntok
+        custom-dmenu
+        ;
+      # Change to "minimal", "server", "headless", or "desktop"
+      environment = "desktop"; # REPLACE_ENVIRONMENT_HOOK
+    })
+    ++ [ hermesAgent ];
 
   programs.neovim = {
     enable = false;
@@ -71,31 +96,33 @@ in {
   # here or changing other parts of the config.
   #
   # Update `dotfiles` if you move the repo.
-  home.file = let
-    dotfiles = "${config.home.homeDirectory}/pwl-dotfiles";
-    link = config.lib.file.mkOutOfStoreSymlink;
-  in {
-    ".config/emacs/config.org".source = link "${dotfiles}/emacs/config.org";
-    ".config/emacs/init.el".source = link "${dotfiles}/emacs/init.el";
-    ".config/emacs/early-init.el".source = link "${dotfiles}/emacs/early-init.el";
-    ".config/emacs/setup_scripts/buffer-move.el".source =
-      link "${dotfiles}/emacs/setup_scripts/buffer-move.el";
-    ".config/emacs/setup_scripts/elpaca-setup.el".source =
-      link "${dotfiles}/emacs/setup_scripts/elpaca-setup.el";
+  home.file =
+    let
+      dotfiles = "${config.home.homeDirectory}/pwl-dotfiles";
+      link = config.lib.file.mkOutOfStoreSymlink;
+    in
+    {
+      ".config/emacs/config.org".source = link "${dotfiles}/emacs/config.org";
+      ".config/emacs/init.el".source = link "${dotfiles}/emacs/init.el";
+      ".config/emacs/early-init.el".source = link "${dotfiles}/emacs/early-init.el";
+      ".config/emacs/setup_scripts/buffer-move.el".source =
+        link "${dotfiles}/emacs/setup_scripts/buffer-move.el";
+      ".config/emacs/setup_scripts/elpaca-setup.el".source =
+        link "${dotfiles}/emacs/setup_scripts/elpaca-setup.el";
 
-    # Uncomment if you want to manage neovim with config files
-    # ".config/nvim/init.vim".source = link "${dotfiles}/nvim/init.vim";
-    # ".config/nvim/coq-config.vim".source = link "${dotfiles}/nvim/coq-config.vim";
-    ".config/sxhkd/sxhkdrc".source = link "${dotfiles}/sxhkd/sxhkdrc";
-    ".config/aliasrc".source = link "${dotfiles}/aliasrc";
-    ".config/grab.sh".source = link "${dotfiles}/grab.sh";
-    ".config/unroll.sh".source = link "${dotfiles}/unroll.sh";
-    ".zshrc".source = link "${dotfiles}/.zshrc";
-    ".xinitrc".source = link "${dotfiles}/.xinitrc";
-    ".ssh/config.def".source = link "${dotfiles}/ssh/config";
-    ".tmux.conf".source = link "${dotfiles}/.tmux.conf";
+      # Uncomment if you want to manage neovim with config files
+      # ".config/nvim/init.vim".source = link "${dotfiles}/nvim/init.vim";
+      # ".config/nvim/coq-config.vim".source = link "${dotfiles}/nvim/coq-config.vim";
+      ".config/sxhkd/sxhkdrc".source = link "${dotfiles}/sxhkd/sxhkdrc";
+      ".config/aliasrc".source = link "${dotfiles}/aliasrc";
+      ".config/grab.sh".source = link "${dotfiles}/grab.sh";
+      ".config/unroll.sh".source = link "${dotfiles}/unroll.sh";
+      ".zshrc".source = link "${dotfiles}/.zshrc";
+      ".xinitrc".source = link "${dotfiles}/.xinitrc";
+      ".ssh/config.def".source = link "${dotfiles}/ssh/config";
+      ".tmux.conf".source = link "${dotfiles}/.tmux.conf";
 
-  };
+    };
 
   # programs.git = {
   #   enable = true;
@@ -105,4 +132,61 @@ in {
   programs.home-manager.enable = true;
 
   programs.nixvim = import ./nixvim-config.nix { inherit pkgs; };
+
+  # GUI file-open (xdg-open) defaults to the first .desktop that claims
+  # text/plain; nvim.desktop has Terminal=true which minimal WMs like ours
+  # don't honor, so plain emacs.desktop was winning by default. Point it at
+  # st+nvim instead.
+  xdg.desktopEntries.st-nvim = {
+    name = "Neovim (st)";
+    genericName = "Text Editor";
+    comment = "Edit text in st + nvim";
+    exec = "st -e nvim %F";
+    icon = "nvim";
+    terminal = false;
+    type = "Application";
+    categories = [
+      "Utility"
+      "TextEditor"
+      "Development"
+    ];
+    mimeType = [
+      "text/english"
+      "text/plain"
+      "text/x-makefile"
+      "text/x-c++hdr"
+      "text/x-c++src"
+      "text/x-chdr"
+      "text/x-csrc"
+      "text/x-java"
+      "text/x-moc"
+      "text/x-pascal"
+      "text/x-tcl"
+      "text/x-tex"
+      "application/x-shellscript"
+      "text/x-c"
+      "text/x-c++"
+    ];
+  };
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "x-scheme-handler/claude-cli" = "claude-code-url-handler.desktop";
+      "text/english" = "st-nvim.desktop";
+      "text/plain" = "st-nvim.desktop";
+      "text/x-makefile" = "st-nvim.desktop";
+      "text/x-c++hdr" = "st-nvim.desktop";
+      "text/x-c++src" = "st-nvim.desktop";
+      "text/x-chdr" = "st-nvim.desktop";
+      "text/x-csrc" = "st-nvim.desktop";
+      "text/x-java" = "st-nvim.desktop";
+      "text/x-moc" = "st-nvim.desktop";
+      "text/x-pascal" = "st-nvim.desktop";
+      "text/x-tcl" = "st-nvim.desktop";
+      "text/x-tex" = "st-nvim.desktop";
+      "application/x-shellscript" = "st-nvim.desktop";
+      "text/x-c" = "st-nvim.desktop";
+      "text/x-c++" = "st-nvim.desktop";
+    };
+  };
 }
