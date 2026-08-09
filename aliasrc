@@ -29,7 +29,11 @@ alias gau="git add -u"
 alias gdm="git diff origin/master...HEAD"
 alias gdmf="git diff origin/master...HEAD --name-only"
 alias gbsort="git branch --sort=-committerdate"
+
+gcfz() { git branch --sort=-committerdate | head -50 | fzf  | cut -c3- | xargs -r git checkout; }
+
 gfc() { git fetch origin "$1" && git checkout "$1"; }
+
 gacap(){
     git add -u
     git commit -m $1
@@ -611,31 +615,35 @@ nfng() {
     done
 }
 # ZLE Bindings are annoying
-function vf-z() { vf ; zle reset-prompt; zle redisplay; zle-keymap-select}
+function vf-z() { vf ; echo -ne '\e[5 q'; zle reset-prompt; }
 zle -N vf-z
 bindkey '^f' vf-z
 
-function zf-z() { zf ; zle reset-prompt; zle redisplay; zle-keymap-select}
+function zf-z() { zf ; zle reset-prompt;}
 zle -N zf-z
-bindkey '^g' zf-z
+# Unused for now 
+
+function gcfz-z() { gcfz ; zle reset-prompt;}
+zle -N gcfz-z
+bindkey '^g' gcfz-z
 
 
-function cdg-z() { cdg ; zle reset-prompt; zle redisplay; zle-keymap-select}
+function cdg-z() { cdg ; zle reset-prompt;}
 zle -N cdg-z
 bindkey '^p' cdg-z
 
-function cdlr-z() { cdlr ; zle reset-prompt; zle redisplay; zle-keymap-select}
+function cdlr-z() { cdlr ; zle reset-prompt;}
 zle -N cdlr-z
 
-function gccb-z(){zle reset-prompt; gccb ; zle reset-prompt; zle redisplay; zle-keymap-select}
+function gccb-z(){zle reset-prompt; gccb ; zle reset-prompt;}
 zle -N gccb-z
-function gcb-z(){zle reset-prompt; gcb ; zle reset-prompt; zle redisplay; zle-keymap-select}
+function gcb-z(){zle reset-prompt; gcb ; zle reset-prompt;}
 zle -N gcb-z
 
 # remap control enter to do autosuggest
 bindkey '[13;5u' autosuggest-execute
 
-function bk-z() { cd .. ; zle reset-prompt; zle redisplay; zle-keymap-select}
+function bk-z() { cd .. ; zle reset-prompt;}
 zle -N bk-z
 bindkey '^h' bk-z
 
