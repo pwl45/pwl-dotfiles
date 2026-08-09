@@ -16,6 +16,13 @@
   hardware.acpilight.enable = true;
   environment.systemPackages = [ pkgs.brightnessctl ];
 
+  # psmouse's SMBus handoff to elan_i2c times out (-110), and since it releases
+  # the PS/2 device first, both the touchpad and TrackPoint vanish. Staying on
+  # PS/2 costs native multitouch (3+ finger gestures).
+  boot.extraModprobeConfig = ''
+    options psmouse elantech_smbus=0
+  '';
+
   # NVIDIA Quadro T2000 + Intel UHD 630 — PRIME Reverse Sync mode.
   # reverseSync keeps Intel as the primary scanout GPU (it renders the desktop
   # and drives the internal eDP-1 panel) and exposes the NVIDIA outputs as

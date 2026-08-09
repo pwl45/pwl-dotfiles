@@ -295,6 +295,8 @@
     settings = {
       PermitRootLogin = "no";
       PasswordAuthentication = false;
+      # Lets nvim's xclip clipboard provider reach the client's X server
+      X11Forwarding = true;
     };
   };
 
