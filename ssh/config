@@ -28,6 +28,7 @@ Host *
     StrictHostKeyChecking no
 Host work
     HostName 100.85.140.192
+	ProxyJump t480.local
     User paul_lapey
     Port 22
 

@@ -24,7 +24,7 @@ else
 fi
 
 if [[ -n $IN_NIX_SHELL ]]; then
-  PS1="%B%{$fg[cyan]%}[nix-shell]%}$reset_color $PS1"
+  PS1="%B%{$fg[cyan]%}[nix-shell]%{$reset_color%} $PS1"
 fi
 
 setopt INC_APPEND_HISTORY

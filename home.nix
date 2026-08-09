@@ -16,9 +16,7 @@ let
   mdcodecat = pkgs.writeScriptBin "mdcodecat" (builtins.readFile ./mdcodecat.py);
 
   ntok = pkgs.writers.writePython3Bin "ntok" {
-    libraries = [
-      pkgs.python3Packages.tiktoken
-    ];
+    libraries = [ pkgs.python3Packages.tiktoken ];
     doCheck = false;
   } (builtins.readFile ./ntok.py);
 in
@@ -50,12 +48,6 @@ in
         buildInputs = oldattrs.buildInputs ++ [ pkgs.harfbuzz ];
         src = custom-st;
       });
-    })
-    # claude-code straight from Anthropic's release CDN instead of nixpkgs,
-    # so updates don't wait on nixpkgs review. Bump with
-    # scripts/update-claude-code.sh.
-    (self: super: {
-      claude-code = super.callPackage ./claude-code.nix { };
     })
   ];
   nixpkgs.config = {
@@ -139,5 +131,62 @@ in
   # };
   programs.home-manager.enable = true;
 
-  programs.nixvim = import ./nixvim-config.nix { inherit pkgs nixvim; };
+  programs.nixvim = import ./nixvim-config.nix { inherit pkgs; };
+
+  # GUI file-open (xdg-open) defaults to the first .desktop that claims
+  # text/plain; nvim.desktop has Terminal=true which minimal WMs like ours
+  # don't honor, so plain emacs.desktop was winning by default. Point it at
+  # st+nvim instead.
+  xdg.desktopEntries.st-nvim = {
+    name = "Neovim (st)";
+    genericName = "Text Editor";
+    comment = "Edit text in st + nvim";
+    exec = "st -e nvim %F";
+    icon = "nvim";
+    terminal = false;
+    type = "Application";
+    categories = [
+      "Utility"
+      "TextEditor"
+      "Development"
+    ];
+    mimeType = [
+      "text/english"
+      "text/plain"
+      "text/x-makefile"
+      "text/x-c++hdr"
+      "text/x-c++src"
+      "text/x-chdr"
+      "text/x-csrc"
+      "text/x-java"
+      "text/x-moc"
+      "text/x-pascal"
+      "text/x-tcl"
+      "text/x-tex"
+      "application/x-shellscript"
+      "text/x-c"
+      "text/x-c++"
+    ];
+  };
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "x-scheme-handler/claude-cli" = "claude-code-url-handler.desktop";
+      "text/english" = "st-nvim.desktop";
+      "text/plain" = "st-nvim.desktop";
+      "text/x-makefile" = "st-nvim.desktop";
+      "text/x-c++hdr" = "st-nvim.desktop";
+      "text/x-c++src" = "st-nvim.desktop";
+      "text/x-chdr" = "st-nvim.desktop";
+      "text/x-csrc" = "st-nvim.desktop";
+      "text/x-java" = "st-nvim.desktop";
+      "text/x-moc" = "st-nvim.desktop";
+      "text/x-pascal" = "st-nvim.desktop";
+      "text/x-tcl" = "st-nvim.desktop";
+      "text/x-tex" = "st-nvim.desktop";
+      "application/x-shellscript" = "st-nvim.desktop";
+      "text/x-c" = "st-nvim.desktop";
+      "text/x-c++" = "st-nvim.desktop";
+    };
+  };
 }
