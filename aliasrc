@@ -614,38 +614,28 @@ nfng() {
         fi
     done
 }
+
 # ZLE Bindings are annoying
-function vf-z() { vf ; echo -ne '\e[5 q'; zle reset-prompt; }
-zle -N vf-z
-bindkey '^f' vf-z
+# Need to wrap the function in a new function that resets the prompt after the function is called
+# And do zle -N to register the new function with zle
+bind_function() {  # $1: keycode, $2: function name, $3: body (defaults to calling $2)
+    local w="zle-wrap-$2" body="${3:-$2}"
+    functions[$w]="$body; print -n '\e[5 q'; zle reset-prompt"
+    zle -N $w
+    bindkey -M viins "$1" $w
+    bindkey -M vicmd "$1" $w
+}
 
-function zf-z() { zf ; zle reset-prompt;}
-zle -N zf-z
-# Unused for now 
+bind_function '^f' vf
 
-function gcfz-z() { gcfz ; zle reset-prompt;}
-zle -N gcfz-z
-bindkey '^g' gcfz-z
+bind_function '^g' gcfz
 
+bind_function '^p' cdg
 
-function cdg-z() { cdg ; zle reset-prompt;}
-zle -N cdg-z
-bindkey '^p' cdg-z
-
-function cdlr-z() { cdlr ; zle reset-prompt;}
-zle -N cdlr-z
-
-function gccb-z(){zle reset-prompt; gccb ; zle reset-prompt;}
-zle -N gccb-z
-function gcb-z(){zle reset-prompt; gcb ; zle reset-prompt;}
-zle -N gcb-z
+bind_function '^h' back 'cd ..'
 
 # remap control enter to do autosuggest
 bindkey '[13;5u' autosuggest-execute
-
-function bk-z() { cd .. ; zle reset-prompt;}
-zle -N bk-z
-bindkey '^h' bk-z
 
 bindkey -a H beginning-of-line
 bindkey -a L end-of-line
