@@ -60,7 +60,7 @@ def mdcodecat(file_paths):
             # filename = os.path.basename(file_path)
             filename = file_path
 
-            print(f"```{lang}")
+            print(f"````{lang}")
             if lang == 'html':
                 print(f"{comment} {filename} -->")
             elif lang == 'css':
@@ -70,7 +70,7 @@ def mdcodecat(file_paths):
             else:
                 print(f"{comment} {filename}")
             print(content.rstrip())
-            print("```")
+            print("````")
             print()  # Add an empty line between files
         except IOError as e:
             print(f"Error reading file {file_path}: {e}", file=sys.stderr)
