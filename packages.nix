@@ -47,7 +47,7 @@ let
     oauth2c
     claude-code
     grok-build
-    codex
+    unstablePkgs.codex
     bazel-buildtools
     zig
     gh

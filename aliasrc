@@ -36,8 +36,19 @@ gfc() { git fetch origin "$1" && git checkout "$1"; }
 
 gacap(){
     git add -u
-    git commit -m $1
-    git push
+    if [[ $1 == --amend ]]; then
+        shift
+        # rewriting a pushed commit needs a force push, lease-guarded
+        if (( $# )); then
+            git commit --amend -m "$*" || return
+        else
+            git commit --amend --no-edit || return
+        fi
+        git push --force-with-lease || return
+    else
+        git commit -m "$*" || return
+        git push || return
+    fi
     git rev-parse HEAD | tr -d '\n' | xclip -selection c
 }
 
@@ -62,9 +73,7 @@ gsga(){
     gsg $@ | xargs -r git add
 }
 
-ggr() {
-    git ls-files -z | xargs -0 grep --color=auto "$@"
-}
+alias ggr='git grep'
 
 ggri() {
     git ls-files -z | xargs -0 grep -i --color=auto "$@"

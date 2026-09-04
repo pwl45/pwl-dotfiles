@@ -100,6 +100,17 @@ in
     let
       dotfiles = "${config.home.homeDirectory}/pwl-dotfiles";
       link = config.lib.file.mkOutOfStoreSymlink;
+
+      # Auto-discover every rule in the dotfiles rules dir and symlink each
+      # into ~/.claude/rules individually, so machine-specific rules dropped
+      # into ~/.claude/rules directly are left untouched. Contents edit in
+      # place; adding/removing a rule file requires a re-switch (readDir runs
+      # at eval time).
+      ruleFiles = builtins.attrNames (builtins.readDir ./.claude/rules);
+      claudeRules = builtins.listToAttrs (map (name: {
+        name = ".claude/rules/${name}";
+        value.source = link "${dotfiles}/.claude/rules/${name}";
+      }) ruleFiles);
     in
     {
       ".config/emacs/config.org".source = link "${dotfiles}/emacs/config.org";
@@ -122,7 +133,8 @@ in
       ".ssh/config.def".source = link "${dotfiles}/ssh/config";
       ".tmux.conf".source = link "${dotfiles}/.tmux.conf";
 
-    };
+    }
+    // claudeRules;
 
   # programs.git = {
   #   enable = true;
@@ -131,7 +143,7 @@ in
   # };
   programs.home-manager.enable = true;
 
-  programs.nixvim = import ./nixvim-config.nix { inherit pkgs; };
+  programs.nixvim = import ./nixvim-config.nix { inherit pkgs nixvim; };
 
   # GUI file-open (xdg-open) defaults to the first .desktop that claims
   # text/plain; nvim.desktop has Terminal=true which minimal WMs like ours
