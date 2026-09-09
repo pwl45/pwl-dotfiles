@@ -1,5 +1,9 @@
 #!/bin/sh
 
+master(){
+    git symbolic-ref --short refs/remotes/origin/HEAD | sed 's|^origin/||'
+}
+
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
@@ -26,8 +30,8 @@ alias stw='st -e zstart "curl wttr.in"'
 alias gits="git status"
 alias gac="git add -u && git commit -m"
 alias gau="git add -u"
-alias gdm="git diff origin/master...HEAD"
-alias gdmf="git diff origin/master...HEAD --name-only"
+alias gdm='git diff origin/$(master)...HEAD'
+alias gdmf='git diff origin/$(master)...HEAD --name-only'
 alias gbsort="git branch --sort=-committerdate"
 
 gcfz() { git branch --sort=-committerdate | head -50 | fzf  | cut -c3- | xargs -r git checkout; }
@@ -53,7 +57,7 @@ gacap(){
 }
 
 gnb() {
-  git fetch origin master && git checkout -b "$1" origin/master --no-track
+    git fetch origin $(master) && git checkout -b "$1" origin/$(master) --no-track
 }
 
 gsg(){
