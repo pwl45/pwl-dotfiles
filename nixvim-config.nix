@@ -1,12 +1,10 @@
-{ pkgs, nixvim, ... }:
+# A nixvim module, not a plain attrset: `pkgs` here is nixvim's own instance,
+# built from the nixpkgs it pins and tests against. Everything below, including
+# `extraPlugins`, therefore resolves against that instance rather than our
+# flake's, so neovim never sees two nixpkgs at once. See flake.nix for the
+# matching `follows` removal.
+{ pkgs, ... }:
 {
-  # Build nixvim against its OWN pinned nixpkgs (the combo it's tested with),
-  # not our flake's. Setting this explicitly is required: with the
-  # `inputs.nixvim.inputs.nixpkgs.follows` removed from flake.nix, nixvim's
-  # default `nixpkgs.source` recurses while computing its `follows` warning.
-  # Pointing at nixvim's pinned source sidesteps both the warning and the
-  # recursion. See flake.nix for the matching `follows` removal.
-  nixpkgs.source = import "${nixvim}/nixpkgs.nix";
   nixpkgs.config.allowUnfree = true;
   enable = true;
   plugins = {
@@ -44,35 +42,35 @@
     # AND inline ghost-text completion. auto_trigger shows ghost text as you
     # type; accept with <C-j> (sidekick still owns <Tab> for NES). Panel (the
     # multi-suggestion split) stays off.
-    copilot-lua = {
-      enable = true;
-      settings = {
-        panel.enabled = false;
-        suggestion = {
-          enabled = true;
-          auto_trigger = true;
-          keymap = {
-            accept = "<C-j>";
-            accept_word = false;
-            accept_line = false;
-            next = "<M-]>";
-            prev = "<M-[>";
-            dismiss = "<C-]>";
-          };
-        };
-      };
-    };
+    # copilot-lua = {
+    #   enable = true;
+    #   settings = {
+    #     panel.enabled = false;
+    #     suggestion = {
+    #       enabled = true;
+    #       auto_trigger = true;
+    #       keymap = {
+    #         accept = "<C-j>";
+    #         accept_word = false;
+    #         accept_line = false;
+    #         next = "<M-]>";
+    #         prev = "<M-[>";
+    #         dismiss = "<C-]>";
+    #       };
+    #     };
+    #   };
+    # };
     # AI sidekick: Copilot NES + integrated AI CLI terminal.
     # Keymaps (<tab>, <leader>a*, <c-.>) live in extra-lua-config.lua.
-    sidekick = {
-      enable = true;
-      settings = {
-        cli.mux = {
-          backend = "tmux";
-          enabled = true;
-        };
-      };
-    };
+    # sidekick = {
+    #   enable = true;
+    #   settings = {
+    #     cli.mux = {
+    #       backend = "tmux";
+    #       enabled = true;
+    #     };
+    #   };
+    # };
     treesitter = {
       enable = true;
       highlight = {

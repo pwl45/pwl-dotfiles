@@ -19,6 +19,23 @@ let
     libraries = [ pkgs.python3Packages.tiktoken ];
     doCheck = false;
   } (builtins.readFile ./ntok.py);
+
+  # `errexit` is omitted deliberately: monitor inspects the exit status of the
+  # command it wraps and must stay alive to report it.
+  monitor = pkgs.writeShellApplication {
+    name = "monitor";
+    runtimeInputs = with pkgs; [
+      coreutils
+      findutils
+      procps
+      util-linux
+    ];
+    bashOptions = [
+      "nounset"
+      "pipefail"
+    ];
+    text = builtins.readFile ./scripts/monitor.sh;
+  };
 in
 {
   imports = [
@@ -77,6 +94,7 @@ in
         custom-st
         mdcodecat
         ntok
+        monitor
         custom-dmenu
         ;
       # Change to "minimal", "server", "headless", or "desktop"
@@ -107,10 +125,12 @@ in
       # place; adding/removing a rule file requires a re-switch (readDir runs
       # at eval time).
       ruleFiles = builtins.attrNames (builtins.readDir ./.claude/rules);
-      claudeRules = builtins.listToAttrs (map (name: {
-        name = ".claude/rules/${name}";
-        value.source = link "${dotfiles}/.claude/rules/${name}";
-      }) ruleFiles);
+      claudeRules = builtins.listToAttrs (
+        map (name: {
+          name = ".claude/rules/${name}";
+          value.source = link "${dotfiles}/.claude/rules/${name}";
+        }) ruleFiles
+      );
     in
     {
       ".config/emacs/config.org".source = link "${dotfiles}/emacs/config.org";
@@ -143,7 +163,7 @@ in
   # };
   programs.home-manager.enable = true;
 
-  programs.nixvim = import ./nixvim-config.nix { inherit pkgs nixvim; };
+  programs.nixvim = import ./nixvim-config.nix;
 
   # GUI file-open (xdg-open) defaults to the first .desktop that claims
   # text/plain; nvim.desktop has Terminal=true which minimal WMs like ours

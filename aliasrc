@@ -624,6 +624,9 @@ nfng() {
     done
 }
 
+# claude
+alias claude='claude --dangerously-skip-permissions'
+
 # ZLE Bindings are annoying
 # Need to wrap the function in a new function that resets the prompt after the function is called
 # And do zle -N to register the new function with zle

@@ -73,5 +73,5 @@
       };
 
     in
-    mkHomeConfiguration "paul_lapey"; # REPLACE_USERNAME_HOOK
+    mkHomeConfiguration "paul"; # REPLACE_USERNAME_HOOK
 }

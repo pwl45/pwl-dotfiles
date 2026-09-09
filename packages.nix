@@ -5,6 +5,7 @@
   custom-st,
   mdcodecat,
   ntok,
+  monitor,
   environment ? "desktop",
   ...
 }:
@@ -15,6 +16,7 @@ let
     hello
     mdcodecat
     ntok
+    monitor
     htop
     fortune
     nixfmt
@@ -111,7 +113,6 @@ let
     pamixer
     # code-cursor
     steam-run
-    nwjs
     zoom-us
     yt-dlp
     (llm.withPlugins {
