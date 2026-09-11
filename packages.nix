@@ -43,6 +43,7 @@ let
   development = [
     cargo
     upower
+    git-filter-repo
     rustc
     awscli2
     google-cloud-sdk
@@ -246,12 +247,56 @@ let
     ncurses
   ];
 
+  # Cross-platform subset that builds on Darwin (no X11/Linux-only tools).
+  macos = [
+    # core CLI
+    hello
+    mdcodecat
+    ntok
+    htop
+    fortune
+    nixfmt
+    zsh
+    fzf
+    bat
+    fd
+    eza
+    unstablePkgs.codex
+    ripgrep
+    tree
+    shellcheck
+    tmux
+    jq
+    zoxide
+    python3
+    dnsutils
+    bc
+    ncurses
+    cowsay
+    perl
+    # dev
+    cargo
+    rustc
+    awscli2
+    google-cloud-sdk
+    oauth2c
+    claude-code
+    bazel-buildtools
+    zig
+    gh
+    mtr
+    aria2
+    emacs
+    git-filter-repo
+  ];
+
   # Environment-specific package sets
   environments = {
     minimal = core;
     server = core ++ development;
     desktop = core ++ development ++ desktop ++ fonts ++ system;
     headless = core ++ development ++ system;
+    macos = macos;
   };
 in
 environments.${environment} or environments.desktop

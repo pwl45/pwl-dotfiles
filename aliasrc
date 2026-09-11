@@ -630,6 +630,7 @@ nfng() {
 
 # claude
 alias claude='claude --dangerously-skip-permissions'
+alias codex='codex --yolo'
 
 # ZLE Bindings are annoying
 # Need to wrap the function in a new function that resets the prompt after the function is called

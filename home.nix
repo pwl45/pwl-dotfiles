@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   custom-dwmblocks,
   custom-dmenu,
@@ -43,7 +44,8 @@ in
     nixvim.homeModules.nixvim
   ];
   home.username = username;
-  home.homeDirectory = "/home/${username}";
+  home.homeDirectory =
+    if pkgs.stdenv.hostPlatform.isDarwin then "/Users/${username}" else "/home/${username}";
   nixpkgs.overlays = [
     (self: super: {
       dwmblocks = super.dwmblocks.overrideAttrs (oldattrs: {
@@ -98,9 +100,10 @@ in
         custom-dmenu
         ;
       # Change to "minimal", "server", "headless", or "desktop"
-      environment = "desktop"; # REPLACE_ENVIRONMENT_HOOK
+      environment = "macos"; # REPLACE_ENVIRONMENT_HOOK
     })
-    ++ [ hermesAgent ];
+    # hermesAgent is null on Darwin (no build there); only append when present.
+    ++ pkgs.lib.optional (hermesAgent != null) hermesAgent;
 
   programs.neovim = {
     enable = false;
@@ -154,6 +157,7 @@ in
       ".tmux.conf".source = link "${dotfiles}/.tmux.conf";
       ".config/alacritty/alacritty.toml".source = link "${dotfiles}/alacritty/alacritty.toml";
       ".config/ghostty/config".source = link "${dotfiles}/ghostty/config";
+      ".hammerspoon/init.lua".source = link "${dotfiles}/hammerspoon/init.lua";
 
     }
     // claudeRules;
@@ -171,7 +175,7 @@ in
   # text/plain; nvim.desktop has Terminal=true which minimal WMs like ours
   # don't honor, so plain emacs.desktop was winning by default. Point it at
   # st+nvim instead.
-  xdg.desktopEntries.st-nvim = {
+  xdg.desktopEntries.st-nvim = pkgs.lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     name = "Neovim (st)";
     genericName = "Text Editor";
     comment = "Edit text in st + nvim";
@@ -202,7 +206,7 @@ in
       "text/x-c++"
     ];
   };
-  xdg.mimeApps = {
+  xdg.mimeApps = pkgs.lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     enable = true;
     defaultApplications = {
       "x-scheme-handler/claude-cli" = "claude-code-url-handler.desktop";
@@ -223,4 +227,20 @@ in
       "text/x-c++" = "st-nvim.desktop";
     };
   };
+
+  # macOS keyboard repeat, ~ `xset r rate 300 50` (units ~15ms, applies at next
+  # login). The option exists on all platforms; mkIf keeps it Darwin-only.
+  targets.darwin.defaults.NSGlobalDomain = pkgs.lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
+    InitialKeyRepeat = 20; # ~300ms before repeat
+    ApplePressAndHold = false; # hold-to-repeat instead of the accent popover
+  };
+
+  # home-manager types KeyRepeat as int-only, so the ~50/s fractional rate
+  # (1.3 ticks) goes through `defaults` directly, ordered after setDarwinDefaults
+  # so it wins over anything that step wrote.
+  home.activation.keyRepeatRate = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (
+    lib.hm.dag.entryAfter [ "setDarwinDefaults" ] ''
+      $DRY_RUN_CMD /usr/bin/defaults write -g KeyRepeat -float 1.3
+    ''
+  );
 }

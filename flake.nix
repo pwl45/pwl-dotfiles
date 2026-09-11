@@ -42,7 +42,7 @@
       ...
     }:
     let
-      system = "x86_64-linux";
+      system = "aarch64-darwin"; # REPLACE_SYSTEM_HOOK
       pkgs = nixpkgs.legacyPackages.${system};
 
       customPkgs = {
@@ -60,10 +60,12 @@
             inherit custom-st;
             inherit nixvim;
             inherit system;
-            # Use the `messaging` variant so python-telegram-bot,
-            # discord.py, and slack-sdk are bundled — the read-only
-            # Nix store can't be pip-installed into at runtime.
-            hermesAgent = hermes-agent.packages.${system}.messaging;
+            # hermes-agent has no Darwin build, so it's null there (home.nix
+            # only appends it when non-null). On Linux, use the `messaging`
+            # variant so python-telegram-bot, discord.py, and slack-sdk are
+            # bundled — the read-only Nix store can't be pip-installed at runtime.
+            hermesAgent =
+              if pkgs.stdenv.hostPlatform.isDarwin then null else hermes-agent.packages.${system}.messaging;
             inherit customPkgs; # Pass the custom packages to home.nix
             inherit username;
             unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
@@ -73,5 +75,5 @@
       };
 
     in
-    mkHomeConfiguration "paul"; # REPLACE_USERNAME_HOOK
+    mkHomeConfiguration "paul.lapey"; # REPLACE_USERNAME_HOOK
 }
