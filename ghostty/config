@@ -1,0 +1,18 @@
+# Ghostty config. See `ghostty +show-config --default --docs` or
+# https://ghostty.org/docs/config for all options.
+
+# Make Option act as Alt/Meta so tmux receives M- chords (dwm-style tiling
+# block in ~/.tmux.conf). macOS-only; ignored on Linux.
+macos-option-as-alt = true
+
+gtk-tabs-location = hidden
+font-family = {{ terminal_font }}
+font-size = 12
+scrollback-limit = 10_000
+window-theme = ghostty
+clipboard-read = allow
+clipboard-paste-protection = false
+window-decoration = false
+shell-integration = zsh
+
+keybind = ctrl+x=write_scrollback_file:open

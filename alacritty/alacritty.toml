@@ -1,0 +1,4 @@
+# Make Option act as Alt/Meta so tmux receives M- chords (dwm-style tiling
+# block in ~/.tmux.conf). macOS-only setting; ignored on Linux.
+[window]
+option_as_alt = "Both"
