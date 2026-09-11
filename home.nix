@@ -152,6 +152,8 @@ in
       ".xinitrc".source = link "${dotfiles}/.xinitrc";
       ".ssh/config.def".source = link "${dotfiles}/ssh/config";
       ".tmux.conf".source = link "${dotfiles}/.tmux.conf";
+      ".config/alacritty/alacritty.toml".source = link "${dotfiles}/alacritty/alacritty.toml";
+      ".config/ghostty/config".source = link "${dotfiles}/ghostty/config";
 
     }
     // claudeRules;

@@ -107,7 +107,9 @@ let
     physlock
     (ffmpeg.override { withXcb = true; })
     slop
-    # ghostty
+    # ncurses also ships a `ghostty` terminfo entry; lowPrio lets it win the
+    # buildEnv collision instead of ghostty's own copy.
+    (lib.lowPrio ghostty)
     peek
     devour
     pamixer
