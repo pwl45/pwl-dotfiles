@@ -368,6 +368,8 @@ cdl() {
 alias cd='cdl'
 alias mdcodecat='python3 $HOME/pwl-dotfiles/mdcodecat.py'
 alias tat='tmux attach -t'
+alias tsf="tmux source-file ~/.tmux.conf"
+
 yto(){
     local url="$1"
     local output=$2
