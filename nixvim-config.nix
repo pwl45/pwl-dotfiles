@@ -126,7 +126,19 @@
       };
     };
   };
-  colorschemes.ayu.enable = true;
+  colorschemes.ayu = {
+    enable = true;
+    settings.overrides.Comment = {
+      # Keep Ayu's dark italic comments from becoming black-on-black in a Linux TTY through tmux.
+      fg = "#8A9199";
+      italic = false;
+    };
+    settings.overrides.Visual = {
+      # Match tmux copy mode with an Ayu gold selection that remains visible in a Linux TTY.
+      fg = "#0B0E14";
+      bg = "#E6B450";
+    };
+  };
   # colorschemes.oxocarbon.enable = true;
   # colorschemes.palette.enable = true;
   # colorschemes.melange.enable = true;
@@ -143,6 +155,22 @@
   };
   clipboard.register = "unnamedplus";
   clipboard.providers.xclip.enable = pkgs.stdenv.hostPlatform.isLinux;
+
+  # In a text console or remote tmux session there is no native system
+  # clipboard. Use tmux's paste buffer for the + and * registers instead.
+  # This must run before Neovim initializes its clipboard provider.
+  extraConfigLuaPre = ''
+    local has_native_clipboard =
+      vim.fn.executable("pbcopy") == 1
+      or (vim.env.WAYLAND_DISPLAY ~= nil and vim.fn.executable("wl-copy") == 1)
+      or (vim.env.DISPLAY ~= nil and
+          (vim.fn.executable("xclip") == 1 or vim.fn.executable("xsel") == 1))
+
+    if vim.env.TMUX ~= nil and vim.env.TMUX ~= "" and not has_native_clipboard then
+      vim.g.clipboard = "tmux"
+    end
+  '';
+
   extraPlugins = with pkgs.vimPlugins; [
     vim-commentary
     # nerdcommenter
