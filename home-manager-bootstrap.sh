@@ -64,9 +64,11 @@ install_nix() {
 configure_nix() {
     echo "Enabling flakes + nix-command..."
     mkdir -p "$HOME/.config/nix"
-    cat > "$HOME/.config/nix/nix.conf" << 'EOF'
-experimental-features = nix-command flakes
-EOF
+    local nix_config="$HOME/.config/nix/nix.conf"
+    # Add features without replacing the user's other settings.
+    if ! grep -Eq '^extra-experimental-features = nix-command flakes$' "$nix_config" 2>/dev/null; then
+        printf '\nextra-experimental-features = nix-command flakes\n' >> "$nix_config"
+    fi
 }
 
 switch_to_flake() {
@@ -77,7 +79,7 @@ switch_to_flake() {
     echo "Activating Home Manager: $configuration"
     # -b backup renames pre-existing files HM would refuse to overwrite.
     # Username may contain a dot, so quote it in the flake ref.
-    nix run home-manager -- switch -b backup --flake "$SCRIPT_DIR#$configuration"
+    nix run --inputs-from "$SCRIPT_DIR" home-manager -- switch -b backup --flake "$SCRIPT_DIR#$configuration"
     echo "Home Manager configuration applied."
 }
 

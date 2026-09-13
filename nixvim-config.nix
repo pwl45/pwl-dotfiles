@@ -142,7 +142,7 @@
     tabstop = 4;
   };
   clipboard.register = "unnamedplus";
-  clipboard.providers.xclip.enable = true;
+  clipboard.providers.xclip.enable = pkgs.stdenv.hostPlatform.isLinux;
   extraPlugins = with pkgs.vimPlugins; [
     vim-commentary
     # nerdcommenter

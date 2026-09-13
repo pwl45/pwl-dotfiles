@@ -2,7 +2,6 @@
   pkgs,
   unstablePkgs,
   customPkgs,
-  custom-st,
   mdcodecat,
   ntok,
   monitor,

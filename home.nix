@@ -3,7 +3,6 @@
   lib,
   pkgs,
   custom-dwmblocks,
-  custom-dmenu,
   custom-dwm,
   custom-st,
   nixvim,
@@ -15,6 +14,7 @@
   ...
 }:
 let
+  inherit (pkgs.stdenv.hostPlatform) isLinux isDarwin;
   mdcodecat = pkgs.writeScriptBin "mdcodecat" (builtins.readFile ./mdcodecat.py);
 
   ntok = pkgs.writers.writePython3Bin "ntok" {
@@ -48,27 +48,26 @@ in
   home.homeDirectory =
     if pkgs.stdenv.hostPlatform.isDarwin then "/Users/${username}" else "/home/${username}";
   nixpkgs.overlays = [
-    (self: super: {
-      dwmblocks = super.dwmblocks.overrideAttrs (oldattrs: {
-        src = custom-dwmblocks;
-        NIX_CFLAGS_COMPILE = "-Wno-error=incompatible-pointer-types";
-      });
-    })
-    # (self: super: {
-    #   dmenu = super.dmenu.overrideAttrs (oldAttrs: { src = custom-dmenu; });
-    # })
-    (self: super: {
-      dwm = super.dwm.overrideAttrs (oldattrs: {
-        src = custom-dwm;
-        buildInputs = oldattrs.buildInputs ++ [ pkgs.libxcb ];
-      });
-    })
-    (self: super: {
-      st = super.st.overrideAttrs (oldattrs: {
-        buildInputs = oldattrs.buildInputs ++ [ pkgs.harfbuzz ];
-        src = custom-st;
-      });
-    })
+    (
+      final: prev:
+      lib.optionalAttrs prev.stdenv.hostPlatform.isLinux {
+        dwmblocks = prev.dwmblocks.overrideAttrs (_: {
+          src = custom-dwmblocks;
+          NIX_CFLAGS_COMPILE = "-Wno-error=incompatible-pointer-types";
+        });
+        dwm = prev.dwm.overrideAttrs (old: {
+          src = custom-dwm;
+          buildInputs = old.buildInputs ++ [ final.libxcb ];
+        });
+        st = prev.st.overrideAttrs (old: {
+          src = custom-st;
+          buildInputs = old.buildInputs ++ [ final.harfbuzz ];
+        });
+      }
+      // lib.optionalAttrs (prev.stdenv.hostPlatform.system == "x86_64-linux") {
+        claude-code = final.callPackage ./claude-code.nix { };
+      }
+    )
   ];
   nixpkgs.config = {
     allowUnfree = true;
@@ -94,11 +93,9 @@ in
         pkgs
         unstablePkgs
         customPkgs
-        custom-st
         mdcodecat
         ntok
         monitor
-        custom-dmenu
         ;
       inherit environment;
     })
@@ -147,18 +144,22 @@ in
       # Uncomment if you want to manage neovim with config files
       # ".config/nvim/init.vim".source = link "${dotfiles}/nvim/init.vim";
       # ".config/nvim/coq-config.vim".source = link "${dotfiles}/nvim/coq-config.vim";
-      ".config/sxhkd/sxhkdrc".source = link "${dotfiles}/sxhkd/sxhkdrc";
       ".config/aliasrc".source = link "${dotfiles}/aliasrc";
       ".config/grab.sh".source = link "${dotfiles}/grab.sh";
       ".config/unroll.sh".source = link "${dotfiles}/unroll.sh";
       ".zshrc".source = link "${dotfiles}/.zshrc";
-      ".xinitrc".source = link "${dotfiles}/.xinitrc";
       ".ssh/config.def".source = link "${dotfiles}/ssh/config";
       ".tmux.conf".source = link "${dotfiles}/.tmux.conf";
       ".config/alacritty/alacritty.toml".source = link "${dotfiles}/alacritty/alacritty.toml";
       ".config/ghostty/config".source = link "${dotfiles}/ghostty/config";
-      ".hammerspoon/init.lua".source = link "${dotfiles}/hammerspoon/init.lua";
 
+    }
+    // lib.optionalAttrs isLinux {
+      ".config/sxhkd/sxhkdrc".source = link "${dotfiles}/sxhkd/sxhkdrc";
+      ".xinitrc".source = link "${dotfiles}/.xinitrc";
+    }
+    // lib.optionalAttrs isDarwin {
+      ".hammerspoon/init.lua".source = link "${dotfiles}/hammerspoon/init.lua";
     }
     // claudeRules;
 
