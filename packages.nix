@@ -11,12 +11,15 @@
 }:
 with pkgs;
 let
+  inherit (lib) optionals;
+  inherit (stdenv.hostPlatform) isLinux isDarwin;
+
+  # Each group starts with shared packages, followed by OS-specific additions.
   # Core packages needed everywhere
   core = [
     hello
     mdcodecat
     ntok
-    monitor
     htop
     fortune
     nixfmt
@@ -28,21 +31,24 @@ let
     ripgrep
     tree
     shellcheck
-    xclip
-    xsel
     tmux
     jq
-    util-linux
     zoxide
     python3
     dnsutils
     bc
+  ]
+  ++ optionals isLinux [
+    # The monitor wrapper uses Linux process and session utilities.
+    monitor
+    xclip
+    xsel
+    util-linux
   ];
 
   # Development tools
   development = [
     cargo
-    upower
     git-filter-repo
     rustc
     awscli2
@@ -57,42 +63,48 @@ let
     acli
     mermaid-cli
     opencode
-    oauth2c
     pi-coding-agent
-    bazel-buildtools
-    zig
     texliveFull
     tcpdump
-    dmidecode
     speedtest-cli
-    iw
-    ethtool
     mtr
     aria2
     emacs
     # hermes
+  ]
+  ++ optionals isLinux [
+    upower
+    dmidecode
+    iw
+    ethtool
   ];
 
   # Desktop environment packages
   desktop = [
     qrcode
     telegram-desktop
-    sxhkd
     discord
-    redshift
-    dwmblocks
-    cheese
-    wine
-    winetricks
     pinta
     firefox
     google-chrome
     qbittorrent
     browsh
-    scrot
     mpv
-    sxiv
     imagemagick
+    # code-cursor
+    zoom-us
+    yt-dlp
+    (import ./packages/llm.nix { inherit pkgs; })
+  ]
+  ++ optionals isLinux [
+    sxhkd
+    redshift
+    dwmblocks
+    cheese
+    wine
+    winetricks
+    scrot
+    sxiv
     pavucontrol
     pulsemixer
     brightnessctl
@@ -108,119 +120,16 @@ let
     physlock
     (ffmpeg.override { withXcb = true; })
     slop
-    # ncurses also ships a `ghostty` terminfo entry; lowPrio lets it win the
-    # buildEnv collision instead of ghostty's own copy.
+    # This nixpkgs Ghostty package is Linux-only; install the macOS app separately.
+    # Let ncurses win the collision with Ghostty's terminfo entry.
     (lib.lowPrio ghostty)
     peek
     devour
     pamixer
-    # code-cursor
     steam-run
-    zoom-us
-    yt-dlp
-    (llm.withPlugins {
-      # LLM access to models by Anthropic, including the Claude series <https://github.com/simonw/llm-anthropic>
-      llm-anthropic = true;
-
-      # Use LLM to generate and execute commands in your shell <https://github.com/simonw/llm-cmd>
-      llm-cmd = true;
-
-      # Access the Cohere Command R family of models <https://github.com/simonw/llm-command-r>
-      llm-command-r = true;
-
-      # LLM plugin providing access to Deepseek models. <https://github.com/abrasumente233/llm-deepseek>
-      llm-deepseek = true;
-
-      # Ask questions of LLM documentation using LLM <https://github.com/simonw/llm-docs>
-      llm-docs = true;
-
-      # Debug plugin for LLM <https://github.com/simonw/llm-echo>
-      llm-echo = true;
-
-      # Load GitHub repository contents as LLM fragments <https://github.com/simonw/llm-fragments-github>
-      llm-fragments-github = true;
-
-      # LLM fragments plugin for PyPI packages metadata <https://github.com/samueldg/llm-fragments-pypi>
-      llm-fragments-pypi = true;
-
-      # Run URLs through the Jina Reader API <https://github.com/simonw/llm-fragments-reader>
-      llm-fragments-reader = true;
-
-      # LLM fragment loader for Python symbols <https://github.com/simonw/llm-fragments-symbex>
-      llm-fragments-symbex = true;
-
-      # LLM plugin to access Google's Gemini family of models <https://github.com/simonw/llm-gemini>
-      llm-gemini = true;
-
-      # Run models distributed as GGUF files using LLM <https://github.com/simonw/llm-gguf>
-      llm-gguf = true;
-
-      # AI-powered Git commands for the LLM CLI tool <https://github.com/OttoAllmendinger/llm-git>
-      llm-git = true;
-
-      # LLM plugin providing access to GitHub Copilot <https://github.com/jmdaly/llm-github-copilot>
-      llm-github-copilot = true;
-
-      # LLM plugin providing access to Grok models using the xAI API <https://github.com/Hiepler/llm-grok>
-      llm-grok = true;
-
-      # LLM plugin providing access to Groqcloud models. <https://github.com/angerman/llm-groq>
-      llm-groq = true;
-
-      # LLM plugin for pulling content from Hacker News <https://github.com/simonw/llm-hacker-news>
-      llm-hacker-news = true;
-
-      # Write and execute jq programs with the help of LLM <https://github.com/simonw/llm-jq>
-      llm-jq = true;
-
-      # LLM plugin for interacting with llama-server models <https://github.com/simonw/llm-llama-server>
-      llm-llama-server = true;
-
-      # LLM plugin providing access to Mistral models using the Mistral API <https://github.com/simonw/llm-mistral>
-      llm-mistral = true;
-
-      # LLM plugin providing access to Ollama models using HTTP API <https://github.com/taketwo/llm-ollama>
-      llm-ollama = true;
-
-      # OpenAI plugin for LLM <https://github.com/simonw/llm-openai-plugin>
-      llm-openai-plugin = true;
-
-      # LLM plugin for models hosted by OpenRouter <https://github.com/simonw/llm-openrouter>
-      llm-openrouter = true;
-
-      # LLM fragment plugin to load a PDF as a sequence of images <https://github.com/simonw/llm-pdf-to-images>
-      llm-pdf-to-images = true;
-
-      # LLM access to pplx-api <https://github.com/hex/llm-perplexity>
-      llm-perplexity = true;
-
-      # LLM plugin for embeddings using sentence-transformers <https://github.com/simonw/llm-sentence-transformers>
-      llm-sentence-transformers = true;
-
-      # Load LLM templates from Fabric <https://github.com/simonw/llm-templates-fabric>
-      llm-templates-fabric = true;
-
-      # Load LLM templates from GitHub repositories <https://github.com/simonw/llm-templates-github>
-      llm-templates-github = true;
-
-      # Expose Datasette instances to LLM as a tool <https://github.com/simonw/llm-tools-datasette>
-      llm-tools-datasette = true;
-
-      # JavaScript execution as a tool for LLM <https://github.com/simonw/llm-tools-quickjs>
-      # llm-tools-quickjs = true; # Disabled due to CVE-2026-1144 and CVE-2026-1145 in quickjs
-
-      # Make simple_eval available as an LLM tool <https://github.com/simonw/llm-tools-simpleeval>
-      llm-tools-simpleeval = true;
-
-      # LLM tools for running queries against SQLite <https://github.com/simonw/llm-tools-sqlite>
-      llm-tools-sqlite = true;
-
-      # LLM plugin to access models available via the Venice API <https://github.com/ar-jan/llm-venice>
-      llm-venice = true;
-
-      # LLM plugin to turn a video into individual frames <https://github.com/simonw/llm-video-frames>
-      llm-video-frames = true;
-    })
+  ]
+  ++ optionals isDarwin [
+    ffmpeg
   ];
 
   # Fonts
@@ -242,52 +151,11 @@ let
   system = [
     cowsay
     perl
+    ncurses
+  ]
+  ++ optionals isLinux [
     glibcLocales
     locale
-    ncurses
-  ];
-
-  # Cross-platform subset that builds on Darwin (no X11/Linux-only tools).
-  macos = [
-    # core CLI
-    hello
-    mdcodecat
-    ntok
-    htop
-    fortune
-    nixfmt
-    zsh
-    fzf
-    bat
-    fd
-    eza
-    unstablePkgs.codex
-    ripgrep
-    tree
-    shellcheck
-    tmux
-    jq
-    zoxide
-    python3
-    dnsutils
-    bc
-    ncurses
-    cowsay
-    perl
-    # dev
-    cargo
-    rustc
-    awscli2
-    google-cloud-sdk
-    oauth2c
-    claude-code
-    bazel-buildtools
-    zig
-    gh
-    mtr
-    aria2
-    emacs
-    git-filter-repo
   ];
 
   # Environment-specific package sets
@@ -296,7 +164,6 @@ let
     server = core ++ development;
     desktop = core ++ development ++ desktop ++ fonts ++ system;
     headless = core ++ development ++ system;
-    macos = macos;
   };
 in
-environments.${environment} or environments.desktop
+environments.${environment}

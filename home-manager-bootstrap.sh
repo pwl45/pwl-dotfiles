@@ -29,7 +29,7 @@ case "$(uname -s)" in
         ;;
     Darwin)
         NIX_FLAG="--daemon"             # multi-user is mandatory (read-only system volume)
-        DEFAULT_ENV="macos"
+        DEFAULT_ENV="headless"          # CLI tools; platform is selected independently
         sedi() { sed -i '' "$@"; }      # BSD sed
         case "$(uname -m)" in
             arm64)  SYSTEM="aarch64-darwin" ;;

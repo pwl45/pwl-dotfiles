@@ -100,7 +100,7 @@ in
         custom-dmenu
         ;
       # Change to "minimal", "server", "headless", or "desktop"
-      environment = "macos"; # REPLACE_ENVIRONMENT_HOOK
+      environment = "headless"; # REPLACE_ENVIRONMENT_HOOK
     })
     # hermesAgent is null on Darwin (no build there); only append when present.
     ++ pkgs.lib.optional (hermesAgent != null) hermesAgent;
