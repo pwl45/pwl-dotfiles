@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Home Manager bootstrap for Linux and macOS. Installs Nix, enables flakes,
-# rewrites the flake's user/system/environment hooks, and activates via
+# selects the flake entry for the current username/platform, and activates via
 # `nix run home-manager`. The only per-platform differences live in the case
 # block below; everything after it is shared.
 
@@ -12,35 +12,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "Home Manager Bootstrap"
 echo "======================"
 
-USERNAME=${USER:-$(whoami)}
 export USER=${USER:-$(whoami)}
 
-# Per-platform knobs: install mode, default environment, sed flavor, system.
+# Installation differs by OS; package profiles live in flake.nix.
 case "$(uname -s)" in
-    Linux)
-        NIX_FLAG="--no-daemon"          # single-user: intentional for containers/servers
-        DEFAULT_ENV="server"
-        sedi() { sed -i "$@"; }         # GNU sed
-        case "$(uname -m)" in
-            x86_64)  SYSTEM="x86_64-linux" ;;
-            aarch64) SYSTEM="aarch64-linux" ;;
-            *) echo "Unsupported Linux arch: $(uname -m)"; exit 1 ;;
-        esac
-        ;;
-    Darwin)
-        NIX_FLAG="--daemon"             # multi-user is mandatory (read-only system volume)
-        DEFAULT_ENV="headless"          # CLI tools; platform is selected independently
-        sedi() { sed -i '' "$@"; }      # BSD sed
-        case "$(uname -m)" in
-            arm64)  SYSTEM="aarch64-darwin" ;;
-            x86_64) SYSTEM="x86_64-darwin" ;;
-            *) echo "Unsupported macOS arch: $(uname -m)"; exit 1 ;;
-        esac
-        ;;
+    Linux) NIX_FLAG="--no-daemon" ;;
+    Darwin) NIX_FLAG="--daemon" ;;
     *) echo "Unsupported OS: $(uname -s)"; exit 1 ;;
 esac
-
-INSTALL_ENVIRONMENT=${INSTALL_ENVIRONMENT:-"$DEFAULT_ENV"}
 
 check_command() { command -v "$1" >/dev/null 2>&1; }
 
@@ -53,7 +32,9 @@ source_nix() {
         # shellcheck disable=SC1091
         source "$HOME/.nix-profile/etc/profile.d/nix.sh"
     fi
-    [[ -d "$HOME/.nix-profile/bin" ]] && export PATH="$HOME/.nix-profile/bin:$PATH"
+    if [[ -d "$HOME/.nix-profile/bin" ]]; then
+        export PATH="$HOME/.nix-profile/bin:$PATH"
+    fi
 }
 
 install_nix() {
@@ -88,23 +69,15 @@ experimental-features = nix-command flakes
 EOF
 }
 
-apply_hooks() {
-    echo "Configuring flake: user=$USERNAME system=$SYSTEM env=$INSTALL_ENVIRONMENT"
-    [[ -f "$SCRIPT_DIR/flake.nix" ]] || { echo "flake.nix not found in $SCRIPT_DIR"; exit 1; }
-    [[ -f "$SCRIPT_DIR/home.nix"  ]] || { echo "home.nix not found in $SCRIPT_DIR"; exit 1; }
-    cd "$SCRIPT_DIR"
-
-    sedi "s/mkHomeConfiguration \".*\"; # REPLACE_USERNAME_HOOK/mkHomeConfiguration \"$USERNAME\"; # REPLACE_USERNAME_HOOK/" flake.nix
-    sedi "s/system = \".*\"; # REPLACE_SYSTEM_HOOK/system = \"$SYSTEM\"; # REPLACE_SYSTEM_HOOK/" flake.nix
-    sedi "s/environment = \".*\"; # REPLACE_ENVIRONMENT_HOOK/environment = \"$INSTALL_ENVIRONMENT\"; # REPLACE_ENVIRONMENT_HOOK/" home.nix
-}
-
 switch_to_flake() {
     source_nix
-    echo "Activating Home Manager..."
+    local platform configuration
+    platform=$(nix --extra-experimental-features 'nix-command flakes' eval --impure --raw --expr 'builtins.currentSystem')
+    configuration="${USER:-$(whoami)}@$platform"
+    echo "Activating Home Manager: $configuration"
     # -b backup renames pre-existing files HM would refuse to overwrite.
     # Username may contain a dot, so quote it in the flake ref.
-    nix run home-manager -- switch -b backup --flake ".#$USERNAME"
+    nix run home-manager -- switch -b backup --flake "$SCRIPT_DIR#$configuration"
     echo "Home Manager configuration applied."
 }
 
@@ -115,12 +88,10 @@ main() {
     echo
     configure_nix
     echo
-    apply_hooks
-    echo
     switch_to_flake
     echo
     echo "Done. Open a new terminal so the Nix profile and PATH take effect."
-    echo "Re-apply later with:  home-manager switch --flake .#\"$USERNAME\""
+    echo "Re-apply later with: hsf"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

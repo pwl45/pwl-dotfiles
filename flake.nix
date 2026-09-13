@@ -42,16 +42,19 @@
       ...
     }:
     let
-      system = "aarch64-darwin"; # REPLACE_SYSTEM_HOOK
-      pkgs = nixpkgs.legacyPackages.${system};
-
-      customPkgs = {
-        dmenu = pkgs.callPackage custom-dmenu { }; # This will use your default.nix
-
-      };
-
-      mkHomeConfiguration = username: {
-        homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
+      mkHomeConfiguration =
+        {
+          username,
+          system,
+          environment,
+        }:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          customPkgs = nixpkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+            dmenu = pkgs.callPackage custom-dmenu { };
+          };
+        in
+        home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           extraSpecialArgs = {
             inherit custom-dwmblocks;
@@ -67,13 +70,25 @@
             hermesAgent =
               if pkgs.stdenv.hostPlatform.isDarwin then null else hermes-agent.packages.${system}.messaging;
             inherit customPkgs; # Pass the custom packages to home.nix
-            inherit username;
+            inherit username environment;
             unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
           };
           modules = [ ./home.nix ];
         };
-      };
-
     in
-    mkHomeConfiguration "paul.lapey"; # REPLACE_USERNAME_HOOK
+    {
+      # Shared by every machine with this username and Nix platform.
+      homeConfigurations = {
+        "paul@x86_64-linux" = mkHomeConfiguration {
+          username = "paul";
+          system = "x86_64-linux";
+          environment = "desktop";
+        };
+        "paul.lapey@aarch64-darwin" = mkHomeConfiguration {
+          username = "paul.lapey";
+          system = "aarch64-darwin";
+          environment = "headless";
+        };
+      };
+    };
 }

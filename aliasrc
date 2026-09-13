@@ -288,7 +288,18 @@ cane(){
     git commit --amend --no-edit
 }
 
-alias hsf='home-manager switch --flake $HOME/pwl-dotfiles'
+home_configuration() {
+    local platform
+    platform=$(nix --extra-experimental-features 'nix-command flakes' eval --impure --raw --expr 'builtins.currentSystem') || return
+    printf '%s@%s\n' "${USER:-$(whoami)}" "$platform"
+}
+
+unalias hsf 2>/dev/null || true
+function hsf() {
+    local configuration
+    configuration=$(home_configuration) || return
+    home-manager switch --flake "$HOME/pwl-dotfiles#$configuration" "$@"
+}
 alias snrs='sudo nixos-rebuild switch --flake $HOME/pwl-dotfiles/system#$(hostname)'
 alias ns='nix develop -c zsh'
 lsd(){
@@ -670,4 +681,3 @@ bindkey -M vicmd '^E' end-of-line
 bindkey -M viins '^K' kill-line
 [ -f "$HOME/.config/grab.sh" ] && source "$HOME/.config/grab.sh"
 [ -f "$HOME/.config/unroll.sh" ] && source "$HOME/.config/unroll.sh"
-

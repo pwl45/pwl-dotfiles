@@ -10,6 +10,7 @@
   customPkgs,
   unstablePkgs,
   username,
+  environment,
   hermesAgent,
   ...
 }:
@@ -99,8 +100,7 @@ in
         monitor
         custom-dmenu
         ;
-      # Change to "minimal", "server", "headless", or "desktop"
-      environment = "headless"; # REPLACE_ENVIRONMENT_HOOK
+      inherit environment;
     })
     # hermesAgent is null on Darwin (no build there); only append when present.
     ++ pkgs.lib.optional (hermesAgent != null) hermesAgent;
@@ -168,6 +168,9 @@ in
   #   userEmail = "plapey45@gmail.com";
   # };
   programs.home-manager.enable = true;
+
+  # Set default model for llm tool
+  xdg.configFile."io.datasette.llm/default_model.txt".text = "openrouter/z-ai/glm-5.3";
 
   programs.nixvim = import ./nixvim-config.nix;
 
