@@ -10,4 +10,6 @@ if [ ! -f "$HW" ] || grep -q PLACEHOLDER "$HW"; then echo "Generating hardware c
 echo "Rebuilding system for host: $HOST"
 sudo nixos-rebuild switch --flake "./system#$HOST"
 echo "Applying home-manager"
-home-manager switch --flake .
+# home-manager configs are keyed "<user>@<platform>" (e.g. paul@x86_64-linux),
+# not by hostname — compute the same key the `hsf` alias uses.
+home-manager switch --flake ".#$(whoami)@$(uname -m)-linux"
