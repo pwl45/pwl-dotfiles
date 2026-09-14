@@ -137,6 +137,9 @@ in
       ".config/alacritty/alacritty.toml".source = link "${dotfiles}/alacritty/alacritty.toml";
       ".config/ghostty/config".source = link "${dotfiles}/ghostty/config";
       ".pi/agent/settings.json".source = link "${dotfiles}/pi/agent/settings.json";
+      ".hermes/config.yaml".source = link "${dotfiles}/hermes/config.yaml";
+      # NOTE: ~/.hermes/.env (API keys) and hermes auth state are intentionally
+      # NOT tracked — they stay in ~/.hermes outside the repo.
 
       # zsh plugins, symlinked from the store so .zshrc never git-clones at
       # shell startup. Sources match the paths .zshrc expects under ~/.zsh/plugins.

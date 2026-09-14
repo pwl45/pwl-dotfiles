@@ -1,0 +1,45 @@
+# Hermes Agent configuration
+# Reference: hermes-agent/cli-config.yaml.example (vendored in the flake)
+
+model:
+  # GLM 5.3 via OpenRouter as the daily default. Switch models per
+  # conversation with /model; GPT models ride the ChatGPT subscription
+  # via the openai-codex provider (added with `hermes auth add openai-codex`).
+  default: "z-ai/glm-5.3"
+
+  # Deterministic for the default model: GLM only exists on OpenRouter.
+  # When switching to GPT models, force Codex per-session via /model.
+  provider: "openrouter"
+
+provider_routing:
+  # Applies to OpenRouter traffic only.
+  #
+  # Belt and suspenders: exclude any provider that may store data or
+  # train on it, for every model.
+  data_collection: "deny"
+
+  # Pin GLM inference to US-hosted providers only (verified 2026-09-13
+  # with live requests; slugs from OpenRouter's provider registry).
+  # Fails closed: if all pinned providers are down, the request errors
+  # rather than falling back to Z.ai/Baidu/SiliconFlow.
+  models:
+    "z-ai/glm-5.3":
+      only:
+        - together
+        - fireworks
+        - baseten
+        - digitalocean
+        - crusoe
+        - modal
+        - reka
+        - decart
+    "z-ai/glm-5.3-flash":
+      only:
+        - together
+        - fireworks
+        - baseten
+        - digitalocean
+        - crusoe
+        - modal
+        - reka
+        - decart
