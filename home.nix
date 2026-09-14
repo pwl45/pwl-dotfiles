@@ -70,7 +70,8 @@ in
   # release notes.
   home.stateVersion = "23.11"; # Please read the comment before changing.
 
-  # fonts.fontconfig.enable = true;
+  # Make the fonts in packages.nix actually resolvable by name on Linux (no-op on Darwin).
+  fonts.fontconfig.enable = isLinux;
   home.packages =
     (import ./packages.nix {
       inherit
@@ -136,6 +137,17 @@ in
       ".config/alacritty/alacritty.toml".source = link "${dotfiles}/alacritty/alacritty.toml";
       ".config/ghostty/config".source = link "${dotfiles}/ghostty/config";
       ".pi/agent/settings.json".source = link "${dotfiles}/pi/agent/settings.json";
+
+      # zsh plugins, symlinked from the store so .zshrc never git-clones at
+      # shell startup. Sources match the paths .zshrc expects under ~/.zsh/plugins.
+      ".zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh".source =
+        "${pkgs.zsh-syntax-highlighting}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh";
+      ".zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh".source =
+        "${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh";
+      ".zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh".source =
+        "${pkgs.zsh-system-clipboard}/share/zsh/zsh-system-clipboard/zsh-system-clipboard.zsh";
+      # Extra zsh completions from nixpkgs; .zshrc adds this to fpath before compinit.
+      ".zsh/completions".source = "${pkgs.zsh-completions}/share/zsh/site-functions";
 
     }
     // lib.optionalAttrs isLinux {

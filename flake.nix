@@ -75,20 +75,49 @@
           };
           modules = [ ./home.nix ];
         };
+
+      # Identity -> default environment the bare "<user>@<system>" entry activates.
+      identities = {
+        paul = "desktop";
+        "paul.lapey" = "headless";
+        mosaic = "desktop";
+      };
+
+      # Every identity on every platform; platform-specific packages are
+      # gated in packages.nix with optionals isLinux/isDarwin.
+      platforms = [
+        "x86_64-linux"
+        "aarch64-darwin"
+      ];
+
+      environments = [
+        "desktop"
+        "headless"
+        "server"
+        "minimal"
+      ];
     in
     {
-      # Shared by every machine with this username and Nix platform.
-      homeConfigurations = {
-        "paul@x86_64-linux" = mkHomeConfiguration {
-          username = "paul";
-          system = "x86_64-linux";
-          environment = "desktop";
-        };
-        "paul.lapey@aarch64-darwin" = mkHomeConfiguration {
-          username = "paul.lapey";
-          system = "aarch64-darwin";
-          environment = "headless";
-        };
-      };
+      # Cross product of identities, platforms, and environments. The
+      # bare "<user>@<system>" entry is the identity's default environment
+      # (what the bootstrap script and plain `hsf` activate); appending
+      # "-<environment>" selects one explicitly (`hsf <environment>`).
+      homeConfigurations = builtins.listToAttrs (
+        nixpkgs.lib.concatMap (
+          username:
+          let
+            defaultEnvironment = identities.${username};
+            entry =
+              system: environment:
+              nixpkgs.lib.nameValuePair
+                "${username}@${system}${nixpkgs.lib.optionalString (environment != null) "-${environment}"}"
+                (mkHomeConfiguration {
+                  inherit username system;
+                  environment = if environment == null then defaultEnvironment else environment;
+                });
+          in
+          nixpkgs.lib.concatMap (system: [ (entry system null) ] ++ map (entry system) environments) platforms
+        ) (builtins.attrNames identities)
+      );
     };
 }

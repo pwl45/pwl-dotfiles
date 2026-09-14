@@ -80,20 +80,20 @@ let
   desktop = [
     qrcode
     telegram-desktop
-    discord
     pinta
     firefox
-    google-chrome
     qbittorrent
     browsh
     mpv
     imagemagick
     # code-cursor
-    zoom-us
     yt-dlp
     (import ./packages/llm.nix { inherit pkgs; })
   ]
   ++ optionals isLinux [
+    discord
+    google-chrome
+    zoom-us
     sxhkd
     redshift
     dwmblocks
@@ -142,7 +142,12 @@ let
     ubuntu-classic
     jetbrains-mono
   ]
-  ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+  # Just the Nerd Font icon/glyph font — pairs with the real families above
+  # (JetBrains Mono, Fira Code, Noto, etc.) so terminal icons work without
+  # pulling in ~50 full patched nerd-font packages.
+  ++ [
+    nerd-fonts.symbols-only
+  ];
 
   # System utilities (might not be needed on all systems)
   system = [

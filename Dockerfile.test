@@ -1,4 +1,10 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
+
+# The bootstrap activates the flake entry for the current user, so the
+# container user must match one defined in flake.nix. Defaults to the
+# headless identity; pass --build-arg USERNAME=paul to test the desktop
+# configuration.
+ARG USERNAME=paul.lapey
 
 # Set environment variables to avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -12,20 +18,20 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Create test user with sudo privileges
-RUN useradd -m -s /bin/bash testuser && \
-    usermod -aG sudo testuser && \
-    echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN useradd -m -s /bin/bash "$USERNAME" && \
+    usermod -aG sudo "$USERNAME" && \
+    echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Copy dotfiles to test user home
-COPY . /home/testuser/pwl-dotfiles
-RUN chown -R testuser:testuser /home/testuser
+# Copy dotfiles to the user home; home.nix links files from ~/pwl-dotfiles.
+COPY . /home/$USERNAME/pwl-dotfiles
+RUN chown -R "$USERNAME:$USERNAME" /home/$USERNAME
 
 # Switch to test user
-USER testuser
-WORKDIR /home/testuser/pwl-dotfiles
+USER $USERNAME
+WORKDIR /home/$USERNAME/pwl-dotfiles
 
 # Set HOME environment variable explicitly
-ENV HOME=/home/testuser
+ENV HOME=/home/$USERNAME
 
 # Run the bootstrap script
 CMD ["./home-manager-bootstrap.sh"]
