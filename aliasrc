@@ -649,7 +649,7 @@ claude-glm() {
     ANTHROPIC_BASE_URL="https://openrouter.ai/api" \
     ANTHROPIC_AUTH_TOKEN="$OPENROUTER_API_KEY" \
     ANTHROPIC_API_KEY="" \
-    claude --model "z-ai/glm-5.3" "$@"
+    claude --model "z-ai/glm-5.3[1m]" "$@"
 }
 
 # ZLE Bindings are annoying
