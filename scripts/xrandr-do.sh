@@ -5,6 +5,7 @@ status=$( xrandr -q )
 # Our custom ordering, optional
 declare -a monitor_order=(
 "eDP1" # We want this last, that's the most important thing.
+"DP-4.8"
 "LVDS-1"
 "DP1"
 "DP2"

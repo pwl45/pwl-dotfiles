@@ -78,6 +78,7 @@
 
       # Identity -> default environment the bare "<user>@<system>" entry activates.
       identities = {
+        paullapey = "desktop";
         paul = "desktop";
         "paul.lapey" = "headless";
         mosaic = "desktop";

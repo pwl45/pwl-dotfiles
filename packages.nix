@@ -46,6 +46,7 @@ let
   development = [
     cargo
     git-filter-repo
+    git-lfs
     rustc
     awscli2
     google-cloud-sdk
@@ -123,7 +124,7 @@ let
     peek
     devour
     pamixer
-    steam-run
+    steam-run-free
   ]
   ++ optionals isDarwin [
     ffmpeg
