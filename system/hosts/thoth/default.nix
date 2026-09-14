@@ -1,9 +1,6 @@
 { ... }:
 
-# Host: thoth — NUC mini PC (always-on hermes agent box, TV-connected).
-# The username stays `paul`: identity throughout the flake tree (home flake
-# identities map, authorized-keys, hermes ~/.hermes) is keyed on the user.
-# `thoth` is only the machine's hostname.
+# Host: thoth, the NUC mini PC (hermes agent, TV-connected).
 {
   imports = [
     ../../common.nix
@@ -12,21 +9,17 @@
 
   networking.hostName = "thoth";
 
-  # First NixOS release installed on THIS machine. Never change it. If
-  # nixos-generate-config produced a different value during install, match it.
+  pwl.username = "thoth";
+
+  # First release installed on this machine; never change it.
   system.stateVersion = "26.05";
 
-  # btrfs: monthly scrub against silent corruption. Also add
-  #   options = [ "compress=zstd" "noatime" ]
-  # to the btrfs fileSystems entries that nixos-generate-config writes into
-  # ./hardware-configuration.nix on first bootstrap.
+  # Add compress=zstd and noatime to the btrfs entries in hardware-configuration.nix.
   services.btrfs.autoScrub = {
     enable = true;
     interval = "monthly";
   };
 
-  # Hermes runs as user-level services; linger keeps them alive without an
-  # active login session (and after unattended reboots — matches the BIOS
-  # "power on after power failure" setting).
-  users.users.paul.linger = true;
+  # hermes runs as user services; keep them alive without a login session.
+  users.users.thoth.linger = true;
 }

@@ -81,6 +81,8 @@
         paul = "desktop";
         "paul.lapey" = "headless";
         mosaic = "desktop";
+        # thoth NUC: hermes agent host, TV-connected.
+        thoth = "desktop";
       };
 
       # Every identity on every platform; platform-specific packages are

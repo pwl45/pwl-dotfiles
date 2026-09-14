@@ -33,6 +33,7 @@
   # the host files, NOT here.
   imports = [
     ./binbash-configuration.nix
+    ./primary-user.nix
     ./postgresql-configuration.nix
     ./authorized-keys.nix
   ];
@@ -185,19 +186,16 @@
   #   # ];
   # };
 
-  users.users.paul = {
+  users.users.${config.pwl.username} = {
     isNormalUser = true;
     extraGroups = [
       "wheel"
       "audio"
       "docker"
       "networkmanager"
-    ]; # Enable ‘sudo’ for the user.
-    initialPassword = "pw123";
-    # packages = with pkgs; [
-    #   firefox
-    #   tree
-    # ];
+    ]; # Enable 'sudo' for the user.
+    initialPassword = "pw123"; # FIXME: change on first login
+    shell = pkgs.zsh;
   };
 
   users.users.ryan = {
@@ -347,7 +345,6 @@
     noto-fonts-cjk-sans
   ];
   programs.zsh.enable = true;
-  users.users.paul.shell = pkgs.zsh;
 
   services.udev.extraRules = "";
   # services.nginx.enable = true;
