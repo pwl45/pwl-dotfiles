@@ -26,7 +26,12 @@
   },
   "packages": [
     "npm:@richardgill/pi-tmux-bash",
-    "npm:pi-hashline-edit-pro"
+    "npm:pi-hashline-edit-pro",
+    "npm:@mxalbert/context-mode",
+    "npm:@ssweens/pi-handoff",
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:@juicesharp/rpiv-todo",
+    "git:github.com/code-yeongyu/pi-rules"
   ],
   "lastChangelogVersion": "0.85.1"
 }

@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Don't Document What Isn't There
 
 In code comments, commit messages, and PR descriptions, describe what the

@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Run Long Commands in tmux Windows
 
 For any command that may run for minutes (builds, tests, bazel, nix, docker,

@@ -103,18 +103,35 @@ in
       dotfiles = "${config.home.homeDirectory}/pwl-dotfiles";
       link = config.lib.file.mkOutOfStoreSymlink;
 
-      # Auto-discover every rule in the dotfiles rules dir and symlink each
-      # into ~/.claude/rules individually, so machine-specific rules dropped
-      # into ~/.claude/rules directly are left untouched. Contents edit in
-      # place; adding/removing a rule file requires a re-switch (readDir runs
-      # at eval time).
-      ruleFiles = builtins.attrNames (builtins.readDir ./.claude/rules);
-      claudeRules = builtins.listToAttrs (
-        map (name: {
-          name = ".claude/rules/${name}";
-          value.source = link "${dotfiles}/.claude/rules/${name}";
-        }) ruleFiles
+      entries =
+        dir:
+        if builtins.pathExists (./. + "/${dir}") then
+          builtins.attrNames (builtins.readDir (./. + "/${dir}"))
+        else
+          [ ];
+      links =
+        source: target:
+        builtins.listToAttrs (
+          map (name: {
+            name = "${target}/${name}";
+            value.source = link "${dotfiles}/${source}/${name}";
+          }) (entries source)
+        );
+      sharedRules = map (name: builtins.readFile (./. + "/.agents/rules/${name}")) (
+        entries ".agents/rules"
       );
+
+      # Agent-specific skills override shared skills with the same name.
+      agentFiles =
+        links ".agents/rules" ".agents/rules"
+        // links ".agents/rules" ".claude/rules"
+        // links ".agents/skills" ".agents/skills"
+        // links ".agents/skills" ".claude/skills"
+        // links ".claude/skills" ".claude/skills"
+        // links ".agents/skills" ".codex/skills"
+        // links ".codex/skills" ".codex/skills"
+        // links ".agents/skills" ".pi/agent/skills"
+        // links ".pi/agent/skills" ".pi/agent/skills";
     in
     {
       ".config/emacs/config.org".source = link "${dotfiles}/emacs/config.org";
@@ -136,7 +153,8 @@ in
       ".tmux.conf".source = link "${dotfiles}/.tmux.conf";
       ".config/alacritty/alacritty.toml".source = link "${dotfiles}/alacritty/alacritty.toml";
       ".config/ghostty/config".source = link "${dotfiles}/ghostty/config";
-      ".pi/agent/settings.json".source = link "${dotfiles}/pi/agent/settings.json";
+      ".codex/AGENTS.md".text = builtins.concatStringsSep "\n\n" sharedRules;
+      ".pi/agent/settings.json".source = link "${dotfiles}/.pi/agent/settings.json";
       ".hermes/config.yaml".source = link "${dotfiles}/hermes/config.yaml";
       # NOTE: ~/.hermes/.env (API keys) and hermes auth state are intentionally
       # NOT tracked — they stay in ~/.hermes outside the repo.
@@ -160,7 +178,7 @@ in
     // lib.optionalAttrs isDarwin {
       ".hammerspoon/init.lua".source = link "${dotfiles}/hammerspoon/init.lua";
     }
-    // claudeRules;
+    // agentFiles;
 
   # programs.git = {
   #   enable = true;

@@ -2,14 +2,54 @@
 # Reference: hermes-agent/cli-config.yaml.example (vendored in the flake)
 
 model:
-  # GLM 5.3 via OpenRouter as the daily default. Switch models per
-  # conversation with /model; GPT models ride the ChatGPT subscription
-  # via the openai-codex provider (added with `hermes auth add openai-codex`).
-  default: "z-ai/glm-5.3"
+  # Default everywhere (all hosts, all identities): GPT-5.6 Sol over the
+  # ChatGPT subscription via Codex OAuth. One-time per host:
+  #   hermes auth add openai-codex
+  # (device-code flow; the credential stays untracked in ~/.hermes).
+  # Interactive conversations (CLI, TUI, messaging gateway) land here.
+  default: "gpt-5.6-sol"
+  provider: "openai-codex"
 
-  # Deterministic for the default model: GLM only exists on OpenRouter.
-  # When switching to GPT models, force Codex per-session via /model.
-  provider: "openrouter"
+  # Note: Codex OAuth caps the gpt-5.6 family at 272K context (the direct
+  # OpenAI API allows ~1.05M); hermes resolves the window automatically.
+
+cron:
+  # Background/scheduled jobs default to the cheaper sibling. Fire-time
+  # resolution: per-job pin > cron.model > creation-time snapshot >
+  # model.default — so cron.model moves the whole fleet at once.
+  # Per-job override: hermes cron create --model <m> --provider <p> ...
+  model: "gpt-5.6-luna"
+  # Inference provider paired with cron.model. ("provider" under cron:
+  # is a *scheduler* plugin setting, not this.)
+  model_provider: "openai-codex"
+
+auxiliary:
+  # Background side tasks on luna over the same Codex OAuth. Spelling:
+  # auxiliary blocks call the codex provider "codex", not "openai-codex".
+  # vision stays on "auto" — luna's vision support is unverified, and the
+  # codex default (gpt-5.3-codex) is vision-capable.
+  background_review:
+    provider: "codex"
+    model: "gpt-5.6-luna"
+  compression:
+    provider: "codex"
+    model: "gpt-5.6-luna"
+  title_generation:
+    provider: "codex"
+    model: "gpt-5.6-luna"
+
+model_aliases:
+  # /model sol | /model luna | /model glm for quick per-session switches.
+  sol:
+    model: "gpt-5.6-sol"
+    provider: "openai-codex"
+  luna:
+    model: "gpt-5.6-luna"
+    provider: "openai-codex"
+  glm:
+    model: "z-ai/glm-5.3"
+    provider: "openrouter"
+    # provider_routing below (US-only, data_collection deny) applies here.
 
 provider_routing:
   # Applies to OpenRouter traffic only.

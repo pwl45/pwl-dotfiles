@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # On Disk-Full, Stop and Ask — Never Clean Up Yourself
 
 If a command fails with "No space left on device" (or you otherwise run out of

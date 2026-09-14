@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Don't Push to GitHub Unprompted in an Interactive Chat
 
 During back-and-forth conversation, do not `git push`, force-push, create or edit a

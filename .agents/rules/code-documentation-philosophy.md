@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Code Documentation Philosophy
 
 Enforce an information hierarchy: each fact about the code lives in exactly
