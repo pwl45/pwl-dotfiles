@@ -47,6 +47,9 @@ export EDITOR=nvim
 export SUDO_EDITOR=$(which nvim)
 
 # Basic auto/tab complete:
+# Extra completions from nixpkgs (symlinked to ~/.zsh/completions by home-manager;
+# must precede compinit for the files to be picked up)
+fpath=($HOME/.zsh/completions $fpath)
 autoload -U compinit && compinit
 zstyle ':completion:*' menu select
 zmodload zsh/complist
@@ -100,7 +103,6 @@ alias history="history 1"
 # neofetch
 
 
-fpath=(~/zsh-completions/src $fpath)
 
 # [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 if [ -n "${commands[fzf-share]}" ]; then
@@ -115,7 +117,7 @@ export FZF_COMPLETION_TRIGGER=''
 
 if [[ -n $DISPLAY ]]; then
     # zsh-system-clipboard
-    [ -e "$HOME/.zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh" ] || ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/kutsan/zsh-system-clipboard $HOME/.zsh/plugins/zsh-system-clipboard )
+    # zsh-system-clipboard (symlinked from nixpkgs by home-manager)
     source "$HOME/.zsh/plugins/zsh-system-clipboard/zsh-system-clipboard.zsh"
     
     # other X things
@@ -127,13 +129,11 @@ fi
 [ -f "$HOME/.config/zsh/.local.zshrc" ] && source "$HOME/.config/zsh/.local.zshrc"
 
 # zsh-syntax-highlighting
-[ -e "$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] ||
-    ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.zsh/plugins/zsh-syntax-highlighting )
+# zsh-syntax-highlighting (symlinked from nixpkgs by home-manager)
 source "$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # zsh-autosuggestions
-[ -e "$HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ] ||
-    ( mkdir -p $HOME/.zsh/plugins/ && git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.zsh/plugins/zsh-autosuggestions )
+# zsh-autosuggestions (symlinked from nixpkgs by home-manager)
 source "$HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 
