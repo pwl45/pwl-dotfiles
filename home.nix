@@ -22,22 +22,6 @@ let
     doCheck = false;
   } (builtins.readFile ./ntok.py);
 
-  # `errexit` is omitted deliberately: monitor inspects the exit status of the
-  # command it wraps and must stay alive to report it.
-  monitor = pkgs.writeShellApplication {
-    name = "monitor";
-    runtimeInputs = with pkgs; [
-      coreutils
-      findutils
-      procps
-      util-linux
-    ];
-    bashOptions = [
-      "nounset"
-      "pipefail"
-    ];
-    text = builtins.readFile ./scripts/monitor.sh;
-  };
 in
 {
   imports = [
@@ -95,7 +79,6 @@ in
         customPkgs
         mdcodecat
         ntok
-        monitor
         ;
       inherit environment;
     })
@@ -152,6 +135,7 @@ in
       ".tmux.conf".source = link "${dotfiles}/.tmux.conf";
       ".config/alacritty/alacritty.toml".source = link "${dotfiles}/alacritty/alacritty.toml";
       ".config/ghostty/config".source = link "${dotfiles}/ghostty/config";
+      ".pi/agent/settings.json".source = link "${dotfiles}/pi/agent/settings.json";
 
     }
     // lib.optionalAttrs isLinux {

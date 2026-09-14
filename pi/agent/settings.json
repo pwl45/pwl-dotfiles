@@ -1,0 +1,9 @@
+{
+  "defaultProvider": "openrouter",
+  "defaultModel": "z-ai/glm-5.3",
+  "defaultThinkingLevel": "high",
+  "packages": [
+    "npm:@richardgill/pi-tmux-bash",
+    "npm:pi-hashline-edit-pro"
+  ]
+}

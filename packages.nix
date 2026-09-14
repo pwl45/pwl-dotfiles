@@ -4,7 +4,6 @@
   customPkgs,
   mdcodecat,
   ntok,
-  monitor,
   environment ? "desktop",
   ...
 }:
@@ -38,8 +37,6 @@ let
     bc
   ]
   ++ optionals isLinux [
-    # The monitor wrapper uses Linux process and session utilities.
-    monitor
     xclip
     xsel
     util-linux
@@ -63,6 +60,7 @@ let
     mermaid-cli
     opencode
     pi-coding-agent
+    nodejs
     texliveFull
     tcpdump
     speedtest-cli

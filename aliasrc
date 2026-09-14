@@ -645,6 +645,13 @@ nfng() {
 alias claude='claude --dangerously-skip-permissions'
 alias codex='codex --yolo'
 
+claude-glm() {
+    ANTHROPIC_BASE_URL="https://openrouter.ai/api" \
+    ANTHROPIC_AUTH_TOKEN="$OPENROUTER_API_KEY" \
+    ANTHROPIC_API_KEY="" \
+    claude --model "z-ai/glm-5.3" "$@"
+}
+
 # ZLE Bindings are annoying
 # Need to wrap the function in a new function that resets the prompt after the function is called
 # And do zle -N to register the new function with zle
