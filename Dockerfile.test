@@ -1,9 +1,7 @@
 FROM ubuntu:24.04
 
-# The bootstrap activates the flake entry for the current user, so the
-# container user must match one defined in flake.nix. Defaults to the
-# headless identity; pass --build-arg USERNAME=paul to test the desktop
-# configuration.
+# Defaults to the headless test identity; pass --build-arg USERNAME=paul to
+# test the desktop configuration.
 ARG USERNAME=paul.lapey
 
 # Set environment variables to avoid interactive prompts

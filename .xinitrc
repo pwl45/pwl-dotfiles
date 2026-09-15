@@ -1,6 +1,10 @@
 # programs i want to run every time i open X
 dbus-update-activation-environment --systemd DISPLAY XAUTHORITY
 
+if [ -r "$HOME/.Xresources" ]; then
+    xrdb -merge "$HOME/.Xresources"
+fi
+
 xset r rate 300 50 # Set repeated keystroke rate.
 setxkbmap -option ctrl:nocaps
 xcape -e 'Control_L=Escape'

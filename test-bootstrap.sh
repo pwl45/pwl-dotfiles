@@ -55,14 +55,20 @@ build_and_run_test() {
     # Bootstrap and verify in a single `docker run`: the container exits with
     # the bootstrap script, so there is no running container to `docker exec`
     # into afterwards.
-    docker run --name "$CONTAINER_NAME" "$IMAGE_NAME" bash -c '
+    docker run --name "$CONTAINER_NAME" --hostname home-manager-bootstrap-test "$IMAGE_NAME" bash -c '
         set -euo pipefail
+        export USER="$(whoami)"
 
-        ./home-manager-bootstrap.sh
+        if [[ "$USER" == "paul.lapey" ]]; then
+            ./home-manager-bootstrap.sh headless
+        else
+            ./home-manager-bootstrap.sh desktop
+        fi
 
         echo "Verifying bootstrap results..."
-        # Single-user Nix installed by the bootstrap is not on PATH until sourced.
+        # Single-user Nix installed by the bootstrap is not on PATH in this shell.
         . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+        export PATH="$HOME/.nix-profile/bin:$PATH"
         nix --version
         echo "✓ Nix installed successfully"
 

@@ -47,6 +47,7 @@
           username,
           system,
           environment,
+          terminalFontPixels ? null,
         }:
         let
           pkgs = nixpkgs.legacyPackages.${system};
@@ -70,28 +71,13 @@
             hermesAgent =
               if pkgs.stdenv.hostPlatform.isDarwin then null else hermes-agent.packages.${system}.messaging;
             inherit customPkgs; # Pass the custom packages to home.nix
-            inherit username environment;
+            inherit username environment terminalFontPixels;
             unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
           };
           modules = [ ./home.nix ];
         };
 
-      # Identity -> default environment the bare "<user>@<system>" entry activates.
-      identities = {
-        paullapey = "desktop";
-        paul = "desktop";
-        "paul.lapey" = "headless";
-        mosaic = "desktop";
-        # thoth NUC: hermes agent host, TV-connected.
-        thoth = "desktop";
-      };
-
-      # Every identity on every platform; platform-specific packages are
-      # gated in packages.nix with optionals isLinux/isDarwin.
-      platforms = [
-        "x86_64-linux"
-        "aarch64-darwin"
-      ];
+      hosts = builtins.fromJSON (builtins.readFile ./hosts.json);
 
       environments = [
         "desktop"
@@ -99,28 +85,49 @@
         "server"
         "minimal"
       ];
+
+      homeEntries =
+        {
+          username,
+          system,
+          hostname,
+          defaultEnvironment,
+          terminalFontPixels ? null,
+        }:
+        let
+          entry =
+            environment:
+            nixpkgs.lib.nameValuePair
+              "${username}@${hostname}${nixpkgs.lib.optionalString (environment != null) "-${environment}"}"
+              (mkHomeConfiguration {
+                inherit username system terminalFontPixels;
+                environment = if environment == null then defaultEnvironment else environment;
+              });
+        in
+        [ (entry null) ] ++ map entry environments;
+
+      hostHomeConfigurations = builtins.listToAttrs (
+        nixpkgs.lib.concatMap (
+          hostname:
+          let
+            host = hosts.${hostname};
+          in
+          nixpkgs.lib.concatMap (
+            username:
+            let
+              user = host.users.${username};
+            in
+            homeEntries {
+              inherit username hostname;
+              inherit (host) system;
+              inherit (user) defaultEnvironment;
+              terminalFontPixels = host.terminalFontPixels or null;
+            }
+          ) (builtins.attrNames host.users)
+        ) (builtins.attrNames hosts)
+      );
     in
     {
-      # Cross product of identities, platforms, and environments. The
-      # bare "<user>@<system>" entry is the identity's default environment
-      # (what the bootstrap script and plain `hsf` activate); appending
-      # "-<environment>" selects one explicitly (`hsf <environment>`).
-      homeConfigurations = builtins.listToAttrs (
-        nixpkgs.lib.concatMap (
-          username:
-          let
-            defaultEnvironment = identities.${username};
-            entry =
-              system: environment:
-              nixpkgs.lib.nameValuePair
-                "${username}@${system}${nixpkgs.lib.optionalString (environment != null) "-${environment}"}"
-                (mkHomeConfiguration {
-                  inherit username system;
-                  environment = if environment == null then defaultEnvironment else environment;
-                });
-          in
-          nixpkgs.lib.concatMap (system: [ (entry system null) ] ++ map (entry system) environments) platforms
-        ) (builtins.attrNames identities)
-      );
+      homeConfigurations = hostHomeConfigurations;
     };
 }

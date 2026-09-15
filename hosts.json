@@ -1,0 +1,51 @@
+{
+  "klausdebug": {
+    "system": "x86_64-linux",
+    "users": {
+      "paul": {
+        "defaultEnvironment": "desktop"
+      }
+    }
+  },
+  "p53": {
+    "system": "x86_64-linux",
+    "users": {
+      "paul": {
+        "defaultEnvironment": "desktop"
+      }
+    }
+  },
+  "sunday-000592721": {
+    "system": "x86_64-linux",
+    "terminalFontPixels": 24,
+    "users": {
+      "paullapey": {
+        "defaultEnvironment": "desktop"
+      }
+    }
+  },
+  "t480": {
+    "system": "x86_64-linux",
+    "users": {
+      "paul": {
+        "defaultEnvironment": "desktop"
+      }
+    }
+  },
+  "thoth": {
+    "system": "x86_64-linux",
+    "users": {
+      "thoth": {
+        "defaultEnvironment": "desktop"
+      }
+    }
+  },
+  "paullapeysundayais-MacBook-Air.local": {
+    "system": "aarch64-darwin",
+    "users": {
+      "paul.lapey": {
+        "defaultEnvironment": "headless"
+      }
+    }
+  }
+}

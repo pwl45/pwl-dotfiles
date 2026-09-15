@@ -11,6 +11,7 @@
   username,
   environment,
   hermesAgent,
+  terminalFontPixels,
   ...
 }:
 let
@@ -72,6 +73,9 @@ in
 
   # Make the fonts in packages.nix actually resolvable by name on Linux (no-op on Darwin).
   fonts.fontconfig.enable = isLinux;
+  xresources.properties = lib.mkIf (isLinux && terminalFontPixels != null) {
+    "st.font" = "mono:pixelsize=${toString terminalFontPixels}:antialias=true:autohint=true";
+  };
   home.packages =
     (import ./packages.nix {
       inherit

@@ -288,23 +288,19 @@ cane(){
     git commit --amend --no-edit
 }
 
-home_configuration() {
-    local platform
-    platform=$(nix --extra-experimental-features 'nix-command flakes' eval --impure --raw --expr 'builtins.currentSystem') || return
-    printf '%s@%s\n' "${USER:-$(whoami)}" "$platform"
-}
-
 unalias hsf 2>/dev/null || true
 # hsf [environment] [home-manager args...] — e.g. `hsf headless -b backup`.
-# Without an environment, activates the flake's default for this identity.
+# Without an environment, activates this host's default environment.
 function hsf() {
-    local configuration environment
-    configuration=$(home_configuration) || return
+    local configuration environment host
+    host=$(command hostname) || return
+    configuration="${USER:-$(whoami)}@${host}"
     environment="${1:-}"
     if [[ -n "$environment" && "$environment" != -* ]]; then
         shift
         configuration="${configuration}-${environment}"
     fi
+    echo "Activating Home Manager: $configuration"
     home-manager switch --flake "$HOME/pwl-dotfiles#$configuration" "$@"
 }
 alias snrs='sudo nixos-rebuild switch --flake $HOME/pwl-dotfiles/system#$(hostname)'

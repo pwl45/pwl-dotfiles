@@ -1,13 +1,17 @@
 #!/bin/bash
 #
 # Home Manager bootstrap for Linux and macOS. Installs Nix, enables flakes,
-# selects the flake entry for the current username/platform, and activates via
-# `nix run home-manager`. The only per-platform differences live in the case
-# block below; everything after it is shared.
+# selects the flake entry for the current username and host, and activates
+# via `nix run home-manager`.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ $# -gt 1 ]]; then
+    echo "Usage: $0 [initial-environment]" >&2
+    exit 2
+fi
+INITIAL_ENVIRONMENT="${1:-desktop}"
 
 echo "Home Manager Bootstrap"
 echo "======================"
@@ -73,9 +77,11 @@ configure_nix() {
 
 switch_to_flake() {
     source_nix
-    local platform configuration
+    local platform configuration host
     platform=$(nix --extra-experimental-features 'nix-command flakes' eval --impure --raw --expr 'builtins.currentSystem')
-    configuration="${USER:-$(whoami)}@$platform"
+    host=$(hostname)
+    "$SCRIPT_DIR/scripts/ensure-home-host.sh" "$host" "${USER:-$(whoami)}" "$platform" "$INITIAL_ENVIRONMENT"
+    configuration="${USER:-$(whoami)}@$host"
     echo "Activating Home Manager: $configuration"
     # -b backup renames pre-existing files HM would refuse to overwrite.
     # Username may contain a dot, so quote it in the flake ref.
