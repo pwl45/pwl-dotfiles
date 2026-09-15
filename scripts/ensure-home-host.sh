@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -ne 4 ]]; then
-    echo "Usage: $0 <hostname> <username> <system> <initial-environment>" >&2
+if [[ $# -gt 2 ]]; then
+    echo "Usage: $0 [initial-environment] [hostname]" >&2
     exit 2
 fi
 
-HOSTNAME_VALUE=$1
-USERNAME_VALUE=$2
-SYSTEM_VALUE=$3
-INITIAL_ENVIRONMENT=$4
+INITIAL_ENVIRONMENT=${1:-desktop}
+HOSTNAME_VALUE=${2:-$(hostname)}
+USERNAME_VALUE=${USER:-$(whoami)}
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 HOSTS_FILE="$REPO_DIR/hosts.json"
 
-for value in "$HOSTNAME_VALUE" "$USERNAME_VALUE" "$SYSTEM_VALUE" "$INITIAL_ENVIRONMENT"; do
+for value in "$HOSTNAME_VALUE" "$USERNAME_VALUE" "$INITIAL_ENVIRONMENT"; do
     if [[ ! "$value" =~ ^[A-Za-z0-9._-]+$ ]]; then
         echo "Invalid host configuration value: $value" >&2
         exit 2
@@ -29,6 +28,12 @@ case "$INITIAL_ENVIRONMENT" in
         exit 2
         ;;
 esac
+
+SYSTEM_VALUE=$(nix --extra-experimental-features 'nix-command flakes' eval --impure --raw --expr 'builtins.currentSystem')
+if [[ ! "$SYSTEM_VALUE" =~ ^[A-Za-z0-9._-]+$ ]]; then
+    echo "Invalid host configuration value: $SYSTEM_VALUE" >&2
+    exit 2
+fi
 
 if command -v jq >/dev/null 2>&1; then
     JQ=(jq)
@@ -54,10 +59,12 @@ trap 'rm -f "$TEMP_FILE"' EXIT
     ' "$HOSTS_FILE" > "$TEMP_FILE"
 
 if cmp -s "$HOSTS_FILE" "$TEMP_FILE"; then
+    printf '%s@%s\n' "$USERNAME_VALUE" "$HOSTNAME_VALUE"
     exit 0
 fi
 
 chmod 0644 "$TEMP_FILE"
 mv "$TEMP_FILE" "$HOSTS_FILE"
 trap - EXIT
-echo "Updated Home Manager host entry: $USERNAME_VALUE@$HOSTNAME_VALUE ($INITIAL_ENVIRONMENT)"
+echo "Updated Home Manager host entry: $USERNAME_VALUE@$HOSTNAME_VALUE ($INITIAL_ENVIRONMENT)" >&2
+printf '%s@%s\n' "$USERNAME_VALUE" "$HOSTNAME_VALUE"

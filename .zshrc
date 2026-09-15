@@ -8,6 +8,7 @@ autoload -U colors && colors
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/pwl-dotfiles/scripts:$PATH"
 export PATH="$HOME/.hermes/bin:$PATH"
+export PATH="$PATH:$HOME/.nix-profile/bin"
 if [ -z "$TMUX" ]; then
     # Generate a unique session name with the format YYYY_MM_DD
     session_name="session_$(date +%Y_%m_%d)_$RANDOM"
@@ -137,3 +138,6 @@ source "$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 source "$HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 
+# lemi-ssh START
+source "/home/paullapey/lemi/tools/lemi-ssh.sh"
+# lemi-ssh END

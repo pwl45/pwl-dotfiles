@@ -16,6 +16,5 @@ if [ ! -f "$HW" ] || grep -q PLACEHOLDER "$HW"; then echo "Generating hardware c
 echo "Rebuilding system for host: $HOST"
 sudo nixos-rebuild switch --flake "./system#$HOST"
 echo "Applying home-manager"
-SYSTEM="$(uname -m)-linux"
-"$PWD/scripts/ensure-home-host.sh" "$HOST" "$(whoami)" "$SYSTEM" "$INITIAL_ENVIRONMENT"
-home-manager switch --flake ".#$(whoami)@$HOST"
+CONFIGURATION=$("$PWD/scripts/ensure-home-host.sh" "$INITIAL_ENVIRONMENT" "$HOST")
+home-manager switch --flake ".#$CONFIGURATION"

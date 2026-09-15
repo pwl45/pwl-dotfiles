@@ -77,11 +77,8 @@ configure_nix() {
 
 switch_to_flake() {
     source_nix
-    local platform configuration host
-    platform=$(nix --extra-experimental-features 'nix-command flakes' eval --impure --raw --expr 'builtins.currentSystem')
-    host=$(hostname)
-    "$SCRIPT_DIR/scripts/ensure-home-host.sh" "$host" "${USER:-$(whoami)}" "$platform" "$INITIAL_ENVIRONMENT"
-    configuration="${USER:-$(whoami)}@$host"
+    local configuration
+    configuration=$("$SCRIPT_DIR/scripts/ensure-home-host.sh" "$INITIAL_ENVIRONMENT")
     echo "Activating Home Manager: $configuration"
     # -b backup renames pre-existing files HM would refuse to overwrite.
     # Username may contain a dot, so quote it in the flake ref.
