@@ -1,0 +1,72 @@
+#!/bin/sh
+# Route copy and paste through tmux or the host's native clipboard.
+
+sync_tmux_environment() {
+    [ -n "${TMUX:-}" ] || return
+
+    for name in DISPLAY WAYLAND_DISPLAY XAUTHORITY; do
+        value=$(tmux show-environment "$name" 2>/dev/null) || value=
+        case "$value" in
+            "$name="*) export "${value?}" ;;
+            *) unset "$name" ;;
+        esac
+    done
+}
+
+native_provider() {
+    if command -v pbcopy >/dev/null 2>&1 && command -v pbpaste >/dev/null 2>&1; then
+        printf '%s\n' pbcopy
+    elif [ -n "${WAYLAND_DISPLAY:-}" ] &&
+        command -v wl-copy >/dev/null 2>&1 && command -v wl-paste >/dev/null 2>&1; then
+        printf '%s\n' wayland
+    elif [ -n "${DISPLAY:-}" ] && command -v xclip >/dev/null 2>&1; then
+        printf '%s\n' xclip
+    else
+        return 1
+    fi
+}
+
+copy_native() {
+    case "$1" in
+        pbcopy) pbcopy ;;
+        wayland) wl-copy ;;
+        xclip) xclip -i -selection clipboard ;;
+    esac
+}
+
+paste_native() {
+    case "$1" in
+        pbcopy) pbpaste ;;
+        wayland) wl-paste --no-newline ;;
+        xclip) xclip -o -selection clipboard ;;
+    esac
+}
+
+sync_tmux_environment
+provider=$(native_provider) || provider=
+
+case "${1:-}" in
+    copy)
+        if [ -n "${TMUX:-}" ]; then
+            tmux load-buffer -w - || exit
+            [ -z "$provider" ] || tmux save-buffer - | copy_native "$provider"
+        elif [ -n "$provider" ]; then
+            copy_native "$provider"
+        else
+            cat >/dev/null
+        fi
+        ;;
+    paste)
+        if [ -n "$provider" ]; then
+            paste_native "$provider"
+        elif [ -n "${TMUX:-}" ]; then
+            tmux refresh-client -l || exit
+            sleep 0.05
+            exec tmux save-buffer -
+        fi
+        ;;
+    *)
+        printf 'usage: %s copy|paste\n' "$0" >&2
+        exit 2
+        ;;
+esac

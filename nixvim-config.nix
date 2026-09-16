@@ -159,7 +159,16 @@
   # Route clipboard access through the client attached to tmux.
   extraConfigLuaPre = ''
     if vim.env.TMUX ~= nil and vim.env.TMUX ~= "" then
-      vim.g.clipboard = "tmux"
+      local clipboard = vim.fn.expand("~/pwl-dotfiles/scripts/clipboard")
+      local copy = { clipboard, "copy" }
+      local paste = { clipboard, "paste" }
+
+      vim.g.clipboard = {
+        name = "tmux client",
+        copy = { ["+"] = copy, ["*"] = copy },
+        paste = { ["+"] = paste, ["*"] = paste },
+        cache_enabled = 0,
+      }
     end
   '';
 
