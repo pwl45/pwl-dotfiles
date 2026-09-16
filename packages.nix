@@ -45,6 +45,7 @@ let
   # Development tools
   development = [
     cargo
+    podman
     git-filter-repo
     git-lfs
     rustc

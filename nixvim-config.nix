@@ -156,17 +156,9 @@
   clipboard.register = "unnamedplus";
   clipboard.providers.xclip.enable = pkgs.stdenv.hostPlatform.isLinux;
 
-  # In a text console or remote tmux session there is no native system
-  # clipboard. Use tmux's paste buffer for the + and * registers instead.
-  # This must run before Neovim initializes its clipboard provider.
+  # Route clipboard access through the client attached to tmux.
   extraConfigLuaPre = ''
-    local has_native_clipboard =
-      vim.fn.executable("pbcopy") == 1
-      or (vim.env.WAYLAND_DISPLAY ~= nil and vim.fn.executable("wl-copy") == 1)
-      or (vim.env.DISPLAY ~= nil and
-          (vim.fn.executable("xclip") == 1 or vim.fn.executable("xsel") == 1))
-
-    if vim.env.TMUX ~= nil and vim.env.TMUX ~= "" and not has_native_clipboard then
+    if vim.env.TMUX ~= nil and vim.env.TMUX ~= "" then
       vim.g.clipboard = "tmux"
     end
   '';
