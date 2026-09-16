@@ -111,8 +111,6 @@ let
     customPkgs.dmenu
     dwm
     st
-    slock
-    i3lock
     xscreensaver
     lightlocker
     xlockmore

@@ -41,7 +41,7 @@ super + ctrl + h;
 super + ctrl + Return;
     st -d "$( tail -n 1 $HOME/.shell-dir )"
 super + ctrl + l;
-    slock
+    $HOME/pwl-dotfiles/scripts/lock-screen.sh
 super + ctrl + space; 
     st -e ssh -Y work
 super + ctrl + y
