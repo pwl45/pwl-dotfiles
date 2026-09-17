@@ -23,6 +23,17 @@ let
     doCheck = false;
   } (builtins.readFile ./ntok.py);
 
+  selection = import ./packages.nix {
+    inherit
+      pkgs
+      unstablePkgs
+      customPkgs
+      mdcodecat
+      ntok
+      environment
+      ;
+  };
+
 in
 {
   imports = [
@@ -77,18 +88,10 @@ in
     "st.font" = "mono:pixelsize=${toString terminalFontPixels}:antialias=true:autohint=true";
   };
   home.packages =
-    (import ./packages.nix {
-      inherit
-        pkgs
-        unstablePkgs
-        customPkgs
-        mdcodecat
-        ntok
-        ;
-      inherit environment;
-    })
+    selection.packages
     # hermesAgent is null on Darwin (no build there); only append when present.
     ++ pkgs.lib.optional (hermesAgent != null) hermesAgent;
+  home.sessionPath = map (pkg: "${lib.getBin pkg}/bin") selection.preferredPackages;
 
   programs.neovim = {
     enable = false;

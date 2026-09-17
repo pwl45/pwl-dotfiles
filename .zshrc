@@ -9,6 +9,9 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/pwl-dotfiles/scripts:$PATH"
 export PATH="$HOME/.hermes/bin:$PATH"
 export PATH="$PATH:$HOME/.nix-profile/bin"
+if [[ -f "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]]; then
+    source "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+fi
 if [ -z "$TMUX" ]; then
     # Generate a unique session name with the format YYYY_MM_DD
     session_name="session_$(date +%Y_%m_%d)_$RANDOM"

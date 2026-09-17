@@ -12,6 +12,11 @@ let
   inherit (lib) optionals;
   inherit (stdenv.hostPlatform) isLinux isDarwin;
 
+  prefer = package: {
+    inherit package;
+    preferNix = true;
+  };
+
   # Each group starts with shared packages, followed by OS-specific additions.
   # Core packages needed everywhere
   core = [
@@ -84,7 +89,7 @@ let
     qrcode
     telegram-desktop
     pinta
-    firefox
+    (prefer firefox)
     qbittorrent
     browsh
     mpv
@@ -168,5 +173,19 @@ let
     desktop = core ++ development ++ desktop ++ fonts ++ system;
     headless = core ++ development ++ system;
   };
+
+  selected = map (
+    entry:
+    if lib.isDerivation entry then
+      {
+        package = entry;
+        preferNix = false;
+      }
+    else
+      entry
+  ) environments.${environment};
 in
-environments.${environment}
+{
+  packages = map (entry: entry.package) selected;
+  preferredPackages = map (entry: entry.package) (builtins.filter (entry: entry.preferNix) selected);
+}
