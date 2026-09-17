@@ -20,8 +20,8 @@ alias please="sudo"
 alias vim="nvim"
 alias ll='ls -alF'
 alias la='eza -al --color=always --group-directories-first'
-alias cb='$HOME/pwl-dotfiles/scripts/clipboard copy'
-alias cbo='$HOME/pwl-dotfiles/scripts/clipboard paste'
+alias cb='clipboard copy'
+alias cbo='clipboard paste'
 # alias l='ls -CF'
 # alias debugoff="find -name settings.py -exec sed -i 's/DEBUG\s*=\s*True/DEBUG=false/g' {} \+"
 # alias debugon="find -name settings.py -exec sed -i 's/DEBUG\s*=\s*false/DEBUG=True/g' {} \+"
