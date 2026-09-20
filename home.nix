@@ -98,7 +98,7 @@ in
     withPython3 = true;
     plugins = with pkgs.vimPlugins; [ coq_nvim ];
   };
-  # programs.zsh.enable = true;
+  programs.zsh.zprof.enable = true;
 
   # Out-of-store symlinks: edits to the files in the dotfiles repo are live
   # without a `home-manager switch`. Only re-switch when adding/removing files

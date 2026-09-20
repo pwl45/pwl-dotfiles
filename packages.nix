@@ -44,6 +44,7 @@ let
   ++ optionals isLinux [
     xclip
     xsel
+    xcape
     util-linux
   ];
 

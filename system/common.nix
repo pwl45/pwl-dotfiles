@@ -2,7 +2,12 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   nixpkgs.overlays = [
@@ -40,7 +45,10 @@
 
   nix = {
     package = pkgs.nixVersions.stable;
-    settings.experimental-features = [ "nix-command" "flakes" ];
+    settings.experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
   };
   # nixpkgs.config = { allowUnfree = true; };
 
@@ -48,8 +56,11 @@
   #   [ "freeimage-unstable-2021-11-01" ];
   nixpkgs.config = {
     allowUnfree = true;
-    permittedInsecurePackages =
-      [ "openssl-1.1.1w" "nix-2.16.2" "freeimage-unstable-2021-11-01" ];
+    permittedInsecurePackages = [
+      "openssl-1.1.1w"
+      "nix-2.16.2"
+      "freeimage-unstable-2021-11-01"
+    ];
   };
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -117,7 +128,9 @@
     displayManager.lightdm.enable = false;
     displayManager.startx.enable = true;
   };
-  services.libinput = { touchpad.tapping = false; };
+  services.libinput = {
+    touchpad.tapping = false;
+  };
   services.tailscale = {
     enable = true;
     extraUpFlags = [ ]; # This ensures no --no-logs-no-support flag is passed
@@ -130,8 +143,7 @@
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; # Optional: Enable Steam Remote Play
-    dedicatedServer.openFirewall =
-      true; # Optional: Enable Steam Dedicated Server
+    dedicatedServer.openFirewall = true; # Optional: Enable Steam Dedicated Server
   };
   hardware.graphics = {
     enable = true;
@@ -163,8 +175,7 @@
     enable = true;
     alsa.enable = true;
     jack.enable = true; # Optional: for JACK compatibility
-    pulse.enable =
-      true; # PipeWire will handle PulseAudio-compatible applications
+    pulse.enable = true; # PipeWire will handle PulseAudio-compatible applications
   };
   hardware.keyboard.qmk.enable = true;
   hardware.bluetooth = {
@@ -303,8 +314,13 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
-  networking.firewall.allowedTCPPorts =
-    [ 22 80 443 8080 8000 ]; # Default SSH port
+  networking.firewall.allowedTCPPorts = [
+    22
+    80
+    443
+    8080
+    8000
+  ]; # Default SSH port
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
@@ -345,6 +361,7 @@
     noto-fonts-cjk-sans
   ];
   programs.zsh.enable = true;
+  programs.zsh.enableGlobalCompInit = false;
 
   services.udev.extraRules = "";
   # services.nginx.enable = true;
@@ -379,4 +396,3 @@
     };
   };
 }
-
