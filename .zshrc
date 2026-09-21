@@ -34,6 +34,7 @@ if [[ -n $IN_NIX_SHELL ]]; then
 fi
 
 setopt INC_APPEND_HISTORY
+setopt HIST_REDUCE_BLANKS # trim whitespace before putting in history
 
 # Share history between all active zsh sessions
 setopt SHARE_HISTORY
