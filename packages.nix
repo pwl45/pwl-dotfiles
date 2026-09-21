@@ -105,6 +105,7 @@ let
     imagemagick
     # code-cursor
     yt-dlp
+    vlc
     (import ./packages/llm.nix { inherit pkgs; })
   ]
   ++ optionals isLinux [
