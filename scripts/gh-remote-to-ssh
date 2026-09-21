@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Rewrite https GitHub remotes to ssh form.
+set -euo pipefail
+
+remote=${1:-origin}
+url=$(git remote get-url "$remote" 2>/dev/null) || {
+    echo "no such remote: $remote" >&2
+    exit 1
+}
+
+case "$url" in
+    https://github.com/*)
+        new_url="git@github.com:${url#https://github.com/}"
+        git remote set-url "$remote" "$new_url"
+        echo "$remote: $url -> $new_url"
+        ;;
+    *)
+        echo "$remote is not an https GitHub remote: $url" >&2
+        exit 1
+        ;;
+esac
