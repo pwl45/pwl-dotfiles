@@ -83,6 +83,14 @@ let
     dmidecode
     iw
     ethtool
+    lm_sensors
+    pciutils
+    usbutils
+    nvme-cli
+    smartmontools
+    powertop
+    iotop
+    strace
   ];
 
   # Desktop environment packages

@@ -1,69 +1,45 @@
-# Hermes Agent configuration
-# Reference: hermes-agent/cli-config.yaml.example (vendored in the flake)
-
 model:
-  # Default everywhere (all hosts, all identities): GPT-5.6 Sol over the
-  # ChatGPT subscription via Codex OAuth. One-time per host:
-  #   hermes auth add openai-codex
-  # (device-code flow; the credential stays untracked in ~/.hermes).
-  # Interactive conversations (CLI, TUI, messaging gateway) land here.
-  default: "gpt-5.6-sol"
-  provider: "openai-codex"
-
-  # Note: Codex OAuth caps the gpt-5.6 family at 272K context (the direct
-  # OpenAI API allows ~1.05M); hermes resolves the window automatically.
-
-cron:
-  # Background/scheduled jobs default to the cheaper sibling. Fire-time
-  # resolution: per-job pin > cron.model > creation-time snapshot >
-  # model.default — so cron.model moves the whole fleet at once.
-  # Per-job override: hermes cron create --model <m> --provider <p> ...
-  model: "gpt-5.6-luna"
-  # Inference provider paired with cron.model. ("provider" under cron:
-  # is a *scheduler* plugin setting, not this.)
-  model_provider: "openai-codex"
-
+  default: gpt-5.6-sol
+  provider: openai-codex
+  base_url: https://chatgpt.com/backend-api/codex
+agent:
+  max_turns: 150
+web:
+  backend: firecrawl
+browser:
+  cloud_provider: local
 auxiliary:
-  # Background side tasks on luna over the same Codex OAuth. Spelling:
-  # auxiliary blocks call the codex provider "codex", not "openai-codex".
-  # vision stays on "auto" — luna's vision support is unverified, and the
-  # codex default (gpt-5.3-codex) is vision-capable.
-  background_review:
-    provider: "codex"
-    model: "gpt-5.6-luna"
   compression:
-    provider: "codex"
-    model: "gpt-5.6-luna"
+    provider: codex
+    model: gpt-5.6-luna
   title_generation:
-    provider: "codex"
-    model: "gpt-5.6-luna"
-
+    provider: codex
+    model: gpt-5.6-luna
+  background_review:
+    provider: codex
+    model: gpt-5.6-luna
+display:
+  tool_progress: all
+cron:
+  model: gpt-5.6-luna
+  model_provider: openai-codex
+computer_use:
+  backend: cua
+_config_version: 44
 model_aliases:
-  # /model sol | /model luna | /model glm for quick per-session switches.
   sol:
-    model: "gpt-5.6-sol"
-    provider: "openai-codex"
+    model: gpt-5.6-sol
+    provider: openai-codex
   luna:
-    model: "gpt-5.6-luna"
-    provider: "openai-codex"
+    model: gpt-5.6-luna
+    provider: openai-codex
   glm:
-    model: "z-ai/glm-5.3"
-    provider: "openrouter"
-    # provider_routing below (US-only, data_collection deny) applies here.
-
+    model: z-ai/glm-5.3
+    provider: openrouter
 provider_routing:
-  # Applies to OpenRouter traffic only.
-  #
-  # Belt and suspenders: exclude any provider that may store data or
-  # train on it, for every model.
-  data_collection: "deny"
-
-  # Pin GLM inference to US-hosted providers only (verified 2026-09-13
-  # with live requests; slugs from OpenRouter's provider registry).
-  # Fails closed: if all pinned providers are down, the request errors
-  # rather than falling back to Z.ai/Baidu/SiliconFlow.
+  data_collection: deny
   models:
-    "z-ai/glm-5.3":
+    z-ai/glm-5.3:
       only:
         - together
         - fireworks
@@ -73,7 +49,7 @@ provider_routing:
         - modal
         - reka
         - decart
-    "z-ai/glm-5.3-flash":
+    z-ai/glm-5.3-flash:
       only:
         - together
         - fireworks
@@ -83,3 +59,59 @@ provider_routing:
         - modal
         - reka
         - decart
+platform_toolsets:
+  cli:
+    - browser
+    - clarify
+    - code_execution
+    - computer_use
+    - connections
+    - cronjob
+    - delegation
+    - file
+    - image_gen
+    - memory
+    - session_search
+    - skills
+    - terminal
+    - todo
+    - tts
+    - vision
+    - web
+known_plugin_toolsets:
+  cli:
+    - a2a
+    - spotify
+known_builtin_toolsets:
+  cli:
+    - browser
+    - clarify
+    - code_execution
+    - computer_use
+    - connections
+    - context_engine
+    - cronjob
+    - delegation
+    - discord
+    - discord_admin
+    - file
+    - homeassistant
+    - image_gen
+    - kanban
+    - memory
+    - session_search
+    - skills
+    - spotify
+    - stt
+    - terminal
+    - todo
+    - tts
+    - video
+    - video_gen
+    - vision
+    - web
+    - x_search
+    - yuanbao
+onboarding:
+  seen:
+    busy_input_prompt: true

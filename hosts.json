@@ -34,7 +34,7 @@
   },
   "thoth": {
     "system": "x86_64-linux",
-    "terminalFontPixels": 24,
+    "terminalFontPixels": 48,
     "users": {
       "thoth": {
         "defaultEnvironment": "desktop"

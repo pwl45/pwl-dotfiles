@@ -17,4 +17,4 @@ echo "Rebuilding system for host: $HOST"
 sudo nixos-rebuild switch --flake "./system#$HOST"
 echo "Applying home-manager"
 CONFIGURATION=$("$PWD/scripts/ensure-home-host.sh" "$INITIAL_ENVIRONMENT" "$HOST")
-home-manager switch --flake ".#$CONFIGURATION"
+home-manager switch --flake ".#$CONFIGURATION" -b backup

@@ -20,6 +20,13 @@
     interval = "monthly";
   };
 
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.nvidia = {
+    modesetting.enable = true;
+    open = false;
+    nvidiaSettings = true;
+  };
+
   # hermes runs as user services; keep them alive without a login session.
   users.users.thoth.linger = true;
 }

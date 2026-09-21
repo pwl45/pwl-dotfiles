@@ -43,7 +43,7 @@ super + ctrl + Return;
 super + ctrl + l;
     $HOME/pwl-dotfiles/scripts/lock-screen.sh
 super + ctrl + space;
-    $HOME/pwl-dotfiles/scripts/dssh.sh
+    $HOME/pwl-dotfiles/scripts/dssh.sh -t
 super + ctrl + y
     $HOME/pwl-dotfiles/yt_dl.sh $( xclip -selection c -out )
 
