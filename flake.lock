@@ -35,11 +35,11 @@
     "custom-dwmblocks": {
       "flake": false,
       "locked": {
-        "lastModified": 1786127276,
-        "narHash": "sha256-+N6m9fXe0wJschiF2v/v/msxAyyHUS89Ur7ZYeuij9c=",
+        "lastModified": 1789950743,
+        "narHash": "sha256-/5lg5byf3MDq2yXKmGkDwMY0hE16l1pR6ffs+4Mpl70=",
         "owner": "pwl45",
         "repo": "pwl-dwmblocks",
-        "rev": "dbd291c558f62483c23735085a6d8b3fa29ef78a",
+        "rev": "f42529a5d192f87a01a2ef6e5cc147a839c2ca88",
         "type": "github"
       },
       "original": {
