@@ -34,7 +34,16 @@ alias gdm='git diff origin/$(master)...HEAD'
 alias gdmf='git diff origin/$(master)...HEAD --name-only'
 alias gbsort="git branch --sort=-committerdate"
 
-gcfz() { git branch --sort=-committerdate | head -50 | fzf  | cut -c3- | xargs -r git checkout; }
+gcfz() {
+    local branch
+    branch=$(git branch --sort=-committerdate --format='%(refname:short)' | head -50 | fzf) || return
+    [[ -n $branch ]] || return
+    if [[ $1 == -p ]]; then
+        printf '%q ' git checkout "$branch"
+    else
+        git checkout "$branch"
+    fi
+}
 
 gfc() { git fetch origin "$1" && git checkout "$1"; }
 
@@ -318,10 +327,12 @@ zf() { fd -HI ".*.pdf" | fzf  | xargs -d '\n' -r zathura }
 vf() {
   local file
   file=$(fd -HI | fzf) || return
-  [[ -n "$file" ]] && {
-    print -s "$EDITOR $file"
+  [[ -n $file ]] || return
+  if [[ $1 == -p ]]; then
+    printf '%q ' "$EDITOR" "$file"
+  else
     $EDITOR "$file"
-  }
+  fi
 }
 # gf() { 
 #     file=$( fd -H | fzf ) 
@@ -381,9 +392,13 @@ yto(){
 }
 
 cdg(){
-    tmp=$( tail -n 10000 $HOME/.shell-dir | awk '!seen[$0]++' | tac | fzf )
-    if [ ! -z $tmp ]; then
-	cdl $tmp
+    local dir
+    dir=$(tail -n 10000 "$HOME/.shell-dir" | awk '!seen[$0]++' | tac | fzf) || return
+    [[ -n $dir ]] || return
+    if [[ $1 == -p ]]; then
+        printf '%q ' cdl "$dir"
+    else
+        cdl "$dir"
     fi
 }
 
@@ -666,14 +681,31 @@ bind_function() {  # $1: keycode, $2: function name, $3: body (defaults to calli
     bindkey -M vicmd "$1" $w
 }
 
-bind_function '^f' vf
+# Bind a picker that prints a shell command for ZLE to submit.
+bind_command() {  # $1: keycode, $2: name, $3: picker command
+    local w="zle-command-$2"
+    functions[$w]="
+        local command
+        command=\$($3 < /dev/tty) || return
+        [[ -n \$command ]] || return
+        zle push-line
+        BUFFER=\$command
+        zle accept-line
+    "
+    zle -N "$w"
+    bindkey -M viins "$1" "$w"
+    bindkey -M vicmd "$1" "$w"
+}
 
-bind_function '^g' gcfz
+bind_command '^f' vf 'vf -p'
 
-bind_function '^p' cdg
+bind_command '^s' dssh 'dssh.sh -p'
+
+bind_command '^g' gcfz 'gcfz -p'
+
+bind_command '^p' cdg 'cdg -p'
 
 bind_function '^h' back 'cd ..'
-
 # remap control enter to do autosuggest
 bindkey '[13;5u' autosuggest-execute
 

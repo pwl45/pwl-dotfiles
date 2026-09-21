@@ -5,6 +5,7 @@
 # $HOME/scripts/simple-unix
 autoload -U colors && colors
 typeset -U path PATH # dedupe path entries
+stty -ixon # Disable Ctrl+S and Ctrl+q keybindings
 
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/pwl-dotfiles/scripts:$PATH"
