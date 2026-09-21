@@ -88,9 +88,15 @@ in
 
   # Make the fonts in packages.nix actually resolvable by name on Linux (no-op on Darwin).
   fonts.fontconfig.enable = isLinux;
-  xresources.properties = lib.mkIf (isLinux && terminalFontPixels != null) {
-    "st.font" = "mono:pixelsize=${toString terminalFontPixels}:antialias=true:autohint=true";
-  };
+  xresources.properties = lib.mkIf (isLinux && terminalFontPixels != null) (
+    let
+      font = "mono:pixelsize=${toString terminalFontPixels}:antialias=true:autohint=true";
+    in
+    {
+      "dmenu.font" = font;
+      "st.font" = font;
+    }
+  );
   home.packages =
     selection.packages
     # hermesAgent is null on Darwin (no build there); only append when present.
