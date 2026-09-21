@@ -3,11 +3,11 @@
     "custom-dmenu": {
       "flake": false,
       "locked": {
-        "lastModified": 1712049507,
-        "narHash": "sha256-oPy8iRY0h5h9ZtrrQGIR2Sz6SwOivy4YWfYPN3ZflZQ=",
+        "lastModified": 1789951204,
+        "narHash": "sha256-M2Kqp9Y/aLgFBmAY+JKdXdOZtl+ivZS8Ekxh6u+pCmg=",
         "owner": "pwl45",
         "repo": "dmenu-flexipatch",
-        "rev": "173588b15b159e1cdd4a40f232bca9eb755576a5",
+        "rev": "d96a253fdb9898a5cf8a418af2165c59bf75c568",
         "type": "github"
       },
       "original": {
