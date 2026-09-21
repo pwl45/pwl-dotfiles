@@ -54,6 +54,10 @@ in
         dwm = prev.dwm.overrideAttrs (old: {
           src = custom-dwm;
           buildInputs = old.buildInputs ++ [ final.libxcb ];
+          NIX_CFLAGS_COMPILE =
+            (old.NIX_CFLAGS_COMPILE or "")
+            + lib.optionalString (terminalFontPixels != null)
+              " -DDWM_FONT_PIXELS=${toString terminalFontPixels}";
         });
         st = prev.st.overrideAttrs (old: {
           src = custom-st;

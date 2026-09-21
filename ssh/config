@@ -1,38 +1,28 @@
-Host lynxion
-	User paul
-	HostName 100.85.115.227
+# note: glob expands in sorted order and ssh_config takes the first value it finds for each keyword
+Include ~/.ssh/config.d/*.conf
+
 Host bastion
     HostName 150.136.174.206
     User alice
     Port 22
-Host cole-orin
-    HostName 10.110.2.104
-    User applied
-Host *
-  ForwardX11 yes
-  ForwardX11Trusted yes
 
-Host snuc
-    HostName 192.168.0.180
-    User snuc
-    Port 22
-Host orin
-    HostName 192.168.0.145
-    User applied
-    Port 22
-host pi
+Host pi
     HostName 100.64.0.2
     User pi
     Port 22
-Host *
-    StrictHostKeyChecking no
-Host work
-    HostName 100.85.140.192
-	ProxyJump t480.local
-    User paul_lapey
-    Port 22
 
-Host soymilk
-    User applied
-    HostName 10.115.1.227
-	ProxyJump work
+Host thoth
+    HostName thoth.local
+    User thoth
+
+Host p53
+    HostName p53.local
+    User paul
+
+Host t480
+    HostName t480.local
+    User paul
+
+Host *
+  ForwardX11 yes
+  ForwardX11Trusted yes
