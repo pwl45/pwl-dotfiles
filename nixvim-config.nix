@@ -147,6 +147,12 @@
   # colorschemes.dracula.enable = true;
   # colorschemes.catppuccin.enable = true;
   globals.mapleader = " "; # Sets the leader key to comma
+  globals.fzf_layout = {
+    window = {
+      width = 0.9;
+      height = 0.6;
+    };
+  };
   opts = {
     number = true; # Show line numbers
     relativenumber = false; # Show relative line numbers
