@@ -1,23 +1,22 @@
 ---
 name: find-docs
 description: >-
-  Look up current documentation, API references, and examples when the answer
-  is unknown, uncertain, version-sensitive, or explicitly needs verification.
-  Skip lookup for stable facts and familiar, routine tasks.
+  Look up documentation to resolve a specific knowledge gap, a concrete version
+  dependency, or an explicit request for verification. Answer familiar, routine
+  commands and stable concepts directly from existing knowledge.
 ---
 
 # Documentation Lookup
 
-Use Context7 when documentation would resolve real uncertainty about a developer
-technology. Trust existing knowledge for stable basics that can be answered
-confidently.
+Answer familiar basics directly. 
 
-Look up documentation when:
+Before looking up documentation, identify the specific unknown or requested
+verification the lookup will resolve. Software being updateable is not enough;
+there must be a concrete reason the answer could depend on a change or version.
 
-- API syntax, configuration, or behavior may have changed.
-- The question depends on a particular version.
-- Debugging hinges on library-specific behavior you are unsure about.
-- The user asks for current docs, verification, citations, or links.
+Look up documentation when you cannot confidently answer a necessary detail,
+there is a concrete version dependency, or the user requests current docs,
+verification, citations, or links.
 
 ## Context7
 
