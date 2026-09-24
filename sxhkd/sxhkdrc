@@ -1,5 +1,5 @@
 super + y
-    $HOME/dynamic-bookmarks/bookmarks.sh -c
+    clipmenu
 super + b
     $HOME/dynamic-bookmarks/bookmarks.sh
 super + ctrl + b

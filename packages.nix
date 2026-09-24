@@ -110,7 +110,7 @@ let
   ]
   ++ optionals isLinux [
     discord
-    google-chrome
+    (prefer google-chrome)
     zoom-us
     sxhkd
     redshift
@@ -125,6 +125,7 @@ let
     brightnessctl
     zathura
     customPkgs.dmenu
+    clipmenu
     dwm
     st
     xscreensaver
@@ -140,6 +141,7 @@ let
     devour
     pamixer
     steam-run-free
+    (llama-cpp.override { cudaSupport = true; })
   ]
   ++ optionals isDarwin [
     ffmpeg
