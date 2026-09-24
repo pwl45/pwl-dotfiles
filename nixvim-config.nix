@@ -11,6 +11,7 @@
     # neotest.adapters.plenary.enable = true;
     # plenary.enable = true;
     bufferline.enable = true;
+    diffview.enable = true;
     web-devicons = {
       enable = true;
       autoLoad = true;

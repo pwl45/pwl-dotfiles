@@ -22,6 +22,7 @@ nnoremap Q K
 " use gj and gk to do what j and k normally do
 
 nnoremap <C-g> :let @+ = expand('%')<CR><C-g>
+nnoremap <silent> <C-f> :let @+ = system(['mdcodecat', expand('%')])<CR>
 nnoremap Z :let @+ = expand('%:p')<CR> C-g
 
 
@@ -182,6 +183,10 @@ nmap <Leader>. :e<Space><c-r>=getcwd()<cr>/
 nmap <Leader>, :e<Space>
 nmap <Leader>bl <c-^>
 nmap <Leader>bb :Buffers<CR>
+
+nnoremap <leader>gd :DiffviewOpen<CR>
+nnoremap <leader>gs :DiffviewOpen --cached<CR>
+nnoremap <leader>gm :DiffviewOpen origin/HEAD...HEAD<CR>
 " colorscheme desert256
 let g:lightline = {
       \ 'colorscheme': 'wombat',
