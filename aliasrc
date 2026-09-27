@@ -312,6 +312,29 @@ function hsf() {
     echo "Activating Home Manager: $configuration"
     home-manager switch --flake "$HOME/pwl-dotfiles#$configuration" "$@"
 }
+
+# hdh HOSTNAME builds locally and activates Home Manager over SSH.
+function hdh() {
+    if [[ $# -ne 1 || -z "$1" || "$1" == -* ]]; then
+        echo "Usage: hdh HOSTNAME" >&2
+        return 1
+    fi
+
+    local target="$1" configuration output activation
+    configuration=$(ssh "$target" 'printf "%s@%s\n" "$(id -un)" "$(hostname)"') || return
+    output="$HOME/.cache/hdh/$configuration"
+    mkdir -p "$HOME/.cache/hdh" || return
+
+    echo "Building Home Manager: $configuration"
+    nix build "$HOME/pwl-dotfiles#homeConfigurations.\"$configuration\".activationPackage" \
+        --out-link "$output" || return
+    activation=$(readlink -f "$output") || return
+
+    echo "Deploying Home Manager to $target"
+    nix copy --to "ssh://$target" "$activation" || return
+    ssh "$target" "$activation/activate"
+}
+
 alias snrs='sudo nixos-rebuild switch --flake $HOME/pwl-dotfiles/system#$(hostname)'
 alias ns='nix develop -c zsh'
 lsd(){

@@ -141,10 +141,13 @@ let
     devour
     pamixer
     steam-run-free
-    (llama-cpp.override { cudaSupport = true; })
   ]
   ++ optionals isDarwin [
     ffmpeg
+  ];
+
+  gpu = [
+    (llama-cpp.override { cudaSupport = true; })
   ];
 
   # Fonts
@@ -183,6 +186,7 @@ let
     minimal = core;
     server = core ++ development;
     desktop = core ++ development ++ desktop ++ fonts ++ system;
+    gpu_desktop = core ++ development ++ desktop ++ fonts ++ system ++ gpu;
     headless = core ++ development ++ system;
   };
 

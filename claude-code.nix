@@ -15,8 +15,8 @@
 }:
 
 let
-  version = "2.1.280";
-  hash = "sha256-HghQPb3zwssNcG0y80CCdziNHHbvEIZz6P5CwbMikls=";
+  version = "2.1.283";
+  hash = "sha256-GFlYPOMpIFlcYe+Gi+5S4bFZT3SG2yCZNeAfHl6ASuI=";
 in
 stdenv.mkDerivation {
   pname = "claude-code";

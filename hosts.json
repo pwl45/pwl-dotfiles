@@ -20,7 +20,7 @@
     "terminalFontPixels": 24,
     "users": {
       "paullapey": {
-        "defaultEnvironment": "desktop"
+        "defaultEnvironment": "gpu_desktop"
       }
     }
   },
