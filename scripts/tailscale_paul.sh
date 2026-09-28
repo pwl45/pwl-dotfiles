@@ -15,5 +15,6 @@ ssh -T -o BatchMode=yes alice@auth.paullapey.com \
 test -s "$authkey_file"
 
 sudo tailscale up --force-reauth \
+    --hostname "$(hostname)" \
     --login-server "https://auth.paullapey.com" \
     --authkey "file:$authkey_file"
