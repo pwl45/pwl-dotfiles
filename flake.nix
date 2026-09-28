@@ -47,6 +47,7 @@
           username,
           system,
           environment,
+          hermes,
           terminalFontPixels ? null,
         }:
         let
@@ -64,12 +65,12 @@
             inherit custom-st;
             inherit nixvim;
             inherit system;
-            # hermes-agent has no Darwin build, so it's null there (home.nix
-            # only appends it when non-null). On Linux, use the `messaging`
-            # variant so python-telegram-bot, discord.py, and slack-sdk are
-            # bundled — the read-only Nix store can't be pip-installed at runtime.
+            # Bundle messaging dependencies because the Nix store is read-only.
             hermesAgent =
-              if pkgs.stdenv.hostPlatform.isDarwin then null else hermes-agent.packages.${system}.messaging;
+              if hermes && pkgs.stdenv.hostPlatform.isLinux then
+                hermes-agent.packages.${system}.messaging
+              else
+                null;
             inherit customPkgs; # Pass the custom packages to home.nix
             inherit username environment terminalFontPixels;
             unstablePkgs = nixpkgs-unstable.legacyPackages.${system};
@@ -92,6 +93,7 @@
           system,
           hostname,
           defaultEnvironment,
+          hermes,
           terminalFontPixels ? null,
         }:
         let
@@ -100,7 +102,12 @@
             nixpkgs.lib.nameValuePair
               "${username}@${hostname}${nixpkgs.lib.optionalString (environment != null) "-${environment}"}"
               (mkHomeConfiguration {
-                inherit username system terminalFontPixels;
+                inherit
+                  username
+                  system
+                  terminalFontPixels
+                  hermes
+                  ;
                 environment = if environment == null then defaultEnvironment else environment;
               });
         in
@@ -121,6 +128,7 @@
               inherit username hostname;
               inherit (host) system;
               inherit (user) defaultEnvironment;
+              hermes = host.hermes or false;
               terminalFontPixels = host.terminalFontPixels or null;
             }
           ) (builtins.attrNames host.users)

@@ -98,10 +98,7 @@ in
       "st.font" = font;
     }
   );
-  home.packages =
-    selection.packages
-    # hermesAgent is null on Darwin (no build there); only append when present.
-    ++ pkgs.lib.optional (hermesAgent != null) hermesAgent;
+  home.packages = selection.packages ++ pkgs.lib.optional (hermesAgent != null) hermesAgent;
   home.sessionPath = map (pkg: "${lib.getBin pkg}/bin") selection.preferredPackages;
 
   programs.neovim = {

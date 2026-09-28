@@ -51,15 +51,15 @@ let
   # Development tools
   development = [
     ruby
-    ghc
-    cargo
+    # ghc
+    # cargo
     crane
     podman
     git-filter-repo
     git-lfs
-    rustc
+    # rustc
     awscli2
-    google-cloud-sdk
+    # google-cloud-sdk
     oauth2c
     claude-code
     grok-build
@@ -72,13 +72,11 @@ let
     opencode
     pi-coding-agent
     nodejs
-    texliveFull
     tcpdump
     speedtest-cli
     mtr
     aria2
     emacs
-    # hermes
   ]
   ++ optionals isLinux [
     upower
@@ -107,6 +105,8 @@ let
     imagemagick
     yt-dlp
     vlc
+    texliveFull
+
     (import ./packages/llm.nix { inherit pkgs; })
   ]
   ++ optionals isLinux [
