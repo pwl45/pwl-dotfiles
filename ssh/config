@@ -17,14 +17,26 @@ Host pi
     Port 22
 
 Host thoth
+    HostName 100.64.0.6
+    User thoth
+
+Host thoth_local
     HostName thoth.local
     User thoth
 
 Host p53
+    HostName 100.64.0.7
+    User paul
+
+Host p53_local
     HostName p53.local
     User paul
 
 Host t480
+    HostName 100.64.0.4
+    User paul
+
+Host t480_local
     HostName t480.local
     User paul
 
