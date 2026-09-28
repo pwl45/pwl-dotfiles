@@ -14,7 +14,7 @@ export PATH="$PATH:$HOME/.nix-profile/bin"
 if [[ -f "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]]; then
     source "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
 fi
-if [ -z "$TMUX" ]; then
+if [[ -z $TMUX && $TERM != tmux* ]]; then
     # Generate a unique session name with the format YYYY_MM_DD
     session_name="session_$(date +%Y_%m_%d)_$RANDOM"
     # Start a new tmux session with the unique name
