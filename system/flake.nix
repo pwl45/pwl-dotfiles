@@ -17,6 +17,7 @@
         };
     in {
       nixosConfigurations = {
+        auth = mkHost nixpkgs-2605 ./hosts/auth/configuration.nix;
         t480 = mkHost nixpkgs-2411 ./hosts/t480;
         p53 = mkHost nixpkgs-2605 ./hosts/p53;
         thoth = mkHost nixpkgs-2605 ./hosts/thoth;

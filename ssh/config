@@ -11,6 +11,10 @@ Host website
     User alice
     Port 22
 
+Host auth
+    HostName auth.paullapey.com
+    User alice
+
 Host pi
     HostName 100.64.0.2
     User pi
