@@ -29,4 +29,8 @@
 
   # hermes runs as user services; keep them alive without a login session.
   users.users.thoth.linger = true;
+  nix.settings.trusted-users = [
+    "root"
+    "thoth"
+  ];
 }
