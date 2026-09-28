@@ -1,6 +1,6 @@
-{ ... }:
+{ pkgs, ... }:
 
-# Host: ThinkPad T480 (nixpkgs pinned to nixos-24.11 in ../../flake.nix)
+# Host: ThinkPad T480
 {
   imports = [
     ../../common.nix
@@ -9,10 +9,11 @@
 
   networking.hostName = "t480";
 
-  # Backlight control via the `light` CLI (used by the brightness keybinds).
-  # Removed from nixpkgs after 24.11 — when this host moves to 26.05+, switch
-  # to brightnessctl / hardware.acpilight like the p53 host.
-  programs.light.enable = true;
+  # The 100 MiB EFI partition shared with Windows fits one NixOS generation.
+  boot.loader.systemd-boot.configurationLimit = 1;
+
+  hardware.acpilight.enable = true;
+  environment.systemPackages = [ pkgs.brightnessctl ];
 
   # First NixOS release installed on THIS machine. Never change it — it keeps
   # stateful data (databases, etc.) compatible. See common.nix for the full note.

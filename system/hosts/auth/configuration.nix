@@ -129,7 +129,7 @@
     settings = {
       server_url = "https://auth.paullapey.com";
       dns = {
-        base_domain = "example.com";
+        base_domain = "tail.paullapey.com";
         override_local_dns = false;
       };
     };

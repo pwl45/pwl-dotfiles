@@ -137,8 +137,6 @@
   };
 
   # xorg.xbac
-  # NOTE: brightness control is host-specific — programs.light (removed from
-  # nixpkgs after 24.11) is set in hosts/t480; newer hosts use brightnessctl.
   programs.thunar.enable = true;
   programs.steam = {
     enable = true;
