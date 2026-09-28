@@ -57,5 +57,4 @@ tmux kill-window -t claude-bg:rebuild
 Long foreground commands hit the Bash tool timeout and, when their output is
 piped into `tail`, give no signal while they run: "still working" and "wedged"
 look identical. A log file works around that, but a tmux window is the real
-thing: a live pty the agent can capture and the user can attach to. This is the
-flow pi recommends, and there is no reason to build a bespoke wrapper for it.
+thing: a live pty the agent can capture and the user can attach to. Never pipe commands into tail.
