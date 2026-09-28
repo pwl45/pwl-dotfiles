@@ -29,5 +29,7 @@ Host t480
     User paul
 
 Host *
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
   ForwardX11 yes
   ForwardX11Trusted yes
