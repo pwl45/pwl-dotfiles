@@ -51,6 +51,7 @@ let
   # Development tools
   development = [
     ruby
+    uv
     crane
     podman
     git-filter-repo
