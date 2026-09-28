@@ -82,4 +82,9 @@
   # fwupd is kept enabled for general BIOS/ME/security firmware updates:
   #   fwupdmgr refresh && fwupdmgr get-updates && fwupdmgr update
   services.fwupd.enable = true;
+  nix.settings.trusted-users = [
+    "root"
+    "paul"
+  ];
+
 }

@@ -22,7 +22,18 @@
   fileSystems."/mnt/windows" = {
     fsType = "ntfs-3g";
     device = "/dev/nvme0n1p3";
-    options =
-      [ "rw" "windows_names" "uid=1000" "gid=100" "fmask=133" "dmask=022" ];
+    options = [
+      "rw"
+      "windows_names"
+      "uid=1000"
+      "gid=100"
+      "fmask=133"
+      "dmask=022"
+    ];
   };
+  nix.settings.trusted-users = [
+    "root"
+    "paul"
+  ];
+
 }
