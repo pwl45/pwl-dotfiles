@@ -15,13 +15,8 @@ Host auth
     HostName auth.paullapey.com
     User alice
 
-Host pi
-    HostName 100.64.0.2
-    User pi
-    Port 22
-
 Host thoth
-    HostName 100.64.0.1
+    HostName thoth.tail.paullapey.com
     User thoth
 
 Host thoth_local
@@ -29,7 +24,7 @@ Host thoth_local
     User thoth
 
 Host p53
-    HostName 100.64.0.2
+    HostName p53.tail.paullapey.com
     User paul
 
 Host p53_local
@@ -37,7 +32,7 @@ Host p53_local
     User paul
 
 Host t480
-    HostName 100.64.0.3
+    HostName t480.tail.paullapey.com
     User paul
 
 Host t480_local
@@ -46,6 +41,5 @@ Host t480_local
 
 Host *
   StrictHostKeyChecking no
-  UserKnownHostsFile /dev/null
   ForwardX11 yes
   ForwardX11Trusted yes

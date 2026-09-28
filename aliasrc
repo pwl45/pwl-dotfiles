@@ -8,13 +8,11 @@ if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
     alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
 
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
 fi
-alias epsxe="ePSXe"
 alias stata="echo 'exit, clear' | stata-se"
 alias please="sudo"
 alias vim="nvim"
@@ -22,13 +20,9 @@ alias ll='ls -alF'
 alias la='eza -al --color=always --group-directories-first'
 alias cb='clipboard copy'
 alias cbo='clipboard paste'
-# alias l='ls -CF'
 # alias debugoff="find -name settings.py -exec sed -i 's/DEBUG\s*=\s*True/DEBUG=false/g' {} \+"
 # alias debugon="find -name settings.py -exec sed -i 's/DEBUG\s*=\s*false/DEBUG=True/g' {} \+"
-alias wttr="curl wttr.in"
-alias stw='st -e zstart "curl wttr.in"'
 alias gits="git status"
-alias gac="git add -u && git commit -m"
 alias gau="git add -u"
 alias gdm='git diff origin/$(master)...HEAD'
 alias gdmf='git diff origin/$(master)...HEAD --name-only'
@@ -82,26 +76,13 @@ gsg(){
         echo "$modified_files"
     fi
 }
-gsga(){
-    gsg $@ | xargs -r git add
-}
 
-alias ggr='git grep'
-
-ggri() {
-    git ls-files -z | xargs -0 grep -i --color=auto "$@"
-}
-
-ggrb() {
-    git ls-files -z | grep -z 'BUILD' | xargs -0 grep --color=auto "$@"
-}
-
-ggrbi() {
-    git ls-files -z | grep -z 'BUILD' | xargs -0 grep --color=auto "$@"
-}
-
-ggf() {
-    git ls-files | grep --color=auto "$@"
+unalias ggr 2>/dev/null || true
+ggr() {
+    case $1 in
+        -*) git grep "$@" ;;
+        *) git grep -e "$@" ;;
+    esac
 }
 
 gco(){
@@ -371,39 +352,7 @@ vf() {
     $EDITOR "$file"
   fi
 }
-# gf() { 
-#     file=$( fd -H | fzf ) 
-#     # read program
-#     read -sk char
-#     echo $char
-#     case $char in
-# 	v)
-# 	    program="nvim"
-# 	    ;;
-# 	z)
-# 	    program="zathura"
-# 	    ;;
-# 	m)
-# 	    program="mpv"
-# 	    ;;
-# 	e)
-# 	    program="emacs"
-# 	    ;;
-# 	c)
-# 	    cd "$file"
-# 	    return 0
-# 	    ;;
-# 	*)
-# 	    echo "Usage: $0 {start|stop|restart|status}"
-# 	    return 1
-# 	    ;;
-#     esac
-#     echo $program $file
 
-#     $program $file
-# }
-
-ef() { fd -H | fzf  | xargs -r emacs }
 vff() { fd -H . $HOME | fzf  | xargs -r $EDITOR }
 # ccv() { tmp=$(fd -H -t d . $HOME | fzf) && cd $tmp }
 vfc() { tmp=$( fzf ) && cd $( dirname "$tmp" ) && basename $tmp | xargs -r $EDITOR }
