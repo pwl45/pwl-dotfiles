@@ -51,24 +51,18 @@ let
   # Development tools
   development = [
     ruby
-    # ghc
-    # cargo
     crane
     podman
     git-filter-repo
     git-lfs
-    # rustc
     awscli2
-    # google-cloud-sdk
     oauth2c
     claude-code
     grok-build
     unstablePkgs.codex
     bazel-buildtools
-    zig
     gh
     acli
-    mermaid-cli
     opencode
     pi-coding-agent
     nodejs
@@ -76,7 +70,6 @@ let
     speedtest-cli
     mtr
     aria2
-    emacs
   ]
   ++ optionals isLinux [
     upower
@@ -95,6 +88,7 @@ let
 
   # Desktop environment packages
   desktop = [
+    mermaid-cli
     qrcode
     telegram-desktop
     pinta
@@ -106,6 +100,7 @@ let
     yt-dlp
     vlc
     texliveFull
+    emacs
 
     (import ./packages/llm.nix { inherit pkgs; })
   ]
@@ -176,6 +171,8 @@ let
     cowsay
     perl
     ncurses
+    zig
+
   ]
   ++ optionals isLinux [
     glibcLocales
