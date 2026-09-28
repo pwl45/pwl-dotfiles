@@ -6,6 +6,11 @@ Host oracle
     User alice
     Port 22
 
+Host website
+    HostName paullapey.com
+    User alice
+    Port 22
+
 Host pi
     HostName 100.64.0.2
     User pi
