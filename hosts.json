@@ -41,6 +41,14 @@
       }
     }
   },
+  "oracle": {
+    "system": "x86_64-linux",
+    "users": {
+      "alice": {
+        "defaultEnvironment": "headless"
+      }
+    }
+  },
   "paullapeysundayais-MacBook-Air.local": {
     "system": "aarch64-darwin",
     "users": {

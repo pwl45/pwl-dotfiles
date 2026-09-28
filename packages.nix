@@ -50,6 +50,8 @@ let
 
   # Development tools
   development = [
+    ruby
+    ghc
     cargo
     crane
     podman
@@ -103,7 +105,6 @@ let
     browsh
     mpv
     imagemagick
-    # code-cursor
     yt-dlp
     vlc
     (import ./packages/llm.nix { inherit pkgs; })

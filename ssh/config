@@ -1,7 +1,7 @@
 # note: glob expands in sorted order and ssh_config takes the first value it finds for each keyword
 Include ~/.ssh/config.d/*.conf
 
-Host bastion
+Host oracle
     HostName 150.136.174.206
     User alice
     Port 22
