@@ -4,6 +4,8 @@ alwaysApply: true
 
 # Run Long Commands in tmux Windows
 
+TL;DR: NEVER PIPE LONG RUNNING COMMANDS INTO TAIL - OBSERVABILITY IS PARAMOUNT
+
 For any command that may run for minutes (builds, tests, bazel, nix, docker,
 regen, deploys, dev servers, watchers, REPLs), do not run it in the foreground
 Bash tool. Start it in a detached, named tmux window in a dedicated
