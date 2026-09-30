@@ -84,6 +84,7 @@ ggr() {
         *) git grep -e "$@" ;;
     esac
 }
+alias glf='git ls-files'
 
 gco(){
     if [ $# -eq 0 ]; then
@@ -367,6 +368,7 @@ cdl() {
 }
 alias cd='cdl'
 alias tat='tmux attach -t'
+alias tst='tmux switch-client -t'
 alias tsf="tmux source-file ~/.tmux.conf"
 
 yto(){
